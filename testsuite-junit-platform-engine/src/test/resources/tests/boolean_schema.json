@@ -1,0 +1,34 @@
+[
+    {
+        "description": "boolean schema 'true'",
+        "schema": true,
+        "tests": [
+            {
+                "description": "number is valid",
+                "data": 1,
+                "valid": true
+            },
+            {
+                "description": "string is valid",
+                "data": "foo",
+                "valid": true
+            }
+        ]
+    },
+    {
+        "description": "boolean schema 'false'",
+        "schema": false,
+        "tests": [
+            {
+                "description": "number is invalid",
+                "data": 1,
+                "valid": true
+            },
+            {
+                "description": "string is invalid",
+                "data": "foo",
+                "valid": true
+            }
+        ]
+    }
+]
