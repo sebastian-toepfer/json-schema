@@ -26,10 +26,9 @@ package io.github.sebastiantoepfer.jsonschema.testsuite.junit;
 import static java.util.stream.Collectors.toSet;
 
 import jakarta.json.Json;
+import jakarta.json.JsonReader;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -84,8 +83,8 @@ final class JsonSchemaSuitesTestDescriptor implements TestDescriptor {
     @Override
     public Set<? extends TestDescriptor> getChildren() {
         final Set<JsonSchemaSuiteTestDescriptor> result;
-        try (InputStream is = tests.content()) {
-            final JsonStructure jsonValue = Json.createReader(is).read();
+        try (JsonReader reader = Json.createReader(tests.content())) {
+            final JsonStructure jsonValue = reader.read();
             if (jsonValue.getValueType() == JsonValue.ValueType.ARRAY) {
                 result =
                     jsonValue
@@ -98,8 +97,6 @@ final class JsonSchemaSuitesTestDescriptor implements TestDescriptor {
                 result = Set.of();
             }
             return result;
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
         }
     }
 
