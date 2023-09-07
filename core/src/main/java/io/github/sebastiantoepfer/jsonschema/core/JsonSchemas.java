@@ -45,7 +45,7 @@ public final class JsonSchemas {
         } else if (schema.equals(JsonValue.EMPTY_JSON_OBJECT)) {
             result = new EmptyJsonSchema();
         } else {
-            throw new IllegalArgumentException("not supported yet!");
+            result = new DefaultJsonSchema(schema.asJsonObject());
         }
         return result;
     }

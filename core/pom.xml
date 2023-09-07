@@ -80,6 +80,13 @@
                                         <inculde>**/tests/draft2019-09/boolean_schema.json</inculde>
                                         <inculde>**/tests/draft2020-12/boolean_schema.json</inculde>
                                         <inculde>**/tests/draft-next/boolean_schema.json</inculde>
+
+                                        <inculde>**/tests/draft4/type.json</inculde>
+                                        <inculde>**/tests/draft6/type.json</inculde>
+                                        <inculde>**/tests/draft7/type.json</inculde>
+                                        <inculde>**/tests/draft2019-09/type.json</inculde>
+                                        <inculde>**/tests/draft2020-12/type.json</inculde>
+                                        <inculde>**/tests/draft-next/type.json</inculde>
                                     </includes>
                                 </resource>
                             </resources>

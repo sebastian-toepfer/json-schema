@@ -27,7 +27,7 @@ import jakarta.json.JsonValue;
 import java.util.Collection;
 import java.util.Set;
 
-final class NoConstraint implements Contraint {
+final class NoConstraint implements Constraint {
 
     @Override
     public Collection<ConstraintViolation> violationsBy(final JsonValue value) {

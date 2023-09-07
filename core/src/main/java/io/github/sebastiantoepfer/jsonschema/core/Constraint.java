@@ -26,6 +26,6 @@ package io.github.sebastiantoepfer.jsonschema.core;
 import jakarta.json.JsonValue;
 import java.util.Collection;
 
-interface Contraint {
+interface Constraint {
     Collection<ConstraintViolation> violationsBy(JsonValue value);
 }

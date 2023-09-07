@@ -23,14 +23,22 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
-import jakarta.json.JsonValue;
-import java.util.Collection;
-import java.util.Set;
+import jakarta.json.JsonObject;
 
-final class UnfulfillableConstraint implements Constraint {
+final class DefaultJsonSchema extends AbstractJsonValueSchema {
+
+    public DefaultJsonSchema(final JsonObject value) {
+        super(value);
+    }
 
     @Override
-    public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-        return Set.of(new ConstraintViolation());
+    public Validator validator() {
+        final Constraint constraint;
+        if (asJsonObject().containsKey("type")) {
+            constraint = new Type(asJsonObject().get("type"));
+        } else {
+            constraint = new UnfulfillableConstraint();
+        }
+        return new Validator(constraint);
     }
 }
