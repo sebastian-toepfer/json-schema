@@ -28,12 +28,9 @@ import static org.junit.platform.testkit.engine.EventConditions.finishedSuccessf
 import static org.junit.platform.testkit.engine.EventConditions.started;
 
 import org.junit.jupiter.api.Test;
-import org.junit.platform.engine.TestEngine;
 import org.junit.platform.testkit.engine.EngineTestKit;
 
 class JsonSchemaTestSuiteEngineTest {
-
-    private final TestEngine engine = new JsonSchemaTestSuiteEngine();
 
     @Test
     void should_run_all_tests() {

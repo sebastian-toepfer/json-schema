@@ -33,7 +33,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.platform.engine.TestDescriptor;
-import org.junit.platform.engine.TestDescriptor.Type;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.TestTag;
 import org.junit.platform.engine.UniqueId;
@@ -119,8 +118,8 @@ final class JsonSchemaSuitesTestDescriptor implements TestDescriptor {
     }
 
     @Override
-    public Type getType() {
-        return Type.CONTAINER;
+    public TestDescriptor.Type getType() {
+        return TestDescriptor.Type.CONTAINER;
     }
 
     @Override
