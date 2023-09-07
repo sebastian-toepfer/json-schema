@@ -26,24 +26,13 @@ package io.github.sebastiantoepfer.jsonschema.testsuite.junit;
 import java.io.InputStream;
 import java.util.Objects;
 
-final class Resource {
-
-    private final String name;
-
-    public Resource(final String name) {
-        this.name = Objects.requireNonNull(name);
-    }
-
+final record Resource(String name) {
     boolean hasName(final String name) {
         return Objects.equals(this.name, name);
     }
 
     boolean hasExtension(final String extension) {
         return name.endsWith(".".concat(extension));
-    }
-
-    String name() {
-        return name;
     }
 
     InputStream content() {
