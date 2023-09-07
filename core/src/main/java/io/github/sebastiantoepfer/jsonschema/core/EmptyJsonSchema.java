@@ -25,6 +25,14 @@ package io.github.sebastiantoepfer.jsonschema.core;
 
 import jakarta.json.JsonValue;
 
-public interface JsonSchema extends JsonValue {
-    public Validator validator();
+final class EmptyJsonSchema extends AbstractJsonValueSchema {
+
+    public EmptyJsonSchema() {
+        super(JsonValue.EMPTY_JSON_OBJECT);
+    }
+
+    @Override
+    public Validator validator() {
+        return new Validator(new NoConstraint());
+    }
 }

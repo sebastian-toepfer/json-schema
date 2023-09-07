@@ -23,8 +23,31 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import java.util.Objects;
 
-public interface JsonSchema extends JsonValue {
-    public Validator validator();
+abstract class AbstractJsonValueSchema implements JsonSchema {
+
+    private final JsonValue value;
+
+    public AbstractJsonValueSchema(final JsonValue value) {
+        this.value = Objects.requireNonNull(value);
+    }
+
+    @Override
+    public final ValueType getValueType() {
+        return value.getValueType();
+    }
+
+    @Override
+    public final JsonObject asJsonObject() {
+        return value.asJsonObject();
+    }
+
+    @Override
+    public final JsonArray asJsonArray() {
+        return value.asJsonArray();
+    }
 }

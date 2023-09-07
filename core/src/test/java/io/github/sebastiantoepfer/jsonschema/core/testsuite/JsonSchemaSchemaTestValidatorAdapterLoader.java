@@ -23,7 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.testsuite;
 
-import io.github.sebastiantoepfer.jsonschema.core.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.core.JsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.core.Validator;
 import io.github.sebastiantoepfer.jsonschema.testsuite.junit.SchemaTestValidatorLoader;
 import java.util.Objects;
@@ -32,7 +32,7 @@ public final class JsonSchemaSchemaTestValidatorAdapterLoader implements SchemaT
 
     @Override
     public SchemaTestValidator loadSchemaTestValidator(final String schema) {
-        return new SchemaTestValidatorAdapter(JsonSchema.load(schema).validator());
+        return new SchemaTestValidatorAdapter(JsonSchemas.load(schema).validator());
     }
 
     private static class SchemaTestValidatorAdapter implements SchemaTestValidator {

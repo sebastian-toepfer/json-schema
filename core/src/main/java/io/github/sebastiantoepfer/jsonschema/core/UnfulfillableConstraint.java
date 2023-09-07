@@ -24,7 +24,13 @@
 package io.github.sebastiantoepfer.jsonschema.core;
 
 import jakarta.json.JsonValue;
+import java.util.Collection;
+import java.util.Set;
 
-public interface JsonSchema extends JsonValue {
-    public Validator validator();
+final class UnfulfillableConstraint implements Contraint {
+
+    @Override
+    public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
+        return Set.of(new ConstraintViolation());
+    }
 }

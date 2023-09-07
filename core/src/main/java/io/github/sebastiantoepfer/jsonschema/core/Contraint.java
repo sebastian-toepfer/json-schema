@@ -24,7 +24,8 @@
 package io.github.sebastiantoepfer.jsonschema.core;
 
 import jakarta.json.JsonValue;
+import java.util.Collection;
 
-public interface JsonSchema extends JsonValue {
-    public Validator validator();
+interface Contraint {
+    Collection<ConstraintViolation> violationsBy(JsonValue value);
 }

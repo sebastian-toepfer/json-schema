@@ -23,8 +23,32 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
+import jakarta.json.Json;
+import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
+import java.io.StringReader;
 
-public interface JsonSchema extends JsonValue {
-    public Validator validator();
+public final class JsonSchemas {
+
+    public static JsonSchema load(final String schema) {
+        try (JsonReader reader = Json.createReader(new StringReader(schema))) {
+            return load(reader.readValue());
+        }
+    }
+
+    public static JsonSchema load(final JsonValue schema) {
+        final JsonSchema result;
+        if (schema == JsonValue.TRUE) {
+            result = new TrueSchema();
+        } else if (schema == JsonValue.FALSE) {
+            result = new FalseSchema();
+        } else if (schema.equals(JsonValue.EMPTY_JSON_OBJECT)) {
+            result = new EmptyJsonSchema();
+        } else {
+            throw new IllegalArgumentException("not supported yet!");
+        }
+        return result;
+    }
+
+    private JsonSchemas() {}
 }

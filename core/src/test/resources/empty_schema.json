@@ -1,0 +1,26 @@
+[
+    {
+        "description": "empty schema",
+        "schema": {},
+        "tests": [
+            {
+                "description": "number is valid",
+                "data": 42,
+                "valid": true
+            },
+            {
+                "description": "string is valid",
+                "data": "I'm a string",
+                "valid": true
+            },
+            {
+                "description": "object is valid",
+                "data": {
+                    "an": ["arbitrarily", "nested"],
+                    "data": "structure"
+                },
+                "valid": true
+            }
+        ]
+    }
+]

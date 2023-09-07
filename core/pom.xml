@@ -24,6 +24,18 @@
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.json</groupId>
+            <artifactId>jakarta.json-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -63,13 +75,28 @@
                                 <resource>
                                     <directory>${project.build.directory}/jsonschematests</directory>
                                     <includes>
+                                        <inculde>**/tests/draft6/boolean_schema.json</inculde>
+                                        <inculde>**/tests/draft7/boolean_schema.json</inculde>
+                                        <inculde>**/tests/draft2019-09/boolean_schema.json</inculde>
                                         <inculde>**/tests/draft2020-12/boolean_schema.json</inculde>
+                                        <inculde>**/tests/draft-next/boolean_schema.json</inculde>
                                     </includes>
                                 </resource>
                             </resources>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <configuration>
+                    <excludedClasses>
+                        <!-- i do not understand why pitests do not use the test to kill all mutants in this classes -->
+                        <excludedClass>io.github.sebastiantoepfer.jsonschema.core.AbstractJsonValueSchema</excludedClass>
+                    </excludedClasses>
+                </configuration>
             </plugin>
         </plugins>
     </build>

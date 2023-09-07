@@ -23,11 +23,28 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
+import jakarta.json.Json;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
+import java.io.StringReader;
 import java.util.Collection;
+import java.util.Objects;
 
 public final class Validator {
 
+    private final Contraint contraint;
+
+    Validator(final Contraint contraint) {
+        this.contraint = Objects.requireNonNull(contraint);
+    }
+
     public Collection<ConstraintViolation> validate(final String data) {
-        throw new UnsupportedOperationException("");
+        try (final JsonReader reader = Json.createReader(new StringReader(data))) {
+            return validate(reader.readValue());
+        }
+    }
+
+    public Collection<ConstraintViolation> validate(final JsonValue data) {
+        return contraint.violationsBy(data);
     }
 }
