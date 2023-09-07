@@ -32,7 +32,7 @@ abstract class AbstractJsonValueSchema implements JsonSchema {
 
     private final JsonValue value;
 
-    public AbstractJsonValueSchema(final JsonValue value) {
+    protected AbstractJsonValueSchema(final JsonValue value) {
         this.value = Objects.requireNonNull(value);
     }
 
