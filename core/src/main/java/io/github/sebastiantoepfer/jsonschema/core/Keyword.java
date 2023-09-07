@@ -23,14 +23,8 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
-import jakarta.json.JsonValue;
-import java.util.Collection;
-import java.util.Set;
-
-final class UnfulfillableConstraint implements Constraint {
-
-    @Override
-    public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-        return Set.of(new ConstraintViolation());
-    }
-}
+/**
+ * It means the “key” part of the key/value pair in an object. Most of the work of writing a JSON Schema involves
+ * mapping a special “keyword” to a value within an object.
+ **/
+public interface Keyword {}

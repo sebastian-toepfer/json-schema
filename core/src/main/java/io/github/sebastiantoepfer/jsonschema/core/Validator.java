@@ -32,9 +32,9 @@ import java.util.Objects;
 
 public final class Validator {
 
-    private final Contraint contraint;
+    private final Constraint contraint;
 
-    Validator(final Contraint contraint) {
+    Validator(final Constraint contraint) {
         this.contraint = Objects.requireNonNull(contraint);
     }
 

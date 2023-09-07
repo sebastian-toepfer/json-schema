@@ -23,14 +23,37 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toSet;
+
 import jakarta.json.JsonValue;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
-final class UnfulfillableConstraint implements Constraint {
+class AnyConstraint implements Constraint {
+
+    private final List<Constraint> contraints;
+
+    public AnyConstraint(final Constraint... constraints) {
+        this(asList(constraints));
+    }
+
+    public AnyConstraint(final Collection<? extends Constraint> contraints) {
+        if (contraints.isEmpty()) {
+            throw new IllegalArgumentException("min one constraint must be provided!");
+        }
+        this.contraints = List.copyOf(contraints);
+    }
 
     @Override
     public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-        return Set.of(new ConstraintViolation());
+        final Collection<ConstraintViolation> result;
+        if (contraints.stream().anyMatch(c -> c.violationsBy(value).isEmpty())) {
+            result = Set.of();
+        } else {
+            result = contraints.stream().map(c -> c.violationsBy(value)).flatMap(Collection::stream).collect(toSet());
+        }
+        return result;
     }
 }
