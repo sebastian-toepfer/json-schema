@@ -37,6 +37,9 @@
     </scm>
 
     <properties>
+        <sonar.organization>sebastian-toepfer</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+
         <prettier.goal>write</prettier.goal>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
