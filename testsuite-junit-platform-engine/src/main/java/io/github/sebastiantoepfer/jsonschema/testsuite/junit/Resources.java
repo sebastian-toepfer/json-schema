@@ -96,8 +96,8 @@ final class Resources {
                                     .substring(
                                         PATH_SEPARATOR
                                             .splitAsStream(System.getProperty("java.class.path"))
-                                            .map(p -> Path.of(p))
-                                            .filter(p -> path.startsWith(p))
+                                            .map(Path::of)
+                                            .filter(path::startsWith)
                                             .map(Path::toFile)
                                             .map(File::getAbsolutePath)
                                             .map(String::length)
