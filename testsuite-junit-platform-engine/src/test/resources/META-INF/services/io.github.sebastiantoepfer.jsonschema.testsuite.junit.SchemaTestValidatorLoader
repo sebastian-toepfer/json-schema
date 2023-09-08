@@ -1,1 +1,1 @@
-io.github.sebastiantoepfer.jsonschema.testsuite.junit.FakeSchemaTestValidatorLoader
+io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine.FakeSchemaTestValidatorLoader

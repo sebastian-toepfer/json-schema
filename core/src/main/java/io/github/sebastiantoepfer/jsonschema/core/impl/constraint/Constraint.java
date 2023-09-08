@@ -21,20 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.impl.constraint;
 
-import jakarta.json.Json;
-import jakarta.json.JsonReader;
-import jakarta.json.JsonValue;
-import java.io.StringReader;
+import io.github.sebastiantoepfer.jsonschema.core.ConstraintViolation;
 import java.util.Collection;
 
-public interface Validator {
-    default Collection<ConstraintViolation> validate(final String data) {
-        try (final JsonReader reader = Json.createReader(new StringReader(data))) {
-            return validate(reader.readValue());
-        }
-    }
-
-    Collection<ConstraintViolation> validate(final JsonValue data);
+public interface Constraint<T> {
+    Collection<ConstraintViolation> violationsBy(T value);
 }

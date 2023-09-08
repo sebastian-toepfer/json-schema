@@ -21,31 +21,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine;
 
-import io.github.sebastiantoepfer.jsonschema.core.spi.JsonSchemaFactory;
-import jakarta.json.Json;
-import jakarta.json.JsonReader;
-import jakarta.json.JsonValue;
-import java.io.StringReader;
-import java.util.ServiceLoader;
+import java.io.InputStream;
+import java.util.Objects;
 
-public final class JsonSchemas {
+final record Resource(String name) {
+    boolean hasName(final String name) {
+        return Objects.equals(this.name, name);
+    }
 
-    private static final JsonSchemaFactory JSONSCHEMA_FACTORY = ServiceLoader
-        .load(JsonSchemaFactory.class)
-        .findFirst()
-        .orElseThrow();
+    boolean hasExtension(final String extension) {
+        return name.endsWith(".".concat(extension));
+    }
 
-    public static JsonSchema load(final String schema) {
-        try (JsonReader reader = Json.createReader(new StringReader(schema))) {
-            return load(reader.readValue());
+    InputStream content() {
+        return Resource.class.getClassLoader().getResourceAsStream(name);
+    }
+
+    @Override
+    public String toString() {
+        return "Resource{" + "name=" + name + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + (this.name != null ? this.name.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
         }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Resource other = (Resource) obj;
+        return (this.name == null) ? (other.name == null) : this.name.equals(other.name);
     }
-
-    public static JsonSchema load(final JsonValue schema) {
-        return JSONSCHEMA_FACTORY.create(schema);
-    }
-
-    private JsonSchemas() {}
 }

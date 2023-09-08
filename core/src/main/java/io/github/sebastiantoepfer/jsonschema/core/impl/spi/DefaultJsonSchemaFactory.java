@@ -21,20 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.impl.spi;
 
-import jakarta.json.Json;
-import jakarta.json.JsonReader;
+import io.github.sebastiantoepfer.jsonschema.core.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.core.spi.JsonSchemaFactory;
 import jakarta.json.JsonValue;
-import java.io.StringReader;
-import java.util.Collection;
 
-public interface Validator {
-    default Collection<ConstraintViolation> validate(final String data) {
-        try (final JsonReader reader = Json.createReader(new StringReader(data))) {
-            return validate(reader.readValue());
+public final class DefaultJsonSchemaFactory implements JsonSchemaFactory {
+
+    @Override
+    public JsonSchema create(final JsonValue schema) {
+        final JsonSchema result;
+        if (schema == JsonValue.TRUE) {
+            result = new TrueJsonSchema();
+        } else if (schema == JsonValue.FALSE) {
+            result = new FalseJsonSchema();
+        } else if (schema.equals(JsonValue.EMPTY_JSON_OBJECT)) {
+            result = new EmptyJsonSchema();
+        } else {
+            result = new DefaultJsonSchema(schema.asJsonObject());
         }
+        return result;
     }
-
-    Collection<ConstraintViolation> validate(final JsonValue data);
 }

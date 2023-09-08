@@ -21,20 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.impl.spi;
 
-import jakarta.json.Json;
-import jakarta.json.JsonReader;
+import io.github.sebastiantoepfer.jsonschema.core.Validator;
+import io.github.sebastiantoepfer.jsonschema.core.impl.constraint.Constraint;
+import io.github.sebastiantoepfer.jsonschema.core.impl.constraint.UnfulfillableConstraint;
+import io.github.sebastiantoepfer.jsonschema.core.impl.keyword.Type;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import java.io.StringReader;
-import java.util.Collection;
 
-public interface Validator {
-    default Collection<ConstraintViolation> validate(final String data) {
-        try (final JsonReader reader = Json.createReader(new StringReader(data))) {
-            return validate(reader.readValue());
-        }
+public final class DefaultJsonSchema extends AbstractJsonValueSchema {
+
+    public DefaultJsonSchema(final JsonObject value) {
+        super(value);
     }
 
-    Collection<ConstraintViolation> validate(final JsonValue data);
+    @Override
+    public Validator validator() {
+        final Constraint<JsonValue> constraint;
+        if (asJsonObject().containsKey("type")) {
+            constraint = new Type(asJsonObject().get("type"));
+        } else {
+            constraint = new UnfulfillableConstraint<>();
+        }
+        return new DefaultValidator(constraint);
+    }
 }

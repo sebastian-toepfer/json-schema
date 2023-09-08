@@ -21,20 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+open module io.github.sebastiantoepfer.jsonschema.core {
+    requires jakarta.json;
 
-import jakarta.json.Json;
-import jakarta.json.JsonReader;
-import jakarta.json.JsonValue;
-import java.io.StringReader;
-import java.util.Collection;
-
-public interface Validator {
-    default Collection<ConstraintViolation> validate(final String data) {
-        try (final JsonReader reader = Json.createReader(new StringReader(data))) {
-            return validate(reader.readValue());
-        }
-    }
-
-    Collection<ConstraintViolation> validate(final JsonValue data);
+    requires io.github.sebastiantoepfer.jsonschema.testsuite.junit;
+    requires org.junit.jupiter.api;
+    requires org.junit.jupiter.engine;
+    requires org.hamcrest;
 }

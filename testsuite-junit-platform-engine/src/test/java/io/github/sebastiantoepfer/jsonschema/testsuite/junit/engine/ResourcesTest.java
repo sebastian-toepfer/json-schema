@@ -21,20 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine;
 
-import jakarta.json.Json;
-import jakarta.json.JsonReader;
-import jakarta.json.JsonValue;
-import java.io.StringReader;
-import java.util.Collection;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
 
-public interface Validator {
-    default Collection<ConstraintViolation> validate(final String data) {
-        try (final JsonReader reader = Json.createReader(new StringReader(data))) {
-            return validate(reader.readValue());
-        }
+import io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine.Resource;
+import io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine.Resources;
+import org.junit.jupiter.api.Test;
+
+class ResourcesTest {
+
+    @Test
+    void should_find_resources_from_classpath() {
+        assertThat(new Resources().all().toList(), hasItems(new Resource("tests/test_resource.json")));
     }
 
-    Collection<ConstraintViolation> validate(final JsonValue data);
+    @Test
+    void should_find_resources_in_subdir_from_classpath() {
+        assertThat(new Resources("tests").all().toList(), hasItems(new Resource("tests/test_resource.json")));
+    }
+
+    @Test
+    void should_find_resources_in_metainf() {
+        //to kill all mutants, we need a resource from non-test classpath
+        assertThat(
+            new Resources("META-INF").all().toList(),
+            hasItems(new Resource("META-INF/services/org.junit.platform.engine.TestEngine"))
+        );
+    }
 }

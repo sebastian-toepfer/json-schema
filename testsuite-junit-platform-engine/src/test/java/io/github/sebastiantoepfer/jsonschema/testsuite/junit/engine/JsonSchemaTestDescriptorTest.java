@@ -21,20 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine;
 
-import jakarta.json.Json;
-import jakarta.json.JsonReader;
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine.JsonSchemaTestDescriptor;
 import jakarta.json.JsonValue;
-import java.io.StringReader;
-import java.util.Collection;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.jupiter.api.Test;
+import org.junit.platform.engine.UniqueId;
+import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 
-public interface Validator {
-    default Collection<ConstraintViolation> validate(final String data) {
-        try (final JsonReader reader = Json.createReader(new StringReader(data))) {
-            return validate(reader.readValue());
-        }
+class JsonSchemaTestDescriptorTest {
+
+    @Test
+    void should_return_parent() {
+        final JsonSchemaTestDescriptor desc = new JsonSchemaTestDescriptor(
+            new EngineDescriptor(UniqueId.forEngine("test"), "test"),
+            JsonValue.EMPTY_JSON_OBJECT,
+            JsonValue.EMPTY_JSON_OBJECT
+        );
+
+        assertThat(desc.getParent(), isPresent());
     }
 
-    Collection<ConstraintViolation> validate(final JsonValue data);
+    @Test
+    void equalsContract() {
+        EqualsVerifier.forClass(JsonSchemaTestDescriptor.class).withIgnoredFields("parent").verify();
+    }
 }

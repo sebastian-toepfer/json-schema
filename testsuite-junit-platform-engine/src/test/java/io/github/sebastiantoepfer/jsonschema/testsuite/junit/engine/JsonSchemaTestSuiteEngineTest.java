@@ -21,20 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine;
 
-import jakarta.json.Json;
-import jakarta.json.JsonReader;
-import jakarta.json.JsonValue;
-import java.io.StringReader;
-import java.util.Collection;
+import static org.junit.platform.testkit.engine.EventConditions.event;
+import static org.junit.platform.testkit.engine.EventConditions.finishedSuccessfully;
+import static org.junit.platform.testkit.engine.EventConditions.started;
 
-public interface Validator {
-    default Collection<ConstraintViolation> validate(final String data) {
-        try (final JsonReader reader = Json.createReader(new StringReader(data))) {
-            return validate(reader.readValue());
-        }
+import org.junit.jupiter.api.Test;
+import org.junit.platform.testkit.engine.EngineTestKit;
+
+class JsonSchemaTestSuiteEngineTest {
+
+    @Test
+    void should_run_all_tests() {
+        EngineTestKit
+            .engine("jsonschema")
+            .execute()
+            .testEvents()
+            .assertThatEvents()
+            .haveExactly(4, event(started()))
+            .haveExactly(4, event(finishedSuccessfully()));
     }
-
-    Collection<ConstraintViolation> validate(final JsonValue data);
 }
