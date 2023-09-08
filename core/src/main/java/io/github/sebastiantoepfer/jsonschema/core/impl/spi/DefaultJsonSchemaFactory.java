@@ -21,18 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.impl.spi;
 
+import io.github.sebastiantoepfer.jsonschema.core.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.core.spi.JsonSchemaFactory;
 import jakarta.json.JsonValue;
 
-final class TrueSchema extends AbstractJsonValueSchema {
-
-    public TrueSchema() {
-        super(JsonValue.TRUE);
-    }
+public final class DefaultJsonSchemaFactory implements JsonSchemaFactory {
 
     @Override
-    public Validator validator() {
-        return new Validator(new NoConstraint());
+    public JsonSchema create(final JsonValue schema) {
+        final JsonSchema result;
+        if (schema == JsonValue.TRUE) {
+            result = new TrueJsonSchema();
+        } else if (schema == JsonValue.FALSE) {
+            result = new FalseJsonSchema();
+        } else if (schema.equals(JsonValue.EMPTY_JSON_OBJECT)) {
+            result = new EmptyJsonSchema();
+        } else {
+            result = new DefaultJsonSchema(schema.asJsonObject());
+        }
+        return result;
     }
 }

@@ -21,18 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.impl.spi;
 
+import io.github.sebastiantoepfer.jsonschema.core.Validator;
+import io.github.sebastiantoepfer.jsonschema.core.impl.constraint.NoConstraint;
 import jakarta.json.JsonValue;
 
-final class FalseSchema extends AbstractJsonValueSchema {
+final class EmptyJsonSchema extends AbstractJsonValueSchema {
 
-    public FalseSchema() {
-        super(JsonValue.FALSE);
+    public EmptyJsonSchema() {
+        super(JsonValue.EMPTY_JSON_OBJECT);
     }
 
     @Override
     public Validator validator() {
-        return new Validator(new UnfulfillableConstraint());
+        return new DefaultValidator(new NoConstraint<>());
     }
 }

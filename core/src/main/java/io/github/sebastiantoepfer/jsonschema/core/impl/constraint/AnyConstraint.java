@@ -21,20 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.impl.constraint;
 
-import jakarta.json.Json;
-import jakarta.json.JsonReader;
-import jakarta.json.JsonValue;
-import java.io.StringReader;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toSet;
+
+import io.github.sebastiantoepfer.jsonschema.core.ConstraintViolation;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
-public interface Validator {
-    default Collection<ConstraintViolation> validate(final String data) {
-        try (final JsonReader reader = Json.createReader(new StringReader(data))) {
-            return validate(reader.readValue());
-        }
+public class AnyConstraint<T> implements Constraint<T> {
+
+    private final List<Constraint<T>> contraints;
+
+    public AnyConstraint(final Constraint<T>... constraints) {
+        this(asList(constraints));
     }
 
-    Collection<ConstraintViolation> validate(final JsonValue data);
+    public AnyConstraint(final Collection<? extends Constraint<T>> contraints) {
+        if (contraints.isEmpty()) {
+            throw new IllegalArgumentException("min one constraint must be provided!");
+        }
+        this.contraints = List.copyOf(contraints);
+    }
+
+    @Override
+    public Collection<ConstraintViolation> violationsBy(final T value) {
+        final Collection<ConstraintViolation> result;
+        if (contraints.stream().anyMatch(c -> c.violationsBy(value).isEmpty())) {
+            result = Set.of();
+        } else {
+            result = contraints.stream().map(c -> c.violationsBy(value)).flatMap(Collection::stream).collect(toSet());
+        }
+        return result;
+    }
 }

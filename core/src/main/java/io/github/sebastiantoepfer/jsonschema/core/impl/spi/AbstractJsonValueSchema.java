@@ -21,16 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.impl.spi;
 
+import io.github.sebastiantoepfer.jsonschema.core.JsonSchema;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import java.util.Collection;
-import java.util.Set;
+import java.util.Objects;
 
-final class UnfulfillableConstraint implements Constraint {
+abstract class AbstractJsonValueSchema implements JsonSchema {
+
+    private final JsonValue value;
+
+    protected AbstractJsonValueSchema(final JsonValue value) {
+        this.value = Objects.requireNonNull(value);
+    }
 
     @Override
-    public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-        return Set.of(new ConstraintViolation());
+    public final ValueType getValueType() {
+        return value.getValueType();
+    }
+
+    @Override
+    public final JsonObject asJsonObject() {
+        return value.asJsonObject();
+    }
+
+    @Override
+    public final JsonArray asJsonArray() {
+        return value.asJsonArray();
     }
 }

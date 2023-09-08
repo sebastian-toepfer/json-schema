@@ -21,33 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.impl.spi;
 
-import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
+import io.github.sebastiantoepfer.jsonschema.core.ConstraintViolation;
+import io.github.sebastiantoepfer.jsonschema.core.Validator;
+import io.github.sebastiantoepfer.jsonschema.core.impl.constraint.Constraint;
 import jakarta.json.JsonValue;
+import java.util.Collection;
 import java.util.Objects;
 
-abstract class AbstractJsonValueSchema implements JsonSchema {
+final class DefaultValidator implements Validator {
 
-    private final JsonValue value;
+    private final Constraint<? super JsonValue> contraint;
 
-    protected AbstractJsonValueSchema(final JsonValue value) {
-        this.value = Objects.requireNonNull(value);
+    public DefaultValidator(final Constraint<? super JsonValue> contraint) {
+        this.contraint = Objects.requireNonNull(contraint);
     }
 
     @Override
-    public final ValueType getValueType() {
-        return value.getValueType();
-    }
-
-    @Override
-    public final JsonObject asJsonObject() {
-        return value.asJsonObject();
-    }
-
-    @Override
-    public final JsonArray asJsonArray() {
-        return value.asJsonArray();
+    public Collection<ConstraintViolation> validate(final JsonValue data) {
+        return contraint.violationsBy(data);
     }
 }

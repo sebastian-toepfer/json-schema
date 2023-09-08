@@ -21,11 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.impl.constraint;
 
-import jakarta.json.JsonValue;
+import io.github.sebastiantoepfer.jsonschema.core.ConstraintViolation;
 import java.util.Collection;
 
-interface Constraint {
-    Collection<ConstraintViolation> violationsBy(JsonValue value);
+public interface Constraint<T> {
+    Collection<ConstraintViolation> violationsBy(T value);
 }

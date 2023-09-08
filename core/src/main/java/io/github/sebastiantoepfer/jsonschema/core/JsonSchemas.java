@@ -23,12 +23,19 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
+import io.github.sebastiantoepfer.jsonschema.core.spi.JsonSchemaFactory;
 import jakarta.json.Json;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
 import java.io.StringReader;
+import java.util.ServiceLoader;
 
 public final class JsonSchemas {
+
+    private static final JsonSchemaFactory JSONSCHEMA_FACTORY = ServiceLoader
+        .load(JsonSchemaFactory.class)
+        .findFirst()
+        .orElseThrow();
 
     public static JsonSchema load(final String schema) {
         try (JsonReader reader = Json.createReader(new StringReader(schema))) {
@@ -37,17 +44,7 @@ public final class JsonSchemas {
     }
 
     public static JsonSchema load(final JsonValue schema) {
-        final JsonSchema result;
-        if (schema == JsonValue.TRUE) {
-            result = new TrueSchema();
-        } else if (schema == JsonValue.FALSE) {
-            result = new FalseSchema();
-        } else if (schema.equals(JsonValue.EMPTY_JSON_OBJECT)) {
-            result = new EmptyJsonSchema();
-        } else {
-            result = new DefaultJsonSchema(schema.asJsonObject());
-        }
-        return result;
+        return JSONSCHEMA_FACTORY.create(schema);
     }
 
     private JsonSchemas() {}

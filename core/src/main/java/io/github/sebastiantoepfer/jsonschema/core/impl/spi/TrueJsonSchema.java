@@ -21,39 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.impl.spi;
 
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toSet;
-
+import io.github.sebastiantoepfer.jsonschema.core.Validator;
+import io.github.sebastiantoepfer.jsonschema.core.impl.constraint.NoConstraint;
 import jakarta.json.JsonValue;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
-class AnyConstraint implements Constraint {
+final class TrueJsonSchema extends AbstractJsonValueSchema {
 
-    private final List<Constraint> contraints;
-
-    public AnyConstraint(final Constraint... constraints) {
-        this(asList(constraints));
-    }
-
-    public AnyConstraint(final Collection<? extends Constraint> contraints) {
-        if (contraints.isEmpty()) {
-            throw new IllegalArgumentException("min one constraint must be provided!");
-        }
-        this.contraints = List.copyOf(contraints);
+    public TrueJsonSchema() {
+        super(JsonValue.TRUE);
     }
 
     @Override
-    public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-        final Collection<ConstraintViolation> result;
-        if (contraints.stream().anyMatch(c -> c.violationsBy(value).isEmpty())) {
-            result = Set.of();
-        } else {
-            result = contraints.stream().map(c -> c.violationsBy(value)).flatMap(Collection::stream).collect(toSet());
-        }
-        return result;
+    public Validator validator() {
+        return new DefaultValidator(new NoConstraint<>());
     }
 }

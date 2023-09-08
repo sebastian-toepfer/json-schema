@@ -21,11 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.impl.keyword;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+import io.github.sebastiantoepfer.jsonschema.core.ConstraintViolation;
+import io.github.sebastiantoepfer.jsonschema.core.InstanceType;
+import io.github.sebastiantoepfer.jsonschema.core.Keyword;
+import io.github.sebastiantoepfer.jsonschema.core.impl.constraint.AnyConstraint;
+import io.github.sebastiantoepfer.jsonschema.core.impl.constraint.Constraint;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
@@ -37,7 +42,7 @@ import java.util.Set;
 /**
  * see: https://json-schema.org/understanding-json-schema/reference/type.html
  */
-final class Type implements Keyword, Constraint {
+public final class Type implements Keyword, Constraint<JsonValue> {
 
     private final JsonValue definition;
 
@@ -50,7 +55,7 @@ final class Type implements Keyword, Constraint {
         return new JsonMappedTypeConstaint(definition).violationsBy(value);
     }
 
-    private static final class JsonMappedTypeConstaint implements Constraint {
+    private static final class JsonMappedTypeConstaint implements Constraint<JsonValue> {
 
         private final JsonValue definition;
 
@@ -60,7 +65,7 @@ final class Type implements Keyword, Constraint {
 
         @Override
         public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-            final Constraint typeContraint =
+            final Constraint<JsonValue> typeContraint =
                 switch (definition.getValueType()) {
                     case STRING -> new JsonStringTypeConstraint((JsonString) definition);
                     default -> new JsonArrayTypeConstraint(definition.asJsonArray());
@@ -69,7 +74,7 @@ final class Type implements Keyword, Constraint {
         }
     }
 
-    private static final class JsonArrayTypeConstraint implements Constraint {
+    private static final class JsonArrayTypeConstraint implements Constraint<JsonValue> {
 
         private final JsonArray types;
 
@@ -87,7 +92,7 @@ final class Type implements Keyword, Constraint {
         }
     }
 
-    private static final class JsonStringTypeConstraint implements Constraint {
+    private static final class JsonStringTypeConstraint implements Constraint<JsonValue> {
 
         private final String type;
 
@@ -101,7 +106,7 @@ final class Type implements Keyword, Constraint {
         }
     }
 
-    private static final class InstanceTypeConstraint implements Constraint {
+    private static final class InstanceTypeConstraint implements Constraint<JsonValue> {
 
         private final InstanceType type;
 

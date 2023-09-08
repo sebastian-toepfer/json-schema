@@ -21,24 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.spi;
 
-import jakarta.json.JsonObject;
+import io.github.sebastiantoepfer.jsonschema.core.JsonSchema;
+import jakarta.json.JsonValue;
 
-final class DefaultJsonSchema extends AbstractJsonValueSchema {
-
-    public DefaultJsonSchema(final JsonObject value) {
-        super(value);
-    }
-
-    @Override
-    public Validator validator() {
-        final Constraint constraint;
-        if (asJsonObject().containsKey("type")) {
-            constraint = new Type(asJsonObject().get("type"));
-        } else {
-            constraint = new UnfulfillableConstraint();
-        }
-        return new Validator(constraint);
-    }
+public interface JsonSchemaFactory {
+    JsonSchema create(JsonValue schema);
 }
