@@ -41,7 +41,7 @@ import java.util.Set;
 /**
  * see: https://json-schema.org/understanding-json-schema/reference/type.html
  */
-public final class Type implements ConstraintAssertion, Constraint<JsonValue> {
+final class Type implements ConstraintAssertion, Constraint<JsonValue> {
 
     private final JsonValue definition;
 
@@ -106,22 +106,9 @@ public final class Type implements ConstraintAssertion, Constraint<JsonValue> {
 
         @Override
         public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-            return new InstanceTypeConstraint(InstanceType.valueOf(type)).violationsBy(value);
-        }
-    }
-
-    private static final class InstanceTypeConstraint implements Constraint<JsonValue> {
-
-        private final InstanceType type;
-
-        public InstanceTypeConstraint(final InstanceType type) {
-            this.type = Objects.requireNonNull(type);
-        }
-
-        @Override
-        public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
+            final InstanceType instanceType = InstanceType.valueOf(type);
             final Collection<ConstraintViolation> result;
-            if (type.isInstance(value)) {
+            if (instanceType.isInstance(value)) {
                 result = Set.of();
             } else {
                 result = Set.of(new ConstraintViolation());

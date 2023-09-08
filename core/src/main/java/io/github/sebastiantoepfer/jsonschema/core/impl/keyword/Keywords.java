@@ -21,34 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.impl.spi;
+package io.github.sebastiantoepfer.jsonschema.core.impl.keyword;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
-
-import io.github.sebastiantoepfer.jsonschema.core.Validator;
-import io.github.sebastiantoepfer.jsonschema.core.impl.constraint.AllOfConstraint;
-import io.github.sebastiantoepfer.jsonschema.core.impl.constraint.Constraint;
-import io.github.sebastiantoepfer.jsonschema.core.impl.keyword.Keywords;
-import jakarta.json.JsonObject;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.DefaultAnnotation;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.Keyword;
 import jakarta.json.JsonValue;
+import java.util.Map;
 
-public final class DefaultJsonSchema extends AbstractJsonValueSchema {
+public final class Keywords {
 
-    public DefaultJsonSchema(final JsonObject value) {
-        super(value);
+    public static Keyword createKeywordFor(final Map.Entry<String, JsonValue> property) {
+        return switch (property.getKey()) {
+            case "type" -> new Type(property.getValue());
+            default -> new DefaultAnnotation(property.getKey(), property.getValue());
+        };
     }
 
-    @Override
-    public Validator validator() {
-        return asJsonObject()
-            .entrySet()
-            .stream()
-            .map(Keywords::createKeywordFor)
-            .filter(Constraint.class::isInstance)
-            .map(k -> (Constraint<JsonValue>) k)
-            .collect(
-                collectingAndThen(toList(), constraints -> new DefaultValidator(new AllOfConstraint<>(constraints)))
-            );
-    }
+    private Keywords() {}
 }
