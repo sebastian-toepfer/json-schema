@@ -21,9 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    exports io.github.sebastiantoepfer.jsonschema.core;
-    exports io.github.sebastiantoepfer.jsonschema.core.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.keyword;
 
-    requires jakarta.json;
+import java.util.Collection;
+import java.util.Set;
+
+/**
+ * do not directly affect results, but reserve a place for a specific purpose to ensure interoperability
+ *
+ * see: http://json-schema.org/draft/2020-12/json-schema-core.html#name-root-schema-and-subschemas-
+ **/
+public interface ReservedLocation extends Keyword {
+    @Override
+    default Collection<KeywordCategory> categories() {
+        return Set.of(Keyword.KeywordCategory.RESERVED_LOCATION);
+    }
 }

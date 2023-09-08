@@ -21,9 +21,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    exports io.github.sebastiantoepfer.jsonschema.core;
-    exports io.github.sebastiantoepfer.jsonschema.core.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.keyword;
 
-    requires jakarta.json;
+import java.util.Collection;
+
+/**
+ * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-json-schema-objects-and-key
+ **/
+public interface Keyword {
+    default Identifier asIdentifier() {
+        return (Identifier) this;
+    }
+
+    default Assertion asAssertion() {
+        return (Assertion) this;
+    }
+
+    default Annotation asAnnotation() {
+        return (Annotation) this;
+    }
+
+    default Applicator asApplicator() {
+        return (Applicator) this;
+    }
+
+    default ReservedLocation asReservedLocation() {
+        return (ReservedLocation) this;
+    }
+
+    default boolean hasCategory(KeywordCategory category) {
+        return categories().contains(category);
+    }
+
+    Collection<KeywordCategory> categories();
+
+    boolean hasName(String name);
+
+    enum KeywordCategory {
+        IDENTIFIER,
+        ASSERTION,
+        ANNOTATION,
+        APPLICATOR,
+        RESERVED_LOCATION,
+    }
 }

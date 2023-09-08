@@ -21,9 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    exports io.github.sebastiantoepfer.jsonschema.core;
-    exports io.github.sebastiantoepfer.jsonschema.core.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.keyword;
 
-    requires jakarta.json;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Set;
+
+/**
+ * control schema identification through setting a URI for the schema and/or changing how the base URI is determined
+ *
+ * see: http://json-schema.org/draft/2020-12/json-schema-core.html#name-root-schema-and-subschemas-
+ **/
+public interface Identifier extends Keyword {
+    @Override
+    default Collection<KeywordCategory> categories() {
+        return Set.of(KeywordCategory.IDENTIFIER);
+    }
+
+    URI asUri();
 }
