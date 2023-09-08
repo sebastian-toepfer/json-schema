@@ -21,31 +21,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.testsuite.junit;
+package io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
+import java.io.InputStream;
+import java.util.Objects;
 
-import org.junit.jupiter.api.Test;
-
-class ResourcesTest {
-
-    @Test
-    void should_find_resources_from_classpath() {
-        assertThat(new Resources().all().toList(), hasItems(new Resource("tests/test_resource.json")));
+final record Resource(String name) {
+    boolean hasName(final String name) {
+        return Objects.equals(this.name, name);
     }
 
-    @Test
-    void should_find_resources_in_subdir_from_classpath() {
-        assertThat(new Resources("tests").all().toList(), hasItems(new Resource("tests/test_resource.json")));
+    boolean hasExtension(final String extension) {
+        return name.endsWith(".".concat(extension));
     }
 
-    @Test
-    void should_find_resources_in_metainf() {
-        //to kill all mutants, we need a resource from non-test classpath
-        assertThat(
-            new Resources("META-INF").all().toList(),
-            hasItems(new Resource("META-INF/services/org.junit.platform.engine.TestEngine"))
-        );
+    InputStream content() {
+        return Resource.class.getClassLoader().getResourceAsStream(name);
+    }
+
+    @Override
+    public String toString() {
+        return "Resource{" + "name=" + name + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + (this.name != null ? this.name.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Resource other = (Resource) obj;
+        return (this.name == null) ? (other.name == null) : this.name.equals(other.name);
     }
 }

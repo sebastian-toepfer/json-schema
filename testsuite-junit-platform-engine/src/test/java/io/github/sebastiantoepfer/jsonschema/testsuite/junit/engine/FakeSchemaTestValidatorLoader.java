@@ -1,4 +1,6 @@
-package io.github.sebastiantoepfer.jsonschema.testsuite.junit;
+package io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine;
+
+import io.github.sebastiantoepfer.jsonschema.testsuite.junit.SchemaTestValidatorLoader;
 
 public final class FakeSchemaTestValidatorLoader implements SchemaTestValidatorLoader {
 

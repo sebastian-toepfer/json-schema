@@ -21,45 +21,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.testsuite.junit;
+package io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine;
 
-import jakarta.json.JsonObject;
+import static java.util.stream.Collectors.toSet;
+
+import jakarta.json.Json;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ServiceLoader;
 import java.util.Set;
-import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestDescriptor;
-import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.TestTag;
 import org.junit.platform.engine.UniqueId;
 
-final class JsonSchemaTestDescriptor implements TestDescriptor, ExecuteableTest {
+final class JsonSchemaSuitesTestDescriptor implements TestDescriptor {
 
-    private final TestDescriptor parent;
-    private final JsonValue schema;
-    private final JsonObject testDescription;
+    private final Resource tests;
+    private TestDescriptor parent;
 
-    public JsonSchemaTestDescriptor(
-        final TestDescriptor parent,
-        final JsonValue schema,
-        final JsonObject testDescription
-    ) {
-        this.parent = Objects.requireNonNull(parent);
-        this.schema = Objects.requireNonNull(schema);
-        this.testDescription = Objects.requireNonNull(testDescription);
+    public JsonSchemaSuitesTestDescriptor(final Resource tests) {
+        this.tests = Objects.requireNonNull(tests);
     }
 
     @Override
     public UniqueId getUniqueId() {
-        return parent.getUniqueId().append("test", getDisplayName());
+        return getParent()
+            .map(TestDescriptor::getUniqueId)
+            .map(id -> id.append("suite", getDisplayName()))
+            .orElse(UniqueId.root("suite", getDisplayName()));
     }
 
     @Override
     public String getDisplayName() {
-        return testDescription.getString("description");
+        return tests.name();
     }
 
     @Override
@@ -74,36 +71,46 @@ final class JsonSchemaTestDescriptor implements TestDescriptor, ExecuteableTest 
 
     @Override
     public Optional<TestDescriptor> getParent() {
-        return Optional.of(parent);
+        return Optional.ofNullable(parent);
     }
 
     @Override
     public void setParent(final TestDescriptor parent) {
-        throw new UnsupportedOperationException("Not supported!");
+        this.parent = parent;
     }
 
     @Override
     public Set<? extends TestDescriptor> getChildren() {
-        return Set.of();
+        final Set<JsonSchemaSuiteTestDescriptor> result;
+        try (JsonReader reader = Json.createReader(tests.content())) {
+            final JsonStructure jsonValue = reader.read();
+            if (jsonValue.getValueType() == JsonValue.ValueType.ARRAY) {
+                result =
+                    jsonValue
+                        .asJsonArray()
+                        .stream()
+                        .map(JsonValue::asJsonObject)
+                        .map(object -> new JsonSchemaSuiteTestDescriptor(this, object))
+                        .collect(toSet());
+            } else {
+                result = Set.of();
+            }
+            return result;
+        }
     }
 
     @Override
     public void addChild(final TestDescriptor descriptor) {
-        throw new UnsupportedOperationException("Not supported!");
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void removeChild(final TestDescriptor descriptor) {
-        throw new UnsupportedOperationException("Not supported!");
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void removeFromHierarchy() {}
-
-    @Override
-    public Type getType() {
-        return Type.TEST;
-    }
 
     @Override
     public Optional<? extends TestDescriptor> findByUniqueId(final UniqueId uniqueId) {
@@ -111,25 +118,8 @@ final class JsonSchemaTestDescriptor implements TestDescriptor, ExecuteableTest 
     }
 
     @Override
-    public void run(final ExecutionRequest request) {
-        request.getEngineExecutionListener().executionStarted(this);
-        TestExecutionResult result;
-        try {
-            final boolean isValid = ServiceLoader
-                .load(SchemaTestValidatorLoader.class)
-                .findFirst()
-                .orElseThrow()
-                .loadSchemaTestValidator(schema.toString())
-                .validate(testDescription.get("data").toString());
-            if (isValid == testDescription.getBoolean("valid")) {
-                result = TestExecutionResult.successful();
-            } else {
-                throw new RuntimeException("expected " + testDescription.getBoolean("valid") + " but was " + isValid);
-            }
-        } catch (Throwable t) {
-            result = TestExecutionResult.failed(t);
-        }
-        request.getEngineExecutionListener().executionFinished(this, result);
+    public TestDescriptor.Type getType() {
+        return TestDescriptor.Type.CONTAINER;
     }
 
     @Override
@@ -139,9 +129,8 @@ final class JsonSchemaTestDescriptor implements TestDescriptor, ExecuteableTest 
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 97 * hash + Objects.hashCode(this.schema);
-        hash = 97 * hash + Objects.hashCode(this.testDescription);
+        int hash = 3;
+        hash = 79 * hash + Objects.hashCode(this.tests);
         return hash;
     }
 
@@ -156,10 +145,7 @@ final class JsonSchemaTestDescriptor implements TestDescriptor, ExecuteableTest 
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final JsonSchemaTestDescriptor other = (JsonSchemaTestDescriptor) obj;
-        if (!Objects.equals(this.schema, other.schema)) {
-            return false;
-        }
-        return Objects.equals(this.testDescription, other.testDescription);
+        final JsonSchemaSuitesTestDescriptor other = (JsonSchemaSuitesTestDescriptor) obj;
+        return Objects.equals(this.tests, other.tests);
     }
 }

@@ -21,50 +21,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.testsuite.junit;
+package io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine;
 
-import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
-import jakarta.json.Json;
-import jakarta.json.JsonValue;
+import io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine.Resource;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.engine.UniqueId;
-import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 
-class JsonSchemaSuiteTestDescriptorTest {
+class ResourceTest {
 
     @Test
-    void should_return_parent() {
-        final JsonSchemaSuiteTestDescriptor desc = new JsonSchemaSuiteTestDescriptor(
-            new EngineDescriptor(UniqueId.forEngine("test"), "test"),
-            JsonValue.EMPTY_JSON_OBJECT
-        );
+    void should_determine_file_extension() {
+        assertThat(new Resource("tests/test_resource.json").hasExtension("json"), is(true));
+    }
 
-        assertThat(desc.getParent(), isPresent());
+    @Test
+    void should_determine_name() {
+        assertThat(new Resource("tests/test_resource.json").hasName("tests/test_resource.json"), is(true));
+        assertThat(new Resource("tests/test_resource.json").hasName("tests/pitest"), is(false));
+    }
+
+    @Test
+    void should_return_content() throws Exception {
+        assertThat(
+            new String(new Resource("tests/test_resource.json").content().readAllBytes()),
+            is(
+                """
+                {
+                    "name": "sebastian"
+                }
+                """
+            )
+        );
     }
 
     @Test
     void equalsContract() {
-        EqualsVerifier.forClass(JsonSchemaSuiteTestDescriptor.class).withIgnoredFields("parent").verify();
-    }
-
-    @Test
-    void should_return_all_children() {
-        assertThat(
-            new JsonSchemaSuiteTestDescriptor(
-                new EngineDescriptor(UniqueId.forEngine("test"), "test"),
-                Json
-                    .createObjectBuilder()
-                    .add("description", "boolean schema 'true'")
-                    .add("schema", JsonValue.TRUE)
-                    .add("tests", Json.createArrayBuilder().add(JsonValue.EMPTY_JSON_OBJECT))
-                    .build()
-            )
-                .getChildren(),
-            hasSize(1)
-        );
+        EqualsVerifier.forClass(Resource.class).verify();
     }
 }

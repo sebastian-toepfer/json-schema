@@ -26,9 +26,10 @@ module io.github.sebastiantoepfer.jsonschema.testsuite.junit {
     exports io.github.sebastiantoepfer.jsonschema.testsuite.junit;
 
     provides org.junit.platform.engine.TestEngine
-        with io.github.sebastiantoepfer.jsonschema.testsuite.junit.JsonSchemaTestSuiteEngine;
+        with io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine.JsonSchemaTestSuiteEngine;
 
     requires org.junit.platform.engine;
     requires org.junit.platform.commons;
+    requires com.github.spotbugs.annotations;
     requires jakarta.json;
 }
