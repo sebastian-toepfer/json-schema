@@ -33,13 +33,13 @@ import java.util.Set;
 
 public class AnyConstraint<T> implements Constraint<T> {
 
-    private final List<Constraint<T>> contraints;
+    private final List<Constraint<? super T>> contraints;
 
-    public AnyConstraint(final Constraint<T>... constraints) {
+    public AnyConstraint(final Constraint<? super T>... constraints) {
         this(asList(constraints));
     }
 
-    public AnyConstraint(final Collection<? extends Constraint<T>> contraints) {
+    public AnyConstraint(final Collection<? extends Constraint<? super T>> contraints) {
         if (contraints.isEmpty()) {
             throw new IllegalArgumentException("min one constraint must be provided!");
         }
