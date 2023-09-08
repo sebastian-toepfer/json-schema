@@ -21,10 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.keyword;
+
+import jakarta.json.JsonValue;
+import java.util.Collection;
+import java.util.Set;
 
 /**
- * It means the “key” part of the key/value pair in an object. Most of the work of writing a JSON Schema involves
- * mapping a special “keyword” to a value within an object.
+ * attach information to an instance for application use
+ *
+ * see: http://json-schema.org/draft/2020-12/json-schema-core.html#name-root-schema-and-subschemas-
  **/
-public interface Keyword {}
+public interface Annotation extends Keyword {
+    @Override
+    default Collection<KeywordCategory> categories() {
+        return Set.of(KeywordCategory.ANNOTATION);
+    }
+
+    JsonValue value();
+}

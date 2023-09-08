@@ -21,12 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.keyword;
 
-import org.junit.jupiter.api.Test;
+import jakarta.json.JsonValue;
+import java.util.Collection;
+import java.util.Set;
 
-class JsonSchemaTest {
+/**
+ * produce a boolean result when applied to an instance
+ *
+ * see: http://json-schema.org/draft/2020-12/json-schema-core.html#name-root-schema-and-subschemas-
+ **/
+public interface Assertion extends Keyword {
+    @Override
+    default Collection<KeywordCategory> categories() {
+        return Set.of(KeywordCategory.ASSERTION);
+    }
 
-    @Test
-    void needed_to_fireup_surefire() {}
+    boolean isValidFor(JsonValue instance);
 }

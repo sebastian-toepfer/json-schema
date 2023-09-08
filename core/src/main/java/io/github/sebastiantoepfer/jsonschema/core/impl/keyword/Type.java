@@ -28,7 +28,6 @@ import static java.util.stream.Collectors.toList;
 
 import io.github.sebastiantoepfer.jsonschema.core.ConstraintViolation;
 import io.github.sebastiantoepfer.jsonschema.core.InstanceType;
-import io.github.sebastiantoepfer.jsonschema.core.Keyword;
 import io.github.sebastiantoepfer.jsonschema.core.impl.constraint.AnyConstraint;
 import io.github.sebastiantoepfer.jsonschema.core.impl.constraint.Constraint;
 import jakarta.json.JsonArray;
@@ -42,12 +41,17 @@ import java.util.Set;
 /**
  * see: https://json-schema.org/understanding-json-schema/reference/type.html
  */
-public final class Type implements Keyword, Constraint<JsonValue> {
+public final class Type implements ConstraintAssertion, Constraint<JsonValue> {
 
     private final JsonValue definition;
 
     public Type(final JsonValue definition) {
         this.definition = Objects.requireNonNull(definition);
+    }
+
+    @Override
+    public boolean hasName(final String name) {
+        return Objects.equals("type", name);
     }
 
     @Override

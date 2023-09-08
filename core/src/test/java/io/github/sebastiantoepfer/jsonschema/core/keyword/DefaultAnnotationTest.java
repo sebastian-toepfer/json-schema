@@ -21,9 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    exports io.github.sebastiantoepfer.jsonschema.core;
-    exports io.github.sebastiantoepfer.jsonschema.core.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.keyword;
 
-    requires jakarta.json;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+import jakarta.json.Json;
+import org.junit.jupiter.api.Test;
+
+class DefaultAnnotationTest {
+
+    @Test
+    void should_know_his_name() {
+        assertThat(new DefaultAnnotation("myname", Json.createValue("string")).hasName("myname"), is(true));
+    }
+
+    @Test
+    void should_know_other_names() {
+        assertThat(new DefaultAnnotation("myname", Json.createValue("string")).hasName("id"), is(false));
+    }
+
+    @Test
+    void should_return_his_value() {
+        assertThat(new DefaultAnnotation("myname", Json.createValue("string")).value(), is(Json.createValue("string")));
+    }
 }
