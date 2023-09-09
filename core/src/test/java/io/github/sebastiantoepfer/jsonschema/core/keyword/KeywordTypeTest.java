@@ -21,25 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.impl.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.keyword;
 
-import io.github.sebastiantoepfer.jsonschema.core.keyword.Keyword;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import jakarta.json.JsonValue;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 
-public final class Keywords {
+class KeywordTypeTest {
 
-    public static Keyword createKeywordFor(final Map.Entry<String, JsonValue> property) {
-        return Stream
-            .of(new BasicVocabulary())
-            .map(vocab -> vocab.findKeywordTypeByName(property.getKey()))
-            .flatMap(Optional::stream)
-            .findFirst()
-            .map(keywordType -> keywordType.createKeyword(property.getValue()))
-            .orElseThrow();
+    @Test
+    void should_know_his_name() {
+        assertThat(new TestKeywordType().hasName("test"), is(true));
+        assertThat(new TestKeywordType().hasName("unknown"), is(false));
     }
 
-    private Keywords() {}
+    private static class TestKeywordType implements KeywordType {
+
+        @Override
+        public String name() {
+            return "test";
+        }
+
+        @Override
+        public Keyword createKeyword(JsonValue value) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
 }
