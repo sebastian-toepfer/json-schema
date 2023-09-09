@@ -23,23 +23,37 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.impl.keyword;
 
-import io.github.sebastiantoepfer.jsonschema.core.keyword.Keyword;
-import jakarta.json.JsonValue;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-public final class Keywords {
+import com.github.npathai.hamcrestopt.OptionalMatchers;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.KeywordType;
+import java.net.URI;
+import org.junit.jupiter.api.Test;
 
-    public static Keyword createKeywordFor(final Map.Entry<String, JsonValue> property) {
-        return Stream
-            .of(new BasicVocabulary())
-            .map(vocab -> vocab.findKeywordTypeByName(property.getKey()))
-            .flatMap(Optional::stream)
-            .findFirst()
-            .map(keywordType -> keywordType.createKeyword(property.getValue()))
-            .orElseThrow();
+class BasicVocabularyTest {
+
+    @Test
+    void should_return_a_fake_id() {
+        assertThat(
+            new BasicVocabulary().id(),
+            is(URI.create("http://https://github.com/sebastian-toepfer/json-schema/basic"))
+        );
     }
 
-    private Keywords() {}
+    @Test
+    void should_return_the_type_keywordtype() {
+        assertThat(
+            new BasicVocabulary().findKeywordTypeByName("type").map(KeywordType::name),
+            OptionalMatchers.isPresentAndIs("type")
+        );
+    }
+
+    @Test
+    void should_return_the_custom_annotation_for_unknow_keyword() {
+        assertThat(
+            new BasicVocabulary().findKeywordTypeByName("unknow").map(KeywordType::name),
+            OptionalMatchers.isPresentAndIs("unknow")
+        );
+    }
 }
