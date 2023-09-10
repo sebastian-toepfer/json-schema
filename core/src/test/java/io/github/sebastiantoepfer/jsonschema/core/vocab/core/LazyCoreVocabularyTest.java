@@ -21,14 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isEmpty;
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresentAndIs;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+import io.github.sebastiantoepfer.jsonschema.Vocabulary;
+import java.net.URI;
+import org.junit.jupiter.api.Test;
+
+class LazyCoreVocabularyTest {
+
+    @Test
+    void should_return_empty_for_non_core_id() {
+        assertThat(new LazyCoreVocabulary().loadVocabularyWithId(URI.create("")), isEmpty());
+    }
+
+    @Test
+    void should_return_core_vocabulary_for_core_id() {
+        assertThat(
+            new LazyCoreVocabulary()
+                .loadVocabularyWithId(URI.create("https://json-schema.org/draft/2020-12/vocab/core"))
+                .map(Vocabulary::id),
+            isPresentAndIs(URI.create("https://json-schema.org/draft/2020-12/vocab/core"))
+        );
+    }
 }

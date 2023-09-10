@@ -21,14 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.basic;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.keyword.DefaultAnnotation;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.JsonValue;
+import java.util.Objects;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+final class UnknowKeywordType implements KeywordType {
+
+    private final String name;
+
+    public UnknowKeywordType(final String name) {
+        this.name = Objects.requireNonNull(name);
+    }
+
+    @Override
+    public String name() {
+        return name;
+    }
+
+    @Override
+    public Keyword createKeyword(final JsonValue value) {
+        return new DefaultAnnotation(name(), value);
+    }
 }

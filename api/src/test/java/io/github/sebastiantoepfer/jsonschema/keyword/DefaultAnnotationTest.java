@@ -21,14 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.keyword;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+import jakarta.json.Json;
+import org.junit.jupiter.api.Test;
+
+class DefaultAnnotationTest {
+
+    @Test
+    void should_know_his_name() {
+        assertThat(new DefaultAnnotation("myname", Json.createValue("string")).hasName("myname"), is(true));
+    }
+
+    @Test
+    void should_know_other_names() {
+        assertThat(new DefaultAnnotation("myname", Json.createValue("string")).hasName("id"), is(false));
+    }
+
+    @Test
+    void should_return_his_value() {
+        assertThat(new DefaultAnnotation("myname", Json.createValue("string")).value(), is(Json.createValue("string")));
+    }
 }

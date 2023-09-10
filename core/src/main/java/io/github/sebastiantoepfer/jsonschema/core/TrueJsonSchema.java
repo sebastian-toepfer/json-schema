@@ -21,14 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.Validator;
+import io.github.sebastiantoepfer.jsonschema.core.constraint.NoConstraint;
+import jakarta.json.JsonValue;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+final class TrueJsonSchema extends AbstractJsonValueSchema {
+
+    public TrueJsonSchema() {
+        super(JsonValue.TRUE);
+    }
+
+    @Override
+    public Validator validator() {
+        return new DefaultValidator(new NoConstraint<>());
+    }
 }

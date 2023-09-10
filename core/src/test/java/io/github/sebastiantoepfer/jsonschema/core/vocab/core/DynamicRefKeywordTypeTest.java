@@ -21,14 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.core.DynamicRefKeywordType;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import jakarta.json.JsonValue;
+import org.junit.jupiter.api.Test;
+
+class DynamicRefKeywordTypeTest {
+
+    @Test
+    void notFinischedYet() {
+        final Keyword keyword = new DynamicRefKeywordType().createKeyword(JsonValue.FALSE);
+
+        assertThat(keyword.hasName("$dynamicRef"), is(true));
+        assertThat(keyword.hasName("$id"), is(false));
+
+        assertThat(keyword.asApplicator().applyTo(JsonValue.TRUE), is(true));
+    }
 }

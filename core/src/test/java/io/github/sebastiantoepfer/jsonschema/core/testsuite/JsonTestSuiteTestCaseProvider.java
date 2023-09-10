@@ -23,7 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.testsuite;
 
-import io.github.sebastiantoepfer.jsonschema.core.JsonSchemas;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;

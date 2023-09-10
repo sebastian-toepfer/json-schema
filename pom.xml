@@ -52,7 +52,9 @@
 
     <modules>
         <module>testsuite-junit-platform-engine</module>
-        <module>core</module>
+        <module>api</module>
+        <module>vocabulary-spi</module>
+        <module>core</module>        
     </modules>
 
     <dependencyManagement>

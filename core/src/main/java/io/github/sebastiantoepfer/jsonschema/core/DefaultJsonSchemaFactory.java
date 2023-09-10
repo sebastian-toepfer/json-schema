@@ -21,14 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory;
+import jakarta.json.JsonValue;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+public final class DefaultJsonSchemaFactory implements JsonSchemaFactory {
+
+    @Override
+    public JsonSchema create(final JsonValue schema) {
+        final JsonSchema result;
+        if (schema == JsonValue.TRUE) {
+            result = new TrueJsonSchema();
+        } else if (schema == JsonValue.FALSE) {
+            result = new FalseJsonSchema();
+        } else if (schema.equals(JsonValue.EMPTY_JSON_OBJECT)) {
+            result = new EmptyJsonSchema();
+        } else {
+            result = new DefaultJsonSchema(schema.asJsonObject());
+        }
+        return result;
+    }
 }

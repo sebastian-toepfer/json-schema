@@ -21,14 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.Vocabulary;
+import java.net.URI;
+import java.util.Optional;
+import java.util.ServiceLoader;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+public record VocabularyDefinition(URI id, boolean required) {
+    public Optional<Vocabulary> findVocabulary() {
+        final Optional<Vocabulary> result = ServiceLoader
+            .load(LazyVocabularies.class)
+            .stream()
+            .map(ServiceLoader.Provider::get)
+            .map(loader -> loader.loadVocabularyWithId(id))
+            .flatMap(Optional::stream)
+            .findFirst();
+        if (result.isEmpty() && required) {
+            throw new IllegalStateException("can not find required vocabulary: " + id);
+        }
+        return result;
+    }
 }

@@ -21,14 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.JsonValue;
+import java.util.Objects;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+/**
+ *
+ * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-dynamic-references-with-dyn
+ */
+final class DynamicRefKeywordType implements KeywordType {
+
+    @Override
+    public String name() {
+        return "$dynamicRef";
+    }
+
+    @Override
+    public Keyword createKeyword(final JsonValue value) {
+        return new Applicator() {
+            @Override
+            public boolean applyTo(final JsonValue instance) {
+                //something is wrong here
+                return true;
+            }
+
+            @Override
+            public boolean hasName(final String name) {
+                return Objects.equals(name(), name);
+            }
+        };
+    }
 }

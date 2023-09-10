@@ -21,14 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core.constraint;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import static java.util.Arrays.asList;
+import static java.util.function.Predicate.not;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+public final class AllOfConstraint<T> implements Constraint<T> {
+
+    private final List<Constraint<? super T>> contraints;
+
+    public AllOfConstraint(final Constraint<? super T>... constraints) {
+        this(asList(constraints));
+    }
+
+    public AllOfConstraint(final Collection<? extends Constraint<? super T>> contraints) {
+        if (contraints.isEmpty()) {
+            throw new IllegalArgumentException("min one constraint must be provided!");
+        }
+        this.contraints = List.copyOf(contraints);
+    }
+
+    @Override
+    public Collection<ConstraintViolation> violationsBy(final T value) {
+        return contraints
+            .stream()
+            .map(c -> c.violationsBy(value))
+            .filter(not(Collection::isEmpty))
+            .findFirst()
+            .orElseGet(Set::of);
+    }
 }

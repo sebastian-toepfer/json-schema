@@ -21,14 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.keyword;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import jakarta.json.JsonValue;
+import java.util.Collection;
+import java.util.Set;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+/**
+ * attach information to an instance for application use
+ *
+ * see: http://json-schema.org/draft/2020-12/json-schema-core.html#name-root-schema-and-subschemas-
+ **/
+public interface Annotation extends Keyword {
+    @Override
+    default Collection<KeywordCategory> categories() {
+        return Set.of(KeywordCategory.ANNOTATION);
+    }
+
+    JsonValue value();
 }
