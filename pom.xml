@@ -244,6 +244,9 @@
                                     <excludeMethod>toString</excludeMethod>
                                     <exlcudeMethod>hashCode</exlcudeMethod>
                                 </excludedMethods>
+                                <excludedTestClasses>
+                                    <excludedTestClass>**IT</excludedTestClass>
+                                </excludedTestClasses>
                             </configuration>
                         </execution>
                     </executions>

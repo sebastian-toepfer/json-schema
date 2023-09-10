@@ -21,43 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.impl.keyword;
+package io.github.sebastiantoepfer.jsonschema.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import com.github.npathai.hamcrestopt.OptionalMatchers;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.KeywordType;
+import jakarta.json.Json;
 import jakarta.json.JsonValue;
-import java.net.URI;
 import org.junit.jupiter.api.Test;
 
-class BasicVocabularyTest {
+class InstanceTypeTest {
 
     @Test
-    void should_return_a_fake_id() {
-        assertThat(
-            new BasicVocabulary().id(),
-            is(URI.create("http://https://github.com/sebastian-toepfer/json-schema/basic"))
-        );
+    void should_be_true_if_instancetype_is_correct() {
+        assertThat(InstanceType.NULL.isInstance(JsonValue.NULL), is(true));
+        assertThat(InstanceType.BOOLEAN.isInstance(JsonValue.FALSE), is(true));
+        assertThat(InstanceType.BOOLEAN.isInstance(JsonValue.TRUE), is(true));
+        assertThat(InstanceType.OBJECT.isInstance(JsonValue.EMPTY_JSON_OBJECT), is(true));
+        assertThat(InstanceType.ARRAY.isInstance(JsonValue.EMPTY_JSON_ARRAY), is(true));
+        assertThat(InstanceType.NUMBER.isInstance(Json.createValue(23L)), is(true));
+        assertThat(InstanceType.INTEGER.isInstance(Json.createValue(23L)), is(true));
+        assertThat(InstanceType.INTEGER.isInstance(Json.createValue(0.0)), is(true));
     }
 
     @Test
-    void should_return_the_type_keywordtype() {
-        assertThat(
-            new BasicVocabulary().findKeywordTypeByName("type").map(KeywordType::name),
-            OptionalMatchers.isPresentAndIs("type")
-        );
+    void should_be_false_for_non_integers() {
+        assertThat(InstanceType.INTEGER.isInstance(Json.createValue(23.2)), is(false));
     }
 
     @Test
-    void should_return_the_custom_annotation_for_unknow_keyword() {
-        assertThat(
-            new BasicVocabulary()
-                .findKeywordTypeByName("unknow")
-                .map(keywordType -> keywordType.createKeyword(JsonValue.FALSE))
-                .map(keyword -> keyword.hasName("unknow")),
-            OptionalMatchers.isPresentAndIs(true)
-        );
+    void should_be_false_for_nonnumbers() {
+        assertThat(InstanceType.INTEGER.isInstance(Json.createValue("test")), is(false));
     }
 }

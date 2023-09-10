@@ -21,11 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-open module io.github.sebastiantoepfer.jsonschema.core {
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core.testsuite;
 
-    requires org.junit.jupiter.api;
-    requires org.junit.jupiter.params;
-    requires org.junit.jupiter.engine;
-    requires org.hamcrest;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+
+class JsonTestSuiteIT {
+
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(JsonTestSuiteTestCaseProvider.class)
+    void runJsonTestSuite(final JsonTestSuiteTestCase testcase) {
+        assertTrue(testcase.isValid());
+    }
 }

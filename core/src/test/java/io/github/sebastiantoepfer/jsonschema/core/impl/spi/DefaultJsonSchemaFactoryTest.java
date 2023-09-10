@@ -21,43 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.impl.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.impl.spi;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
-import com.github.npathai.hamcrestopt.OptionalMatchers;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.KeywordType;
+import jakarta.json.Json;
 import jakarta.json.JsonValue;
-import java.net.URI;
 import org.junit.jupiter.api.Test;
 
-class BasicVocabularyTest {
+class DefaultJsonSchemaFactoryTest {
 
     @Test
-    void should_return_a_fake_id() {
+    void should_return_truejsonschema_for_true() {
+        assertThat(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), is(instanceOf(TrueJsonSchema.class)));
+    }
+
+    @Test
+    void should_return_truejsonschema_for_false() {
+        assertThat(new DefaultJsonSchemaFactory().create(JsonValue.FALSE), is(instanceOf(FalseJsonSchema.class)));
+    }
+
+    @Test
+    void should_return_emptyjsonschema_for_emptyobject() {
         assertThat(
-            new BasicVocabulary().id(),
-            is(URI.create("http://https://github.com/sebastian-toepfer/json-schema/basic"))
+            new DefaultJsonSchemaFactory().create(JsonValue.EMPTY_JSON_OBJECT),
+            is(instanceOf(EmptyJsonSchema.class))
         );
     }
 
     @Test
-    void should_return_the_type_keywordtype() {
+    void should_return_defaultjsonschema_for_everything_else() {
         assertThat(
-            new BasicVocabulary().findKeywordTypeByName("type").map(KeywordType::name),
-            OptionalMatchers.isPresentAndIs("type")
-        );
-    }
-
-    @Test
-    void should_return_the_custom_annotation_for_unknow_keyword() {
-        assertThat(
-            new BasicVocabulary()
-                .findKeywordTypeByName("unknow")
-                .map(keywordType -> keywordType.createKeyword(JsonValue.FALSE))
-                .map(keyword -> keyword.hasName("unknow")),
-            OptionalMatchers.isPresentAndIs(true)
+            new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("type", "string").build()),
+            is(instanceOf(DefaultJsonSchema.class))
         );
     }
 }

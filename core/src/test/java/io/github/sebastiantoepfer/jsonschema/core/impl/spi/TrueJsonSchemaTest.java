@@ -21,43 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.impl.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.impl.spi;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 
-import com.github.npathai.hamcrestopt.OptionalMatchers;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.KeywordType;
 import jakarta.json.JsonValue;
-import java.net.URI;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-class BasicVocabularyTest {
+class TrueJsonSchemaTest {
 
-    @Test
-    void should_return_a_fake_id() {
-        assertThat(
-            new BasicVocabulary().id(),
-            is(URI.create("http://https://github.com/sebastian-toepfer/json-schema/basic"))
-        );
-    }
-
-    @Test
-    void should_return_the_type_keywordtype() {
-        assertThat(
-            new BasicVocabulary().findKeywordTypeByName("type").map(KeywordType::name),
-            OptionalMatchers.isPresentAndIs("type")
-        );
-    }
-
-    @Test
-    void should_return_the_custom_annotation_for_unknow_keyword() {
-        assertThat(
-            new BasicVocabulary()
-                .findKeywordTypeByName("unknow")
-                .map(keywordType -> keywordType.createKeyword(JsonValue.FALSE))
-                .map(keyword -> keyword.hasName("unknow")),
-            OptionalMatchers.isPresentAndIs(true)
-        );
+    @ParameterizedTest
+    @ArgumentsSource(JsonValuesArguments.class)
+    void should_be_valid_for_everything(final JsonValue value) {
+        assertThat(new TrueJsonSchema().validator().validate(value), is(empty()));
     }
 }

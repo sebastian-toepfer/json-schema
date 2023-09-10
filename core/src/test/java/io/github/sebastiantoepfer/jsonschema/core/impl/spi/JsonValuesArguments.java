@@ -21,11 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-open module io.github.sebastiantoepfer.jsonschema.core {
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core.impl.spi;
 
-    requires org.junit.jupiter.api;
-    requires org.junit.jupiter.params;
-    requires org.junit.jupiter.engine;
-    requires org.hamcrest;
+import jakarta.json.JsonValue;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+
+public class JsonValuesArguments implements ArgumentsProvider {
+
+    @Override
+    public Stream<? extends Arguments> provideArguments(final ExtensionContext context) throws Exception {
+        return Stream.of(
+            Arguments.of(JsonValue.EMPTY_JSON_ARRAY),
+            Arguments.of(JsonValue.EMPTY_JSON_OBJECT),
+            Arguments.of(JsonValue.FALSE),
+            Arguments.of(JsonValue.TRUE),
+            Arguments.of(JsonValue.NULL)
+        );
+    }
 }

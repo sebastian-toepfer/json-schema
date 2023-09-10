@@ -26,7 +26,9 @@ package io.github.sebastiantoepfer.jsonschema.core.impl.keyword;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.jsonschema.core.keyword.Assertion;
 import jakarta.json.Json;
+import jakarta.json.JsonValue;
 import org.junit.jupiter.api.Test;
 
 class TypeTest {
@@ -39,5 +41,28 @@ class TypeTest {
     @Test
     void should_know_other_names() {
         assertThat(new Type(Json.createValue("string")).hasName("id"), is(false));
+    }
+
+    @Test
+    void should_use_stringvalue_to_validate_type() {
+        final Assertion typeAssertion = new Type(Json.createValue("string")).asAssertion();
+
+        assertThat(typeAssertion.isValidFor(Json.createValue("value")), is(true));
+        assertThat(typeAssertion.isValidFor(JsonValue.EMPTY_JSON_OBJECT), is(false));
+        assertThat(typeAssertion.isValidFor(Json.createValue(1L)), is(false));
+        assertThat(typeAssertion.isValidFor(JsonValue.EMPTY_JSON_ARRAY), is(false));
+    }
+
+    @Test
+    void should_use_arrayvalue_to_validate_type() {
+        final Assertion typeAssertion = new Type(
+            Json.createArrayBuilder().add(Json.createValue("string")).add(Json.createValue("object")).build()
+        )
+            .asAssertion();
+
+        assertThat(typeAssertion.isValidFor(Json.createValue("value")), is(true));
+        assertThat(typeAssertion.isValidFor(JsonValue.EMPTY_JSON_OBJECT), is(true));
+        assertThat(typeAssertion.isValidFor(Json.createValue(1L)), is(false));
+        assertThat(typeAssertion.isValidFor(JsonValue.EMPTY_JSON_ARRAY), is(false));
     }
 }

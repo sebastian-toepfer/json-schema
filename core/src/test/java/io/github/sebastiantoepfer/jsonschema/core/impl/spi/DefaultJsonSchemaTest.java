@@ -21,31 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.testsuite;
+package io.github.sebastiantoepfer.jsonschema.core.impl.spi;
 
-import io.github.sebastiantoepfer.jsonschema.core.JsonSchemas;
-import io.github.sebastiantoepfer.jsonschema.core.Validator;
-import io.github.sebastiantoepfer.jsonschema.testsuite.junit.SchemaTestValidatorLoader;
-import java.util.Objects;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
-public final class JsonSchemaSchemaTestValidatorAdapterLoader implements SchemaTestValidatorLoader {
+import jakarta.json.Json;
+import jakarta.json.JsonValue;
+import org.junit.jupiter.api.Test;
 
-    @Override
-    public SchemaTestValidator loadSchemaTestValidator(final String schema) {
-        return new SchemaTestValidatorAdapter(JsonSchemas.load(schema).validator());
+class DefaultJsonSchemaTest {
+
+    private final DefaultJsonSchema schema = new DefaultJsonSchema(
+        Json.createObjectBuilder().add("type", "string").build()
+    );
+
+    @Test
+    void should_be_valid_for_string() {
+        assertThat(schema.validator().validate(Json.createValue("test")), is(empty()));
     }
 
-    private static class SchemaTestValidatorAdapter implements SchemaTestValidator {
-
-        private final Validator validator;
-
-        public SchemaTestValidatorAdapter(final Validator validator) {
-            this.validator = Objects.requireNonNull(validator);
-        }
-
-        @Override
-        public boolean validate(final String data) {
-            return validator.validate(data).isEmpty();
-        }
+    @Test
+    void should_be_invalid_for_object() {
+        assertThat(schema.validator().validate(JsonValue.EMPTY_JSON_OBJECT), is(not(empty())));
     }
 }

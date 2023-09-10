@@ -21,11 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-open module io.github.sebastiantoepfer.jsonschema.core {
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core.testsuite;
 
-    requires org.junit.jupiter.api;
-    requires org.junit.jupiter.params;
-    requires org.junit.jupiter.engine;
-    requires org.hamcrest;
+interface JsonTestSuiteTestCase {
+    boolean isValid();
 }
