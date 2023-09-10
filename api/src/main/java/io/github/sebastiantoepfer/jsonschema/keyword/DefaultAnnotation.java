@@ -21,14 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.keyword;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import jakarta.json.JsonValue;
+import java.util.Objects;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+/**
+ * A JSON Schema MAY contain properties which are not schema keywords. Unknown keywords SHOULD be treated as
+ * annotations, where the value of the keyword is the value of the annotation
+ *
+ * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-json-schema-objects-and-key
+ */
+public final class DefaultAnnotation implements Annotation {
+
+    private final String name;
+    private final JsonValue value;
+
+    public DefaultAnnotation(final String name, final JsonValue value) {
+        this.name = Objects.requireNonNull(name);
+        this.value = Objects.requireNonNullElse(value, JsonValue.NULL);
+    }
+
+    @Override
+    public boolean hasName(final String name) {
+        return Objects.equals(this.name, name);
+    }
+
+    @Override
+    public JsonValue value() {
+        return value;
+    }
 }

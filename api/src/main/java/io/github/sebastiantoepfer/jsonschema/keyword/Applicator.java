@@ -21,14 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.keyword;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import jakarta.json.JsonValue;
+import java.util.Collection;
+import java.util.Set;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+/**
+ * apply one or more subschemas to a particular location in the instance, and combine or modify their results.
+ *
+ * applicators SHOULD only produce assertion results based on their subschemas' results. They should not define
+ * additional constraints independent of their subschemas
+ *
+ * see: http://json-schema.org/draft/2020-12/json-schema-core.html#name-root-schema-and-subschemas-
+ **/
+public interface Applicator extends Keyword {
+    @Override
+    default Collection<KeywordCategory> categories() {
+        return Set.of(KeywordCategory.APPLICATOR);
+    }
+
+    boolean applyTo(JsonValue instance);
 }

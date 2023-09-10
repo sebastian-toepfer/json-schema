@@ -21,14 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
+import io.github.sebastiantoepfer.jsonschema.Validator;
+import io.github.sebastiantoepfer.jsonschema.core.constraint.Constraint;
+import jakarta.json.JsonValue;
+import java.util.Collection;
+import java.util.Objects;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+final class DefaultValidator implements Validator {
+
+    private final Constraint<? super JsonValue> contraint;
+
+    public DefaultValidator(final Constraint<? super JsonValue> contraint) {
+        this.contraint = Objects.requireNonNull(contraint);
+    }
+
+    @Override
+    public Collection<ConstraintViolation> validate(final JsonValue data) {
+        return contraint.violationsBy(data);
+    }
 }

@@ -21,14 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory;
+import jakarta.json.Json;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
+import java.io.StringReader;
+import java.util.ServiceLoader;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+public final class JsonSchemas {
+
+    private static final JsonSchemaFactory JSONSCHEMA_FACTORY = ServiceLoader
+        .load(JsonSchemaFactory.class)
+        .findFirst()
+        .orElseThrow();
+
+    public static JsonSchema load(final String schema) {
+        try (JsonReader reader = Json.createReader(new StringReader(schema))) {
+            return load(reader.readValue());
+        }
+    }
+
+    public static JsonSchema load(final JsonValue schema) {
+        return JSONSCHEMA_FACTORY.create(schema);
+    }
+
+    private JsonSchemas() {}
 }

@@ -21,14 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.JsonObject;
+import java.util.Objects;
+import java.util.Optional;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+final class KeywordSearch {
+
+    private final KeywordType keywordType;
+
+    public KeywordSearch(final KeywordType keywordType) {
+        this.keywordType = Objects.requireNonNull(keywordType);
+    }
+
+    public Optional<Keyword> searchForKeywordIn(final JsonObject schema) {
+        return Optional.ofNullable(schema.get(keywordType.name())).map(keywordType::createKeyword);
+    }
 }

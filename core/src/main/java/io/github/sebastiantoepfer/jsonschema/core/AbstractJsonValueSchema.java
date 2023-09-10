@@ -21,14 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
+import java.util.Objects;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+abstract class AbstractJsonValueSchema implements JsonSchema {
+
+    private final JsonValue value;
+
+    protected AbstractJsonValueSchema(final JsonValue value) {
+        this.value = Objects.requireNonNull(value);
+    }
+
+    @Override
+    public final ValueType getValueType() {
+        return value.getValueType();
+    }
+
+    @Override
+    public final JsonObject asJsonObject() {
+        return value.asJsonObject();
+    }
+
+    @Override
+    public final JsonArray asJsonArray() {
+        return value.asJsonArray();
+    }
 }

@@ -21,14 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory;
+import jakarta.json.JsonValue;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.LazyCoreVocabulary;
+public final class FakeJsonSchemaFactory implements JsonSchemaFactory {
+
+    @Override
+    public JsonSchema create(final JsonValue schema) {
+        return new JsonSchema() {
+            @Override
+            public Validator validator() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public JsonValue.ValueType getValueType() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
+    }
 }
