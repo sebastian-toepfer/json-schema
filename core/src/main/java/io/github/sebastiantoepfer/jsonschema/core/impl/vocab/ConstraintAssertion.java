@@ -21,14 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    exports io.github.sebastiantoepfer.jsonschema.core;
-    exports io.github.sebastiantoepfer.jsonschema.core.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.impl.vocab;
 
-    exports io.github.sebastiantoepfer.jsonschema.core.vocab.spi;
+import io.github.sebastiantoepfer.jsonschema.core.impl.constraint.Constraint;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.Assertion;
+import jakarta.json.JsonValue;
 
-    provides io.github.sebastiantoepfer.jsonschema.core.vocab.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.impl.vocab.core.LazyCoreVocabulary;
-
-    requires jakarta.json;
+/**
+ * only simplify pitest :)
+ */
+public interface ConstraintAssertion extends Assertion, Constraint<JsonValue> {
+    @Override
+    default boolean isValidFor(JsonValue instance) {
+        return violationsBy(instance).isEmpty();
+    }
 }

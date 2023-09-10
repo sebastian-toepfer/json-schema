@@ -21,14 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    exports io.github.sebastiantoepfer.jsonschema.core;
-    exports io.github.sebastiantoepfer.jsonschema.core.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.spi;
 
-    exports io.github.sebastiantoepfer.jsonschema.core.vocab.spi;
+import java.util.stream.Stream;
 
-    provides io.github.sebastiantoepfer.jsonschema.core.vocab.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.impl.vocab.core.LazyCoreVocabulary;
-
-    requires jakarta.json;
+public interface VocabularyDefinitions {
+    Stream<VocabularyDefinition> definitions();
 }

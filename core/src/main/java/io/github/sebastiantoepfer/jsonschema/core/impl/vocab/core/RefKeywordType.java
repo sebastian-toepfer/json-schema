@@ -21,14 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    exports io.github.sebastiantoepfer.jsonschema.core;
-    exports io.github.sebastiantoepfer.jsonschema.core.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.impl.vocab.core;
 
-    exports io.github.sebastiantoepfer.jsonschema.core.vocab.spi;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.Applicator;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.Keyword;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.KeywordType;
+import jakarta.json.JsonValue;
+import java.util.Objects;
 
-    provides io.github.sebastiantoepfer.jsonschema.core.vocab.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.impl.vocab.core.LazyCoreVocabulary;
+/**
+ *
+ * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-direct-references-with-ref
+ */
+final class RefKeywordType implements KeywordType {
 
-    requires jakarta.json;
+    @Override
+    public String name() {
+        return "$ref";
+    }
+
+    @Override
+    public Keyword createKeyword(final JsonValue value) {
+        return new Applicator() {
+            @Override
+            public boolean applyTo(final JsonValue instance) {
+                return true; //something is wrong here
+            }
+
+            @Override
+            public boolean hasName(final String name) {
+                return Objects.equals(name(), name);
+            }
+        };
+    }
 }

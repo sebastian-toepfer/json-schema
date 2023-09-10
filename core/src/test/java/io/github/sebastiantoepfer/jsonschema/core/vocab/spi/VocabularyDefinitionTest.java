@@ -21,45 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.impl.spi;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.spi;
 
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isEmpty;
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresentAndIs;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
-import org.junit.jupiter.api.Assertions;
+import io.github.sebastiantoepfer.jsonschema.core.Vocabulary;
+import java.net.URI;
 import org.junit.jupiter.api.Test;
 
-class DefaultJsonSchemaTest {
-
-    private final DefaultJsonSchema schema = new DefaultJsonSchema(
-        Json.createObjectBuilder().add("type", "string").build()
-    );
+class VocabularyDefinitionTest {
 
     @Test
-    void should_be_valid_for_string() {
-        assertThat(schema.validator().validate(Json.createValue("test")), is(empty()));
+    void should_throw_illegal_state_if_a_required_vocabulary_can_not_be_loaded() {
+        final VocabularyDefinition vocabDef = new VocabularyDefinition(URI.create("https://invalid"), true);
+        assertThrows(IllegalStateException.class, () -> vocabDef.findVocabulary());
     }
 
     @Test
-    void should_be_invalid_for_object() {
-        assertThat(schema.validator().validate(JsonValue.EMPTY_JSON_OBJECT), is(not(empty())));
+    void should_find_mandatory_core_vocabulary() {
+        assertThat(
+            new VocabularyDefinition(URI.create("https://json-schema.org/draft/2020-12/vocab/core"), true)
+                .findVocabulary()
+                .map(Vocabulary::id),
+            isPresentAndIs(URI.create("https://json-schema.org/draft/2020-12/vocab/core"))
+        );
     }
 
     @Test
-    void should_not_be_loadable_without_mandantory_core_vocabulary() {
-        final JsonObject invalidSchema = Json
-            .createObjectBuilder()
-            .add(
-                "$vocabulary",
-                Json.createObjectBuilder().add("https://json-schema.org/draft/2020-12/vocab/core", false)
-            )
-            .build();
-
-        Assertions.assertThrows(Exception.class, () -> new DefaultJsonSchema(invalidSchema));
+    void should_retrun_empty_for_optional_vocabulary_which_can_not_be_loaded() {
+        assertThat(
+            new VocabularyDefinition(URI.create("https://invalid"), false).findVocabulary().map(Vocabulary::id),
+            isEmpty()
+        );
     }
 }

@@ -21,14 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    exports io.github.sebastiantoepfer.jsonschema.core;
-    exports io.github.sebastiantoepfer.jsonschema.core.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.impl.vocab.core;
 
-    exports io.github.sebastiantoepfer.jsonschema.core.vocab.spi;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-    provides io.github.sebastiantoepfer.jsonschema.core.vocab.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.impl.vocab.core.LazyCoreVocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.Keyword;
+import jakarta.json.JsonValue;
+import org.junit.jupiter.api.Test;
 
-    requires jakarta.json;
+class DynamicRefKeywordTypeTest {
+
+    @Test
+    void notFinischedYet() {
+        final Keyword keyword = new DynamicRefKeywordType().createKeyword(JsonValue.FALSE);
+
+        assertThat(keyword.hasName("$dynamicRef"), is(true));
+        assertThat(keyword.hasName("$id"), is(false));
+
+        assertThat(keyword.asApplicator().applyTo(JsonValue.TRUE), is(true));
+    }
 }

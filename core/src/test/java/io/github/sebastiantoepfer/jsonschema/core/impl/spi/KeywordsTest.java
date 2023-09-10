@@ -24,42 +24,42 @@
 package io.github.sebastiantoepfer.jsonschema.core.impl.spi;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
-import org.junit.jupiter.api.Assertions;
+import io.github.sebastiantoepfer.jsonschema.core.impl.vocab.basic.BasicVocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.impl.vocab.core.CoreVocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.spi.VocabularyDefinition;
+import java.net.URI;
+import java.util.Collection;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class DefaultJsonSchemaTest {
-
-    private final DefaultJsonSchema schema = new DefaultJsonSchema(
-        Json.createObjectBuilder().add("type", "string").build()
-    );
+class KeywordsTest {
 
     @Test
-    void should_be_valid_for_string() {
-        assertThat(schema.validator().validate(Json.createValue("test")), is(empty()));
+    void should_not_be_createbale_without_mandantory_core_vocabulary() {
+        final Collection<VocabularyDefinition> vocabDefs = List.of(
+            new VocabularyDefinition(new CoreVocabulary().id(), false)
+        );
+        assertThrows(IllegalArgumentException.class, () -> new Keywords(vocabDefs));
     }
 
     @Test
-    void should_be_invalid_for_object() {
-        assertThat(schema.validator().validate(JsonValue.EMPTY_JSON_OBJECT), is(not(empty())));
+    void should_not_be_createbale_without_mandantory_base_vocabulary() {
+        final Collection<VocabularyDefinition> vocabDefs = List.of(
+            new VocabularyDefinition(new BasicVocabulary().id(), false)
+        );
+        assertThrows(IllegalArgumentException.class, () -> new Keywords(vocabDefs));
     }
 
     @Test
-    void should_not_be_loadable_without_mandantory_core_vocabulary() {
-        final JsonObject invalidSchema = Json
-            .createObjectBuilder()
-            .add(
-                "$vocabulary",
-                Json.createObjectBuilder().add("https://json-schema.org/draft/2020-12/vocab/core", false)
-            )
-            .build();
-
-        Assertions.assertThrows(Exception.class, () -> new DefaultJsonSchema(invalidSchema));
+    void should_be_createbale_with_optional_vocabularies() {
+        assertThat(
+            new Keywords(List.of(new VocabularyDefinition(URI.create("http://optinal"), false))),
+            is(not(nullValue()))
+        );
     }
 }

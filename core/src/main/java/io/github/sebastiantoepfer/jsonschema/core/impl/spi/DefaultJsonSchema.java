@@ -29,14 +29,20 @@ import static java.util.stream.Collectors.toList;
 import io.github.sebastiantoepfer.jsonschema.core.Validator;
 import io.github.sebastiantoepfer.jsonschema.core.impl.constraint.AllOfConstraint;
 import io.github.sebastiantoepfer.jsonschema.core.impl.constraint.Constraint;
-import io.github.sebastiantoepfer.jsonschema.core.impl.keyword.Keywords;
+import io.github.sebastiantoepfer.jsonschema.core.impl.vocab.core.VocabularyKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.spi.VocabularyDefinition;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.spi.VocabularyDefinitions;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import java.util.Collection;
 
-public final class DefaultJsonSchema extends AbstractJsonValueSchema {
+final class DefaultJsonSchema extends AbstractJsonValueSchema {
+
+    private final Keywords keywords;
 
     public DefaultJsonSchema(final JsonObject value) {
         super(value);
+        keywords = new Keywords(vocabulary());
     }
 
     @Override
@@ -44,11 +50,21 @@ public final class DefaultJsonSchema extends AbstractJsonValueSchema {
         return asJsonObject()
             .entrySet()
             .stream()
-            .map(Keywords::createKeywordFor)
+            .map(keywords::createKeywordFor)
             .filter(Constraint.class::isInstance)
             .map(k -> (Constraint<JsonValue>) k)
             .collect(
                 collectingAndThen(toList(), constraints -> new DefaultValidator(new AllOfConstraint<>(constraints)))
             );
+    }
+
+    private Collection<VocabularyDefinition> vocabulary() {
+        return new KeywordSearch(new VocabularyKeywordType())
+            .searchForKeywordIn(asJsonObject())
+            .filter(VocabularyDefinitions.class::isInstance)
+            .map(VocabularyDefinitions.class::cast)
+            .stream()
+            .flatMap(VocabularyDefinitions::definitions)
+            .toList();
     }
 }

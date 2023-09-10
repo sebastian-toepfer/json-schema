@@ -21,18 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.impl.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.impl.vocab.core;
 
-import io.github.sebastiantoepfer.jsonschema.core.impl.constraint.Constraint;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.Assertion;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.Applicator;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.Keyword;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.KeywordType;
 import jakarta.json.JsonValue;
+import java.util.Objects;
 
 /**
- * only simplify pitest :)
+ *
+ * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-dynamic-references-with-dyn
  */
-interface ConstraintAssertion extends Assertion, Constraint<JsonValue> {
+final class DynamicRefKeywordType implements KeywordType {
+
     @Override
-    default boolean isValidFor(JsonValue instance) {
-        return violationsBy(instance).isEmpty();
+    public String name() {
+        return "$dynamicRef";
+    }
+
+    @Override
+    public Keyword createKeyword(final JsonValue value) {
+        return new Applicator() {
+            @Override
+            public boolean applyTo(final JsonValue instance) {
+                //something is wrong here
+                return true;
+            }
+
+            @Override
+            public boolean hasName(final String name) {
+                return Objects.equals(name(), name);
+            }
+        };
     }
 }

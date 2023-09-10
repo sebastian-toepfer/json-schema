@@ -21,14 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    exports io.github.sebastiantoepfer.jsonschema.core;
-    exports io.github.sebastiantoepfer.jsonschema.core.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.impl.vocab.basic;
 
-    exports io.github.sebastiantoepfer.jsonschema.core.vocab.spi;
+import io.github.sebastiantoepfer.jsonschema.core.Vocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.KeywordType;
+import java.net.URI;
+import java.util.Optional;
 
-    provides io.github.sebastiantoepfer.jsonschema.core.vocab.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.impl.vocab.core.LazyCoreVocabulary;
+public final class BasicVocabulary implements Vocabulary {
 
-    requires jakarta.json;
+    @Override
+    public URI id() {
+        return URI.create("http://https://github.com/sebastian-toepfer/json-schema/basic");
+    }
+
+    @Override
+    public Optional<KeywordType> findKeywordTypeByName(final String name) {
+        return Optional.of(
+            switch (name) {
+                case "type" -> new TypeKeywordType();
+                default -> new UnknowKeywordType(name);
+            }
+        );
+    }
 }

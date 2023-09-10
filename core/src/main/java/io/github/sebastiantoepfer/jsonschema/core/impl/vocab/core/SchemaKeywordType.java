@@ -21,50 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.impl.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.impl.vocab.core;
 
-import io.github.sebastiantoepfer.jsonschema.core.Vocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.DefaultAnnotation;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.KeywordType;
 import jakarta.json.JsonValue;
-import java.net.URI;
-import java.util.Optional;
 
-final class BasicVocabulary implements Vocabulary {
+/**
+ *
+ * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-the-schema-keyword
+ */
+final class SchemaKeywordType implements KeywordType {
 
     @Override
-    public URI id() {
-        return URI.create("http://https://github.com/sebastian-toepfer/json-schema/basic");
+    public String name() {
+        return "$schema";
     }
 
     @Override
-    public Optional<KeywordType> findKeywordTypeByName(final String name) {
-        KeywordType keywordType =
-            switch (name) {
-                case "type" -> new KeywordType() {
-                    @Override
-                    public String name() {
-                        return "type";
-                    }
-
-                    @Override
-                    public Keyword createKeyword(final JsonValue value) {
-                        return new Type(value);
-                    }
-                };
-                default -> new KeywordType() {
-                    @Override
-                    public String name() {
-                        return name;
-                    }
-
-                    @Override
-                    public Keyword createKeyword(final JsonValue value) {
-                        return new DefaultAnnotation(name(), value);
-                    }
-                };
-            };
-        return Optional.of(keywordType);
+    public Keyword createKeyword(final JsonValue value) {
+        return new DefaultAnnotation(name(), value);
     }
 }

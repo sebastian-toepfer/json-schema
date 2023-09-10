@@ -21,25 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.impl.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.impl.spi;
 
 import io.github.sebastiantoepfer.jsonschema.core.keyword.Keyword;
-import jakarta.json.JsonValue;
-import java.util.Map;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.KeywordType;
+import jakarta.json.JsonObject;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-public final class Keywords {
+final class KeywordSearch {
 
-    public static Keyword createKeywordFor(final Map.Entry<String, JsonValue> property) {
-        return Stream
-            .of(new BasicVocabulary())
-            .map(vocab -> vocab.findKeywordTypeByName(property.getKey()))
-            .flatMap(Optional::stream)
-            .findFirst()
-            .map(keywordType -> keywordType.createKeyword(property.getValue()))
-            .orElseThrow();
+    private final KeywordType keywordType;
+
+    public KeywordSearch(final KeywordType keywordType) {
+        this.keywordType = Objects.requireNonNull(keywordType);
     }
 
-    private Keywords() {}
+    public Optional<Keyword> searchForKeywordIn(final JsonObject schema) {
+        return Optional.ofNullable(schema.get(keywordType.name())).map(keywordType::createKeyword);
+    }
 }

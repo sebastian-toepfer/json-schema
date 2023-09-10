@@ -21,45 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.impl.spi;
+package io.github.sebastiantoepfer.jsonschema.core.impl.vocab.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
+import com.github.npathai.hamcrestopt.OptionalMatchers;
 import jakarta.json.JsonValue;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import java.net.URI;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-class DefaultJsonSchemaTest {
+class CoreVocabularyTest {
 
-    private final DefaultJsonSchema schema = new DefaultJsonSchema(
-        Json.createObjectBuilder().add("type", "string").build()
-    );
-
-    @Test
-    void should_be_valid_for_string() {
-        assertThat(schema.validator().validate(Json.createValue("test")), is(empty()));
+    void should_return_the_uri_of_the_current_core_vocabulary() {
+        assertThat(new CoreVocabulary().id(), is(URI.create("https://json-schema.org/draft/2020-12/vocab/core")));
     }
 
-    @Test
-    void should_be_invalid_for_object() {
-        assertThat(schema.validator().validate(JsonValue.EMPTY_JSON_OBJECT), is(not(empty())));
-    }
-
-    @Test
-    void should_not_be_loadable_without_mandantory_core_vocabulary() {
-        final JsonObject invalidSchema = Json
-            .createObjectBuilder()
-            .add(
-                "$vocabulary",
-                Json.createObjectBuilder().add("https://json-schema.org/draft/2020-12/vocab/core", false)
-            )
-            .build();
-
-        Assertions.assertThrows(Exception.class, () -> new DefaultJsonSchema(invalidSchema));
+    @ParameterizedTest(name = "should know keyword {0}")
+    @ValueSource(strings = { "$schema", "$vocabulary", "$id", "$ref", "$dynamicRef", "$defs", "$comment" })
+    void should_return_keywords_for_name(final String name) {
+        //keyword creation for easier pitesting :) -> i know it is bad
+        assertThat(
+            new CoreVocabulary()
+                .findKeywordTypeByName(name)
+                .map(keywordType -> keywordType.createKeyword(JsonValue.EMPTY_JSON_OBJECT))
+                .map(keyword -> keyword.hasName(name)),
+            OptionalMatchers.isPresentAndIs(true)
+        );
     }
 }

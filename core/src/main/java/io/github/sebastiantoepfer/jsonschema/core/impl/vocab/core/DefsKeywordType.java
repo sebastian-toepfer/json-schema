@@ -21,14 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    exports io.github.sebastiantoepfer.jsonschema.core;
-    exports io.github.sebastiantoepfer.jsonschema.core.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.impl.vocab.core;
 
-    exports io.github.sebastiantoepfer.jsonschema.core.vocab.spi;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.DefaultAnnotation;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.Keyword;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.KeywordType;
+import jakarta.json.JsonValue;
 
-    provides io.github.sebastiantoepfer.jsonschema.core.vocab.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.impl.vocab.core.LazyCoreVocabulary;
+/**
+ *
+ * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-schema-re-use-with-defs
+ */
+final class DefsKeywordType implements KeywordType {
 
-    requires jakarta.json;
+    @Override
+    public String name() {
+        return "$defs";
+    }
+
+    @Override
+    public Keyword createKeyword(final JsonValue value) {
+        return new DefaultAnnotation(name(), value);
+    }
 }

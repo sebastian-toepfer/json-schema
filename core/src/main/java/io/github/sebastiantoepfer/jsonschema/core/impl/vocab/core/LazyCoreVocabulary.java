@@ -21,14 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    exports io.github.sebastiantoepfer.jsonschema.core;
-    exports io.github.sebastiantoepfer.jsonschema.core.keyword;
+package io.github.sebastiantoepfer.jsonschema.core.impl.vocab.core;
 
-    exports io.github.sebastiantoepfer.jsonschema.core.vocab.spi;
+import io.github.sebastiantoepfer.jsonschema.core.Vocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.spi.LazyVocabularies;
+import java.net.URI;
+import java.util.Objects;
+import java.util.Optional;
 
-    provides io.github.sebastiantoepfer.jsonschema.core.vocab.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.impl.vocab.core.LazyCoreVocabulary;
+public final class LazyCoreVocabulary implements LazyVocabularies {
 
-    requires jakarta.json;
+    private final Vocabulary vocab;
+
+    public LazyCoreVocabulary() {
+        this.vocab = new CoreVocabulary();
+    }
+
+    @Override
+    public Optional<Vocabulary> loadVocabularyWithId(final URI id) {
+        final Optional<Vocabulary> result;
+        if (Objects.equals(id, vocab.id())) {
+            result = Optional.of(vocab);
+        } else {
+            result = Optional.empty();
+        }
+        return result;
+    }
 }
