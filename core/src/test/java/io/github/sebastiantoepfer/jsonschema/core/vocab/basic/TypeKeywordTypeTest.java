@@ -26,13 +26,12 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.basic;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import io.github.sebastiantoepfer.jsonschema.core.vocab.basic.TypeKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import org.junit.jupiter.api.Test;
 
-class TypeTest {
+class TypeKeywordTypeTest {
 
     @Test
     void should_know_his_name() {

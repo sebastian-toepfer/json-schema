@@ -25,23 +25,31 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.basic;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
 import java.net.URI;
 import java.util.Optional;
 
 public final class BasicVocabulary implements Vocabulary {
 
+    private final DefaultVocabulary vocab;
+
+    public BasicVocabulary() {
+        this.vocab =
+            new DefaultVocabulary(
+                URI.create("http://https://github.com/sebastian-toepfer/json-schema/basic"),
+                new TypeKeywordType(),
+                new MinLengthKeywordType(),
+                new MaxLengthKeywordType()
+            );
+    }
+
     @Override
     public URI id() {
-        return URI.create("http://https://github.com/sebastian-toepfer/json-schema/basic");
+        return vocab.id();
     }
 
     @Override
     public Optional<KeywordType> findKeywordTypeByName(final String name) {
-        return Optional.of(
-            switch (name) {
-                case "type" -> new TypeKeywordType();
-                default -> new UnknowKeywordType(name);
-            }
-        );
+        return Optional.of(vocab.findKeywordTypeByName(name).orElseGet(() -> new UnknowKeywordType(name)));
     }
 }

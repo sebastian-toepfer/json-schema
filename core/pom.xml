@@ -113,6 +113,21 @@
                                         <inculde>**/tests/draft2019-09/type.json</inculde>
                                         <inculde>**/tests/draft2020-12/type.json</inculde>
                                         <inculde>**/tests/draft-next/type.json</inculde>
+
+                                        <inculde>**/tests/draft3/minLength.json</inculde>
+                                        <inculde>**/tests/draft4/minLength.json</inculde>
+                                        <inculde>**/tests/draft6/minLength.json</inculde>
+                                        <inculde>**/tests/draft7/minLength.json</inculde>
+                                        <inculde>**/tests/draft2019-09/minLength.json</inculde>
+                                        <inculde>**/tests/draft2020-12/minLength.json</inculde>
+                                        <inculde>**/tests/draft-next/minLength.json</inculde>
+
+                                        <inculde>**/tests/draft4/maxLength.json</inculde>
+                                        <inculde>**/tests/draft6/maxLength.json</inculde>
+                                        <inculde>**/tests/draft7/maxLength.json</inculde>
+                                        <inculde>**/tests/draft2019-09/maxLength.json</inculde>
+                                        <inculde>**/tests/draft2020-12/maxLength.json</inculde>
+                                        <inculde>**/tests/draft-next/maxLength.json</inculde>
                                     </includes>
                                 </resource>
                             </resources>
