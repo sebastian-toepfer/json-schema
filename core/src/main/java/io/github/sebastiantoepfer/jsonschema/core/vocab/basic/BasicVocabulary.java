@@ -38,7 +38,8 @@ public final class BasicVocabulary implements Vocabulary {
             new DefaultVocabulary(
                 URI.create("http://https://github.com/sebastian-toepfer/json-schema/basic"),
                 new TypeKeywordType(),
-                new MinLengthKeywordType()
+                new MinLengthKeywordType(),
+                new MaxLengthKeywordType()
             );
     }
 
