@@ -21,30 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
-
-import static com.github.npathai.hamcrestopt.OptionalMatchers.isEmpty;
-import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresentAndIs;
-import static org.hamcrest.MatcherAssert.assertThat;
+package io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import java.net.URI;
-import org.junit.jupiter.api.Test;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-class LazyCoreVocabularyTest {
+public final class DefaultVocabulary implements Vocabulary {
 
-    @Test
-    void should_return_empty_for_non_core_id() {
-        assertThat(new LazyCoreVocabulary().loadVocabularyWithId(URI.create("")), isEmpty());
+    private final URI id;
+    private final List<KeywordType> keywords;
+
+    public DefaultVocabulary(final URI id, final KeywordType... keywortds) {
+        this(id, Arrays.asList(keywortds));
     }
 
-    @Test
-    void should_return_core_vocabulary_for_core_id() {
-        assertThat(
-            new LazyCoreVocabulary()
-                .loadVocabularyWithId(URI.create("https://json-schema.org/draft/2020-12/vocab/core"))
-                .map(Vocabulary::id),
-            isPresentAndIs(URI.create("https://json-schema.org/draft/2020-12/vocab/core"))
-        );
+    public DefaultVocabulary(final URI id, final Collection<KeywordType> keywords) {
+        this.id = Objects.requireNonNull(id);
+        this.keywords = List.copyOf(keywords);
+    }
+
+    @Override
+    public URI id() {
+        return id;
+    }
+
+    @Override
+    public Optional<KeywordType> findKeywordTypeByName(final String name) {
+        return keywords.stream().filter(keywordType -> keywordType.hasName(name)).findFirst();
     }
 }

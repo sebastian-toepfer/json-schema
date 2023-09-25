@@ -23,28 +23,16 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
-import io.github.sebastiantoepfer.jsonschema.Vocabulary;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies;
-import java.net.URI;
-import java.util.Objects;
-import java.util.Optional;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-public final class LazyCoreVocabulary implements LazyVocabularies {
+import jakarta.json.JsonValue;
+import org.junit.jupiter.api.Test;
 
-    private final Vocabulary vocab;
+class SchemaKeywordTypeTest {
 
-    public LazyCoreVocabulary() {
-        this.vocab = new CoreVocabulary();
-    }
-
-    @Override
-    public Optional<Vocabulary> loadVocabularyWithId(final URI id) {
-        final Optional<Vocabulary> result;
-        if (Objects.equals(id, vocab.id())) {
-            result = Optional.of(vocab);
-        } else {
-            result = Optional.empty();
-        }
-        return result;
+    @Test
+    void should_create_keyword_with_name() {
+        assertThat(new SchemaKeywordType().createKeyword(JsonValue.EMPTY_JSON_OBJECT).hasName("$schema"), is(true));
     }
 }

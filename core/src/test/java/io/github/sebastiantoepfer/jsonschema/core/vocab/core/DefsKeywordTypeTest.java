@@ -26,27 +26,13 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonValue;
 import org.junit.jupiter.api.Test;
 
-class DynamicRefKeywordTypeTest {
+class DefsKeywordTypeTest {
 
     @Test
     void should_create_keyword_with_name() {
-        assertThat(
-            new DynamicRefKeywordType().createKeyword(JsonValue.EMPTY_JSON_OBJECT).hasName("$dynamicRef"),
-            is(true)
-        );
-    }
-
-    @Test
-    void notFinischedYet() {
-        final Keyword keyword = new DynamicRefKeywordType().createKeyword(JsonValue.FALSE);
-
-        assertThat(keyword.hasName("$dynamicRef"), is(true));
-        assertThat(keyword.hasName("$id"), is(false));
-
-        assertThat(keyword.asApplicator().applyTo(JsonValue.TRUE), is(true));
+        assertThat(new DefsKeywordType().createKeyword(JsonValue.EMPTY_JSON_OBJECT).hasName("$defs"), is(true));
     }
 }

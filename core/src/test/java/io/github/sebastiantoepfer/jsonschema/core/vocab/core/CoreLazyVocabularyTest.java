@@ -23,30 +23,28 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isEmpty;
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresentAndIs;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import jakarta.json.JsonValue;
+import io.github.sebastiantoepfer.jsonschema.Vocabulary;
+import java.net.URI;
 import org.junit.jupiter.api.Test;
 
-class DynamicRefKeywordTypeTest {
+class CoreLazyVocabularyTest {
 
     @Test
-    void should_create_keyword_with_name() {
-        assertThat(
-            new DynamicRefKeywordType().createKeyword(JsonValue.EMPTY_JSON_OBJECT).hasName("$dynamicRef"),
-            is(true)
-        );
+    void should_return_empty_for_non_core_id() {
+        assertThat(new CoreLazyVocabulary().loadVocabularyWithId(URI.create("")), isEmpty());
     }
 
     @Test
-    void notFinischedYet() {
-        final Keyword keyword = new DynamicRefKeywordType().createKeyword(JsonValue.FALSE);
-
-        assertThat(keyword.hasName("$dynamicRef"), is(true));
-        assertThat(keyword.hasName("$id"), is(false));
-
-        assertThat(keyword.asApplicator().applyTo(JsonValue.TRUE), is(true));
+    void should_return_core_vocabulary_for_core_id() {
+        assertThat(
+            new CoreLazyVocabulary()
+                .loadVocabularyWithId(URI.create("https://json-schema.org/draft/2020-12/vocab/core"))
+                .map(Vocabulary::id),
+            isPresentAndIs(URI.create("https://json-schema.org/draft/2020-12/vocab/core"))
+        );
     }
 }

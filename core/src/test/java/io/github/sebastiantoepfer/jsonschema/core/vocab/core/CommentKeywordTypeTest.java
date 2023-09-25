@@ -23,36 +23,16 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
-import io.github.sebastiantoepfer.jsonschema.Vocabulary;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import java.net.URI;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-/**
- * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-the-json-schema-core-vocabu
- */
-public final class CoreVocabulary implements Vocabulary {
+import jakarta.json.JsonValue;
+import org.junit.jupiter.api.Test;
 
-    private Collection<KeywordType> supportedKeywords = List.of(
-        new SchemaKeywordType(),
-        new VocabularyKeywordType(),
-        new IdKeywordType(),
-        new RefKeywordType(),
-        new DynamicRefKeywordType(),
-        new DefsKeywordType(),
-        new CommentKeywordType()
-    );
+class CommentKeywordTypeTest {
 
-    @Override
-    public URI id() {
-        //we need a way to find out which draft we are using!
-        return URI.create("https://json-schema.org/draft/2020-12/vocab/core");
-    }
-
-    @Override
-    public Optional<KeywordType> findKeywordTypeByName(final String name) {
-        return supportedKeywords.stream().filter(keywordType -> keywordType.hasName(name)).findFirst();
+    @Test
+    void should_create_keyword_with_name() {
+        assertThat(new CommentKeywordType().createKeyword(JsonValue.EMPTY_JSON_OBJECT).hasName("$comment"), is(true));
     }
 }
