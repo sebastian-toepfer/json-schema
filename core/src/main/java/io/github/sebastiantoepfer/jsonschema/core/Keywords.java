@@ -28,7 +28,7 @@ import static java.util.stream.Collectors.toMap;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.basic.BasicVocabulary;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreVocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreLazyVocabulary;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
 import jakarta.json.JsonValue;
@@ -49,7 +49,7 @@ final class Keywords {
     static {
         MANDANTORY_VOCABS =
             List
-                .of(new BasicVocabulary(), new CoreVocabulary())
+                .of(new BasicVocabulary(), new CoreLazyVocabulary().vocab())
                 .stream()
                 .collect(toMap(Vocabulary::id, Function.identity()));
     }

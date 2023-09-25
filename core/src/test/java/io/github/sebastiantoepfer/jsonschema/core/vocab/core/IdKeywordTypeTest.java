@@ -26,29 +26,13 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import com.github.npathai.hamcrestopt.OptionalMatchers;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreVocabulary;
 import jakarta.json.JsonValue;
-import java.net.URI;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.api.Test;
 
-class CoreVocabularyTest {
+class IdKeywordTypeTest {
 
-    void should_return_the_uri_of_the_current_core_vocabulary() {
-        assertThat(new CoreVocabulary().id(), is(URI.create("https://json-schema.org/draft/2020-12/vocab/core")));
-    }
-
-    @ParameterizedTest(name = "should know keyword {0}")
-    @ValueSource(strings = { "$schema", "$vocabulary", "$id", "$ref", "$dynamicRef", "$defs", "$comment" })
-    void should_return_keywords_for_name(final String name) {
-        //keyword creation for easier pitesting :) -> i know it is bad
-        assertThat(
-            new CoreVocabulary()
-                .findKeywordTypeByName(name)
-                .map(keywordType -> keywordType.createKeyword(JsonValue.EMPTY_JSON_OBJECT))
-                .map(keyword -> keyword.hasName(name)),
-            OptionalMatchers.isPresentAndIs(true)
-        );
+    @Test
+    void should_create_keyword_with_name() {
+        assertThat(new IdKeywordType().createKeyword(JsonValue.EMPTY_JSON_OBJECT).hasName("$id"), is(true));
     }
 }
