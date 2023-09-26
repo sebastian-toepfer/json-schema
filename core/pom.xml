@@ -116,6 +116,7 @@
                                         <inculde>**/tests/draft2020-12/items.json</inculde>
                                         -->
                                         <inculde>**/tests/draft2020-12/minItems.json</inculde>
+                                        <inculde>**/tests/draft2020-12/maxItems.json</inculde>
                                     </includes>
                                 </resource>
                             </resources>
