@@ -167,6 +167,16 @@
                                         <inculde>**/tests/draft2019-09/multipleOf.json</inculde>
                                         <inculde>**/tests/draft2020-12/multipleOf.json</inculde>
                                         <inculde>**/tests/draft-next/multipleOf.json</inculde>
+
+                                        <!-- more than items keyword needed :(
+                                        <inculde>**/tests/draft3/items.json</inculde>
+                                        <inculde>**/tests/draft4/items.json</inculde>
+                                        <inculde>**/tests/draft6/items.json</inculde>
+                                        <inculde>**/tests/draft7/items.json</inculde>
+                                        <inculde>**/tests/draft2019-09/items.json</inculde>
+                                        <inculde>**/tests/draft2020-12/items.json</inculde>
+                                        <inculde>**/tests/draft-next/items.json</inculde>
+                                        -->
                                     </includes>
                                 </resource>
                             </resources>
