@@ -49,7 +49,8 @@ public final class ValidationVocabulary implements Vocabulary {
                 new ExclusiveMaximumKeywordType(),
                 new MultipleOfKeywordType(),
                 new MinItemsKeywordType(),
-                new MaxItemsKeywordType()
+                new MaxItemsKeywordType(),
+                new UniqueItemsKeywordType()
             );
     }
 

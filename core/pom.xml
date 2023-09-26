@@ -126,6 +126,7 @@
                                         <!--inculde>**/tests/draft2020-12/ref.json</inculde-->
                                         <inculde>**/tests/draft2020-12/required.json</inculde>
                                         <inculde>**/tests/draft2020-12/type.json</inculde>
+                                        <inculde>**/tests/draft2020-12/uniqueItems.json</inculde>
                                     </includes>
                                 </resource>
                             </resources>
