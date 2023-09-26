@@ -136,6 +136,12 @@
                                         <inculde>**/tests/draft2019-09/pattern.json</inculde>
                                         <inculde>**/tests/draft2020-12/pattern.json</inculde>
                                         <inculde>**/tests/draft-next/pattern.json</inculde>
+
+                                        <inculde>**/tests/draft6/minimum.json</inculde>
+                                        <inculde>**/tests/draft7/minimum.json</inculde>
+                                        <inculde>**/tests/draft2019-09/minimum.json</inculde>
+                                        <inculde>**/tests/draft2020-12/minimum.json</inculde>
+                                        <inculde>**/tests/draft-next/minimum.json</inculde>
                                     </includes>
                                 </resource>
                             </resources>
