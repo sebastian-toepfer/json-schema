@@ -128,6 +128,14 @@
                                         <inculde>**/tests/draft2019-09/maxLength.json</inculde>
                                         <inculde>**/tests/draft2020-12/maxLength.json</inculde>
                                         <inculde>**/tests/draft-next/maxLength.json</inculde>
+
+                                        <inculde>**/tests/draft3/pattern.json</inculde>
+                                        <inculde>**/tests/draft4/pattern.json</inculde>
+                                        <inculde>**/tests/draft6/pattern.json</inculde>
+                                        <inculde>**/tests/draft7/pattern.json</inculde>
+                                        <inculde>**/tests/draft2019-09/pattern.json</inculde>
+                                        <inculde>**/tests/draft2020-12/pattern.json</inculde>
+                                        <inculde>**/tests/draft-next/pattern.json</inculde>
                                     </includes>
                                 </resource>
                             </resources>
