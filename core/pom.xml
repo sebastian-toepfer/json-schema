@@ -118,6 +118,9 @@
                                         <inculde>**/tests/draft2020-12/minItems.json</inculde>
                                         <inculde>**/tests/draft2020-12/maxItems.json</inculde>
                                         <inculde>**/tests/draft2020-12/patternProperties.json</inculde>
+                                        <!-- needs additionalProperty
+                                        <inculde>**/tests/draft2020-12/properties.json</inculde>
+                                        -->
                                     </includes>
                                 </resource>
                             </resources>
