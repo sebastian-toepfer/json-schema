@@ -106,9 +106,7 @@
                                         -->
                                         <inculde>**/tests/draft2020-12/additionalProperties.json</inculde>
                                         <inculde>**/tests/draft2020-12/boolean_schema.json</inculde>
-                                        <!-- needs required
                                         <inculde>**/tests/draft2020-12/enum.json</inculde>
-                                        -->
                                         <inculde>**/tests/draft2020-12/exclusiveMaximum.json</inculde>
                                         <inculde>**/tests/draft2020-12/exclusiveMinimum.json</inculde>
                                         <!-- more than items keyword needed :(
