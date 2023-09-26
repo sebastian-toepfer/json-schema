@@ -42,7 +42,8 @@ public final class BasicVocabulary implements Vocabulary {
                 new MaxLengthKeywordType(),
                 new PatternKeywordType(),
                 new PatternKeywordType(),
-                new MinimumKeywordType()
+                new MinimumKeywordType(),
+                new ExclusiveMinimumKeywordType()
             );
     }
 
