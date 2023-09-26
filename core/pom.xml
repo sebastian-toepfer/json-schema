@@ -154,6 +154,12 @@
                                         <inculde>**/tests/draft2019-09/maximum.json</inculde>
                                         <inculde>**/tests/draft2020-12/maximum.json</inculde>
                                         <inculde>**/tests/draft-next/maximum.json</inculde>
+
+                                        <inculde>**/tests/draft6/exclusiveMaximum.json</inculde>
+                                        <inculde>**/tests/draft7/exclusiveMaximum.json</inculde>
+                                        <inculde>**/tests/draft2019-09/exclusiveMaximum.json</inculde>
+                                        <inculde>**/tests/draft2020-12/exclusiveMaximum.json</inculde>
+                                        <inculde>**/tests/draft-next/exclusiveMaximum.json</inculde>
                                     </includes>
                                 </resource>
                             </resources>
