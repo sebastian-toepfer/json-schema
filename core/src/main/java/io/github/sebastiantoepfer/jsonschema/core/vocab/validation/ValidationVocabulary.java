@@ -37,6 +37,7 @@ public final class ValidationVocabulary implements Vocabulary {
         this.vocab =
             new DefaultVocabulary(
                 URI.create("https://json-schema.org/draft/2020-12/vocab/validation"),
+                new RequiredKeywordType(),
                 new TypeKeywordType(),
                 new MinLengthKeywordType(),
                 new MaxLengthKeywordType(),
