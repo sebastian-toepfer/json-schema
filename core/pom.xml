@@ -148,6 +148,12 @@
                                         <inculde>**/tests/draft2019-09/exclusiveMinimum.json</inculde>
                                         <inculde>**/tests/draft2020-12/exclusiveMinimum.json</inculde>
                                         <inculde>**/tests/draft-next/exclusiveMinimum.json</inculde>
+
+                                        <inculde>**/tests/draft6/maximum.json</inculde>
+                                        <inculde>**/tests/draft7/maximum.json</inculde>
+                                        <inculde>**/tests/draft2019-09/maximum.json</inculde>
+                                        <inculde>**/tests/draft2020-12/maximum.json</inculde>
+                                        <inculde>**/tests/draft-next/maximum.json</inculde>
                                     </includes>
                                 </resource>
                             </resources>
