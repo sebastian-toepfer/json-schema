@@ -51,7 +51,12 @@ public enum InstanceType {
         }
 
         private boolean isIntegral(final BigDecimal decimal) {
-            return BigDecimal.ZERO.equals(decimal) || decimal.stripTrailingZeros().scale() == 0;
+            return (
+                BigDecimal.ZERO.equals(decimal) ||
+                BigDecimal.ONE.equals(decimal) ||
+                BigDecimal.TEN.equals(decimal) ||
+                decimal.stripTrailingZeros().scale() == 0
+            );
         }
     },
     STRING(JsonValue.ValueType.STRING);
