@@ -23,11 +23,15 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
+import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.keyword.DefaultAnnotation;
+import io.github.sebastiantoepfer.jsonschema.keyword.Identifier;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
+import java.net.URI;
+import java.util.Objects;
 
 /**
  *
@@ -42,6 +46,29 @@ final class IdKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        return new DefaultAnnotation(name(), value);
+        if (InstanceType.STRING.isInstance(value)) {
+            return new IdKeyword((JsonString) value);
+        } else {
+            throw new IllegalArgumentException("must be a string!");
+        }
+    }
+
+    private class IdKeyword implements Identifier {
+
+        private final URI uri;
+
+        private IdKeyword(final JsonString uri) {
+            this.uri = URI.create(uri.getString());
+        }
+
+        @Override
+        public URI asUri() {
+            return uri;
+        }
+
+        @Override
+        public boolean hasName(final String name) {
+            return Objects.equals(name(), name);
+        }
     }
 }

@@ -25,20 +25,44 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import jakarta.json.Json;
 import jakarta.json.JsonValue;
+import java.net.URI;
 import org.junit.jupiter.api.Test;
 
 class IdKeywordTypeTest {
 
     @Test
-    void should_create_keyword_with_name() {
+    void should_not_be_creatable_from_non_string() {
+        final IdKeywordType schema = new IdKeywordType();
+
+        assertThrows(IllegalArgumentException.class, () -> schema.createKeyword(null, JsonValue.FALSE));
+    }
+
+    @Test
+    void should_know_his_name() {
+        final Keyword id = new IdKeywordType()
+            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue("/test"));
+
+        assertThat(id.hasName("$id"), is(true));
+        assertThat(id.hasName("test"), is(false));
+    }
+
+    @Test
+    void should_retun_his_uri() {
         assertThat(
             new IdKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
-                .hasName("$id"),
-            is(true)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
+                    Json.createValue("https://json-schema.org/draft/2020-12/schema")
+                )
+                .asIdentifier()
+                .asUri(),
+            is(URI.create("https://json-schema.org/draft/2020-12/schema"))
         );
     }
 }
