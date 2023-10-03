@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.basic;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.DefaultAnnotation;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
@@ -43,7 +44,7 @@ final class UnknowKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonValue value) {
+    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
         return new DefaultAnnotation(name(), value);
     }
 }

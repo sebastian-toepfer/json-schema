@@ -26,6 +26,7 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.basic;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
@@ -36,7 +37,8 @@ class MinimumKeywordTypeTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword minimum = new MinimumKeywordType().createKeyword(Json.createValue(1));
+        final Keyword minimum = new MinimumKeywordType()
+            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(1));
 
         assertThat(minimum.hasName("minimum"), is(true));
         assertThat(minimum.hasName("test"), is(false));
@@ -45,14 +47,18 @@ class MinimumKeywordTypeTest {
     @Test
     void should_not_becreatable_with_non_number() {
         final MinimumKeywordType keywordType = new MinimumKeywordType();
-        Assertions.assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(JsonValue.FALSE));
+        final var schema = new DefaultJsonSchemaFactory().create(JsonValue.TRUE);
+        Assertions.assertThrows(
+            IllegalArgumentException.class,
+            () -> keywordType.createKeyword(schema, JsonValue.FALSE)
+        );
     }
 
     @Test
     void should_be_valid_for_non_number_values() {
         assertThat(
             new MinimumKeywordType()
-                .createKeyword(Json.createValue(1))
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(1))
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
@@ -62,7 +68,10 @@ class MinimumKeywordTypeTest {
     @Test
     void should_be_invalid_for_smaller_numbers() {
         assertThat(
-            new MinimumKeywordType().createKeyword(Json.createValue(0)).asAssertion().isValidFor(Json.createValue(-1)),
+            new MinimumKeywordType()
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(0))
+                .asAssertion()
+                .isValidFor(Json.createValue(-1)),
             is(false)
         );
     }
@@ -70,7 +79,10 @@ class MinimumKeywordTypeTest {
     @Test
     void should_be_valid_for_equals_numbers() {
         assertThat(
-            new MinimumKeywordType().createKeyword(Json.createValue(0)).asAssertion().isValidFor(Json.createValue(0)),
+            new MinimumKeywordType()
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(0))
+                .asAssertion()
+                .isValidFor(Json.createValue(0)),
             is(true)
         );
     }
@@ -78,7 +90,10 @@ class MinimumKeywordTypeTest {
     @Test
     void shhould_be_valid_for_greater_numbers() {
         assertThat(
-            new MinimumKeywordType().createKeyword(Json.createValue(0)).asAssertion().isValidFor(Json.createValue(1)),
+            new MinimumKeywordType()
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(0))
+                .asAssertion()
+                .isValidFor(Json.createValue(1)),
             is(true)
         );
     }

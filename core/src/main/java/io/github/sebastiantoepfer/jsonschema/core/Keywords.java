@@ -26,6 +26,7 @@ package io.github.sebastiantoepfer.jsonschema.core;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toMap;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.basic.BasicVocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreLazyVocabulary;
@@ -80,13 +81,13 @@ final class Keywords {
                 );
     }
 
-    public Keyword createKeywordFor(final Map.Entry<String, JsonValue> property) {
+    public Keyword createKeywordFor(final JsonSchema schema, final Map.Entry<String, JsonValue> property) {
         return vocabularies
             .stream()
             .map(vocab -> vocab.findKeywordTypeByName(property.getKey()))
             .flatMap(Optional::stream)
             .findFirst()
-            .map(keywordType -> keywordType.createKeyword(property.getValue()))
+            .map(keywordType -> keywordType.createKeyword(schema, property.getValue()))
             .orElseThrow();
     }
 }

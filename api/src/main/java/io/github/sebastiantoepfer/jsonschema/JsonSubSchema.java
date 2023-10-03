@@ -21,24 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
+package io.github.sebastiantoepfer.jsonschema;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import jakarta.json.JsonValue;
-import org.junit.jupiter.api.Test;
-
-class DefsKeywordTypeTest {
-
-    @Test
-    void should_create_keyword_with_name() {
-        assertThat(
-            new DefsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
-                .hasName("$defs"),
-            is(true)
-        );
-    }
+/**
+ *
+ * see: https://json-schema.org/draft/2020-12/json-schema-core#name-root-schema-and-subschemas-
+ */
+public interface JsonSubSchema extends JsonSchema {
+    JsonSchema owner();
 }

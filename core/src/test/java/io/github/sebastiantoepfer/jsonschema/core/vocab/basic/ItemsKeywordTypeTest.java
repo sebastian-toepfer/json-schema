@@ -25,72 +25,73 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.basic;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
-class PatternKeywordTypeTest {
+class ItemsKeywordTypeTest {
 
     @Test
-    void should_be_not_createbale_from_non_string() {
-        final PatternKeywordType keywordType = new PatternKeywordType();
-        final JsonSchema schema = new DefaultJsonSchemaFactory().create(JsonValue.TRUE);
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> keywordType.createKeyword(schema, JsonValue.EMPTY_JSON_OBJECT)
-        );
+    void should_know_his_name() {
+        final Keyword items = new ItemsKeywordType()
+            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT);
+
+        assertThat(items.hasName("items"), is(true));
+        assertThat(items.hasName("test"), is(false));
     }
 
     @Test
-    void should_be_know_his_name() {
-        final Keyword pattern = new PatternKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue("a"));
-
-        assertThat(pattern.hasName("pattern"), is(true));
-        assertThat(pattern.hasName("test"), is(false));
-    }
-
-    @Test
-    void should_be_valid_for_non_string_value() {
+    void should_be_invalid_if_items_does_not_match_schema() {
         assertThat(
-            new PatternKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue("a"))
-                .asAssertion()
-                .isValidFor(JsonValue.TRUE),
-            is(true)
-        );
-    }
-
-    @Test
-    void should_be_invalid_for_non_matching_value() {
-        assertThat(
-            new PatternKeywordType()
+            new ItemsKeywordType()
                 .createKeyword(
                     new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createValue("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$")
+                    Json.createObjectBuilder().add("type", "number").build()
                 )
                 .asAssertion()
-                .isValidFor(Json.createValue("(888)555-1212 ext. 532")),
+                .isValidFor(Json.createArrayBuilder().add(1).add("invalid").add(2).build()),
             is(false)
         );
     }
 
     @Test
-    void should_be_valid_matching_value() {
+    void should_be_valid_if_all_items_match_schema() {
         assertThat(
-            new PatternKeywordType()
+            new ItemsKeywordType()
                 .createKeyword(
                     new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createValue("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$")
+                    Json.createObjectBuilder().add("type", "number").build()
                 )
                 .asAssertion()
-                .isValidFor(Json.createValue("(888)555-1212")),
+                .isValidFor(Json.createArrayBuilder().add(1).add(2).build()),
             is(true)
+        );
+    }
+
+    @Test
+    void should_return_his_owning_schema() {
+        final JsonSchema schema = new DefaultJsonSchemaFactory().create(JsonValue.TRUE);
+        assertThat(
+            ((JsonSubSchema) new ItemsKeywordType().createKeyword(schema, JsonValue.TRUE)).owner(),
+            is(Matchers.sameInstance(schema))
+        );
+    }
+
+    @Test
+    void should_return_his_json_valuetype() {
+        assertThat(
+            ((JsonSubSchema) new ItemsKeywordType()
+                    .createKeyword(
+                        new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
+                        JsonValue.EMPTY_JSON_OBJECT
+                    )).getValueType(),
+            is(JsonValue.ValueType.OBJECT)
         );
     }
 }

@@ -26,6 +26,7 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import jakarta.json.JsonValue;
 import org.junit.jupiter.api.Test;
 
@@ -33,6 +34,11 @@ class IdKeywordTypeTest {
 
     @Test
     void should_create_keyword_with_name() {
-        assertThat(new IdKeywordType().createKeyword(JsonValue.EMPTY_JSON_OBJECT).hasName("$id"), is(true));
+        assertThat(
+            new IdKeywordType()
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
+                .hasName("$id"),
+            is(true)
+        );
     }
 }

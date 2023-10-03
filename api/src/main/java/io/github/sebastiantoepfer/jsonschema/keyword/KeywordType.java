@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.keyword;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import jakarta.json.JsonValue;
 import java.util.Objects;
 
@@ -33,5 +34,5 @@ public interface KeywordType {
 
     String name();
 
-    Keyword createKeyword(JsonValue value);
+    Keyword createKeyword(JsonSchema schema, JsonValue value);
 }

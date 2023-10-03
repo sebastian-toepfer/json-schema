@@ -26,39 +26,54 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.basic;
 import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
+import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
+import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.ConstraintAssertion;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.JsonNumber;
-import jakarta.json.JsonString;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-class MinLengthKeywordType implements KeywordType {
+final class ItemsKeywordType implements KeywordType {
 
     @Override
     public String name() {
-        return "minLength";
+        return "items";
     }
 
     @Override
     public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        if (InstanceType.INTEGER.isInstance(value)) {
-            return new MinLengthKeyword((JsonNumber) value);
-        } else {
-            throw new IllegalArgumentException("value must be a positiv integer!");
-        }
+        return new ItemsKeyword(schema, JsonSchemas.load(value));
     }
 
-    private class MinLengthKeyword implements ConstraintAssertion {
+    private class ItemsKeyword implements ConstraintAssertion, JsonSubSchema {
 
-        private final JsonNumber value;
+        private final JsonSchema owner;
+        private final JsonSchema schema;
 
-        public MinLengthKeyword(final JsonNumber value) {
-            this.value = Objects.requireNonNull(value);
+        public ItemsKeyword(final JsonSchema owner, final JsonSchema schema) {
+            this.owner = Objects.requireNonNull(owner);
+            this.schema = Objects.requireNonNull(schema);
+        }
+
+        @Override
+        public JsonSchema owner() {
+            return owner;
+        }
+
+        @Override
+        public Validator validator() {
+            return schema.validator();
+        }
+
+        @Override
+        public ValueType getValueType() {
+            return schema.getValueType();
         }
 
         @Override
@@ -67,17 +82,19 @@ class MinLengthKeywordType implements KeywordType {
         }
 
         @Override
-        public Collection<ConstraintViolation> violationsBy(final JsonValue instance) {
+        public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
             final Collection<ConstraintViolation> result;
-            if (
-                !InstanceType.STRING.isInstance(instance) ||
-                ((JsonString) instance).getChars().codePoints().count() >= value.longValue()
-            ) {
+            if (!InstanceType.ARRAY.isInstance(value) || matchesSchema(value.asJsonArray())) {
                 result = Collections.emptyList();
             } else {
                 result = List.of(new ConstraintViolation());
             }
             return result;
+        }
+
+        private boolean matchesSchema(final JsonArray items) {
+            final Validator itemValidator = validator();
+            return items.stream().map(itemValidator::validate).allMatch(Collection::isEmpty);
         }
     }
 }
