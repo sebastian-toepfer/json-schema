@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
@@ -41,7 +42,7 @@ final class DynamicRefKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonValue value) {
+    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
         return new Applicator() {
             @Override
             public boolean applyTo(final JsonValue instance) {

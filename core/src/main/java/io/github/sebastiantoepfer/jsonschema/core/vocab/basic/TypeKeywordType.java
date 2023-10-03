@@ -28,6 +28,7 @@ import static java.util.stream.Collectors.toList;
 
 import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.constraint.AnyConstraint;
 import io.github.sebastiantoepfer.jsonschema.core.constraint.Constraint;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.ConstraintAssertion;
@@ -52,7 +53,7 @@ final class TypeKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonValue value) {
+    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
         return new TypeKeyword(value);
     }
 

@@ -27,6 +27,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
@@ -37,12 +39,17 @@ class PatternKeywordTypeTest {
     @Test
     void should_be_not_createbale_from_non_string() {
         final PatternKeywordType keywordType = new PatternKeywordType();
-        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(JsonValue.EMPTY_JSON_OBJECT));
+        final JsonSchema schema = new DefaultJsonSchemaFactory().create(JsonValue.TRUE);
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> keywordType.createKeyword(schema, JsonValue.EMPTY_JSON_OBJECT)
+        );
     }
 
     @Test
     void should_be_know_his_name() {
-        final Keyword pattern = new PatternKeywordType().createKeyword(Json.createValue("a"));
+        final Keyword pattern = new PatternKeywordType()
+            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue("a"));
 
         assertThat(pattern.hasName("pattern"), is(true));
         assertThat(pattern.hasName("test"), is(false));
@@ -51,7 +58,10 @@ class PatternKeywordTypeTest {
     @Test
     void should_be_valid_for_non_string_value() {
         assertThat(
-            new PatternKeywordType().createKeyword(Json.createValue("a")).asAssertion().isValidFor(JsonValue.TRUE),
+            new PatternKeywordType()
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue("a"))
+                .asAssertion()
+                .isValidFor(JsonValue.TRUE),
             is(true)
         );
     }
@@ -60,7 +70,10 @@ class PatternKeywordTypeTest {
     void should_be_invalid_for_non_matching_value() {
         assertThat(
             new PatternKeywordType()
-                .createKeyword(Json.createValue("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
+                    Json.createValue("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$")
+                )
                 .asAssertion()
                 .isValidFor(Json.createValue("(888)555-1212 ext. 532")),
             is(false)
@@ -71,7 +84,10 @@ class PatternKeywordTypeTest {
     void should_be_valid_matching_value() {
         assertThat(
             new PatternKeywordType()
-                .createKeyword(Json.createValue("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
+                    Json.createValue("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$")
+                )
                 .asAssertion()
                 .isValidFor(Json.createValue("(888)555-1212")),
             is(true)

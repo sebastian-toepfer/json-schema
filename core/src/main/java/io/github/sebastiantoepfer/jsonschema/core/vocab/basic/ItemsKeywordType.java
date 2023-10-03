@@ -27,6 +27,7 @@ import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
+import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.ConstraintAssertion;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
@@ -46,16 +47,33 @@ final class ItemsKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonValue value) {
-        return new ItemsKeyword(JsonSchemas.load(value));
+    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
+        return new ItemsKeyword(schema, JsonSchemas.load(value));
     }
 
-    private class ItemsKeyword implements ConstraintAssertion {
+    private class ItemsKeyword implements ConstraintAssertion, JsonSubSchema {
 
+        private final JsonSchema owner;
         private final JsonSchema schema;
 
-        public ItemsKeyword(final JsonSchema schema) {
-            this.schema = schema;
+        public ItemsKeyword(final JsonSchema owner, final JsonSchema schema) {
+            this.owner = Objects.requireNonNull(owner);
+            this.schema = Objects.requireNonNull(schema);
+        }
+
+        @Override
+        public JsonSchema owner() {
+            return owner;
+        }
+
+        @Override
+        public Validator validator() {
+            return schema.validator();
+        }
+
+        @Override
+        public ValueType getValueType() {
+            return schema.getValueType();
         }
 
         @Override
@@ -75,7 +93,7 @@ final class ItemsKeywordType implements KeywordType {
         }
 
         private boolean matchesSchema(final JsonArray items) {
-            final Validator itemValidator = schema.validator();
+            final Validator itemValidator = validator();
             return items.stream().map(itemValidator::validate).allMatch(Collection::isEmpty);
         }
     }

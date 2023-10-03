@@ -27,6 +27,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonNumber;
@@ -39,12 +41,14 @@ class MinLengthKeywordTypeTest {
     void should_not_be_createbale_with_non_integer() {
         final JsonNumber value = Json.createValue(12.3);
         final MinLengthKeywordType keywordType = new MinLengthKeywordType();
-        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(value));
+        final JsonSchema schema = new DefaultJsonSchemaFactory().create(JsonValue.TRUE);
+        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema, value));
     }
 
     @Test
     void should_know_his_name() {
-        final Keyword keyword = new MinLengthKeywordType().createKeyword(Json.createValue(1));
+        final Keyword keyword = new MinLengthKeywordType()
+            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(1));
 
         assertThat(keyword.hasName("test"), is(false));
         assertThat(keyword.hasName("minLength"), is(true));
@@ -54,7 +58,7 @@ class MinLengthKeywordTypeTest {
     void should_be_invalid_with_shorter_string() {
         assertThat(
             new MinLengthKeywordType()
-                .createKeyword(Json.createValue(2))
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(2))
                 .asAssertion()
                 .isValidFor(Json.createValue("A")),
             is(false)
@@ -65,7 +69,7 @@ class MinLengthKeywordTypeTest {
     void should_be_valid_with_string_with_equal_length() {
         assertThat(
             new MinLengthKeywordType()
-                .createKeyword(Json.createValue(2))
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(2))
                 .asAssertion()
                 .isValidFor(Json.createValue("AB")),
             is(true)
@@ -76,7 +80,7 @@ class MinLengthKeywordTypeTest {
     void should_be_valid_with_string_that_is_longer() {
         assertThat(
             new MinLengthKeywordType()
-                .createKeyword(Json.createValue(2))
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(2))
                 .asAssertion()
                 .isValidFor(Json.createValue("ABC")),
             is(true)
@@ -87,7 +91,7 @@ class MinLengthKeywordTypeTest {
     void should_be_valid_for_non_string_values() {
         assertThat(
             new MinLengthKeywordType()
-                .createKeyword(Json.createValue(2))
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(2))
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_ARRAY),
             is(true)

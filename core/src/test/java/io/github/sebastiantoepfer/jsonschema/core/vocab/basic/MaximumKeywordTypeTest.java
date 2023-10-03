@@ -26,6 +26,8 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.basic;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
@@ -36,7 +38,8 @@ class MaximumKeywordTypeTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword maximum = new MaximumKeywordType().createKeyword(Json.createValue(1));
+        final Keyword maximum = new MaximumKeywordType()
+            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(1));
 
         assertThat(maximum.hasName("maximum"), is(true));
         assertThat(maximum.hasName("test"), is(false));
@@ -45,14 +48,18 @@ class MaximumKeywordTypeTest {
     @Test
     void should_not_becreatable_with_non_number() {
         final MaximumKeywordType keywordType = new MaximumKeywordType();
-        Assertions.assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(JsonValue.FALSE));
+        final JsonSchema schema = new DefaultJsonSchemaFactory().create(JsonValue.TRUE);
+        Assertions.assertThrows(
+            IllegalArgumentException.class,
+            () -> keywordType.createKeyword(schema, JsonValue.FALSE)
+        );
     }
 
     @Test
     void should_be_valid_for_non_number_values() {
         assertThat(
             new MaximumKeywordType()
-                .createKeyword(Json.createValue(1))
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(1))
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
@@ -62,7 +69,10 @@ class MaximumKeywordTypeTest {
     @Test
     void should_be_invalid_for_greater_numbers() {
         assertThat(
-            new MaximumKeywordType().createKeyword(Json.createValue(10)).asAssertion().isValidFor(Json.createValue(11)),
+            new MaximumKeywordType()
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(10))
+                .asAssertion()
+                .isValidFor(Json.createValue(11)),
             is(false)
         );
     }
@@ -70,7 +80,10 @@ class MaximumKeywordTypeTest {
     @Test
     void should_be_valid_for_equals_numbers() {
         assertThat(
-            new MaximumKeywordType().createKeyword(Json.createValue(10)).asAssertion().isValidFor(Json.createValue(10)),
+            new MaximumKeywordType()
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(10))
+                .asAssertion()
+                .isValidFor(Json.createValue(10)),
             is(true)
         );
     }
@@ -78,7 +91,10 @@ class MaximumKeywordTypeTest {
     @Test
     void shhould_be_valid_for_smaller_numbers() {
         assertThat(
-            new MaximumKeywordType().createKeyword(Json.createValue(10)).asAssertion().isValidFor(Json.createValue(9)),
+            new MaximumKeywordType()
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(10))
+                .asAssertion()
+                .isValidFor(Json.createValue(9)),
             is(true)
         );
     }

@@ -27,7 +27,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
-import io.github.sebastiantoepfer.jsonschema.core.vocab.core.VocabularyKeywordType;
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinitions;
@@ -42,12 +43,17 @@ class VocabularyKeywordTypeTest {
     @Test
     void should_not_create_keyword_for_non_jsonobject() {
         final VocabularyKeywordType keywordType = new VocabularyKeywordType();
-        Assertions.assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(JsonValue.FALSE));
+        final JsonSchema schema = new DefaultJsonSchemaFactory().create(JsonValue.TRUE);
+        Assertions.assertThrows(
+            IllegalArgumentException.class,
+            () -> keywordType.createKeyword(schema, JsonValue.FALSE)
+        );
     }
 
     @Test
     void should_created_keyword_should_know_his_name() {
-        final Keyword vocabulary = new VocabularyKeywordType().createKeyword(JsonValue.EMPTY_JSON_OBJECT);
+        final Keyword vocabulary = new VocabularyKeywordType()
+            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT);
 
         assertThat(vocabulary.hasName("$vocabulary"), is(true));
         assertThat(vocabulary.hasName("$id"), is(false));
@@ -58,6 +64,7 @@ class VocabularyKeywordTypeTest {
         assertThat(
             ((VocabularyDefinitions) new VocabularyKeywordType()
                     .createKeyword(
+                        new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
                         Json
                             .createObjectBuilder()
                             .add("http://json-schema.org/test", true)

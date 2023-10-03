@@ -50,7 +50,7 @@ final class DefaultJsonSchema extends AbstractJsonValueSchema {
         return asJsonObject()
             .entrySet()
             .stream()
-            .map(keywords::createKeywordFor)
+            .map(keyword -> keywords.createKeywordFor(this, keyword))
             .filter(Constraint.class::isInstance)
             .map(k -> (Constraint<JsonValue>) k)
             .collect(
@@ -60,7 +60,7 @@ final class DefaultJsonSchema extends AbstractJsonValueSchema {
 
     private Collection<VocabularyDefinition> vocabulary() {
         return new KeywordSearch(new VocabularyKeywordType())
-            .searchForKeywordIn(asJsonObject())
+            .searchForKeywordIn(this)
             .filter(VocabularyDefinitions.class::isInstance)
             .map(VocabularyDefinitions.class::cast)
             .stream()

@@ -26,6 +26,7 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonValue;
 import org.junit.jupiter.api.Test;
@@ -34,12 +35,18 @@ class RefKeywordTypeTest {
 
     @Test
     void should_create_keyword_with_name() {
-        assertThat(new RefKeywordType().createKeyword(JsonValue.EMPTY_JSON_OBJECT).hasName("$ref"), is(true));
+        assertThat(
+            new RefKeywordType()
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
+                .hasName("$ref"),
+            is(true)
+        );
     }
 
     @Test
     void notFinischedYet() {
-        final Keyword keyword = new RefKeywordType().createKeyword(JsonValue.FALSE);
+        final Keyword keyword = new RefKeywordType()
+            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.FALSE);
 
         assertThat(keyword.hasName("$ref"), is(true));
         assertThat(keyword.hasName("$id"), is(false));

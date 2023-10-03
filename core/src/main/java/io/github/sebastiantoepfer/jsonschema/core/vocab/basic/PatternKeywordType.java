@@ -25,6 +25,7 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.basic;
 
 import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.ConstraintAssertion;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
@@ -44,7 +45,7 @@ final class PatternKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonValue value) {
+    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
         if (InstanceType.STRING.isInstance(value)) {
             return new PatternKeyword((JsonString) value);
         } else {

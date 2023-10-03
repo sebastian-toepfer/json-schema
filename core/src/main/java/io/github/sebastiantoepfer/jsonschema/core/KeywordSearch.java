@@ -23,9 +23,9 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.JsonObject;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -37,7 +37,9 @@ final class KeywordSearch {
         this.keywordType = Objects.requireNonNull(keywordType);
     }
 
-    public Optional<Keyword> searchForKeywordIn(final JsonObject schema) {
-        return Optional.ofNullable(schema.get(keywordType.name())).map(keywordType::createKeyword);
+    public Optional<Keyword> searchForKeywordIn(final JsonSchema schema) {
+        return Optional
+            .ofNullable(schema.asJsonObject().get(keywordType.name()))
+            .map(keywordValue -> keywordType.createKeyword(schema, keywordValue));
     }
 }

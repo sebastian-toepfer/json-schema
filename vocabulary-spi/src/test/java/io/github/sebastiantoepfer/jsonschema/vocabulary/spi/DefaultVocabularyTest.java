@@ -28,6 +28,7 @@ import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresentAndIs;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonValue;
@@ -76,7 +77,7 @@ class DefaultVocabularyTest {
         }
 
         @Override
-        public Keyword createKeyword(final JsonValue value) {
+        public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
     }
