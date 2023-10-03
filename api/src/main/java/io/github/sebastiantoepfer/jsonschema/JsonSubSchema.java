@@ -21,33 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.keyword;
+package io.github.sebastiantoepfer.jsonschema;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import jakarta.json.JsonValue;
-import org.junit.jupiter.api.Test;
-
-class KeywordTypeTest {
-
-    @Test
-    void should_know_his_name() {
-        assertThat(new TestKeywordType().hasName("test"), is(true));
-        assertThat(new TestKeywordType().hasName("unknown"), is(false));
-    }
-
-    private static class TestKeywordType implements KeywordType {
-
-        @Override
-        public String name() {
-            return "test";
-        }
-
-        @Override
-        public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-    }
+/**
+ *
+ * see: https://json-schema.org/draft/2020-12/json-schema-core#name-root-schema-and-subschemas-
+ */
+public interface JsonSubSchema extends JsonSchema {
+    JsonSchema owner();
 }
