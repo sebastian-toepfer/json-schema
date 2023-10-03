@@ -25,20 +25,28 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonValue;
 import org.junit.jupiter.api.Test;
 
 class DefsKeywordTypeTest {
 
     @Test
-    void should_create_keyword_with_name() {
-        assertThat(
-            new DefsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
-                .hasName("$defs"),
-            is(true)
-        );
+    void should_not_be_creatable_from_non_objects() {
+        final DefsKeywordType schema = new DefsKeywordType();
+
+        assertThrows(IllegalArgumentException.class, () -> schema.createKeyword(null, JsonValue.FALSE));
+    }
+
+    @Test
+    void should_know_his_name() {
+        final Keyword defs = new DefsKeywordType()
+            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT);
+
+        assertThat(defs.hasName("$defs"), is(true));
+        assertThat(defs.hasName("test"), is(false));
     }
 }

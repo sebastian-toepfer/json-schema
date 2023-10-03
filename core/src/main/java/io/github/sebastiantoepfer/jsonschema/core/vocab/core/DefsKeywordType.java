@@ -23,11 +23,13 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
+import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.keyword.DefaultAnnotation;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import io.github.sebastiantoepfer.jsonschema.keyword.ReservedLocation;
 import jakarta.json.JsonValue;
+import java.util.Objects;
 
 /**
  *
@@ -42,6 +44,18 @@ final class DefsKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        return new DefaultAnnotation(name(), value);
+        if (InstanceType.OBJECT.isInstance(value)) {
+            return new DefsKeyword();
+        } else {
+            throw new IllegalArgumentException("must be an object!");
+        }
+    }
+
+    private class DefsKeyword implements ReservedLocation {
+
+        @Override
+        public boolean hasName(final String name) {
+            return Objects.equals(name(), name);
+        }
     }
 }
