@@ -23,19 +23,18 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
-import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.Validator;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.ConstraintAssertion;
+import io.github.sebastiantoepfer.jsonschema.keyword.Annotation;
+import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,7 +50,7 @@ final class ItemsKeywordType implements KeywordType {
         return new ItemsKeyword(schema, JsonSchemas.load(value));
     }
 
-    private class ItemsKeyword implements ConstraintAssertion, JsonSubSchema {
+    private class ItemsKeyword implements Applicator, Annotation, JsonSubSchema {
 
         private final JsonSchema owner;
         private final JsonSchema schema;
@@ -82,14 +81,18 @@ final class ItemsKeywordType implements KeywordType {
         }
 
         @Override
-        public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-            final Collection<ConstraintViolation> result;
-            if (!InstanceType.ARRAY.isInstance(value) || matchesSchema(value.asJsonArray())) {
-                result = Collections.emptyList();
-            } else {
-                result = List.of(new ConstraintViolation());
-            }
-            return result;
+        public Collection<KeywordCategory> categories() {
+            return List.of(KeywordCategory.APPLICATOR, KeywordCategory.ANNOTATION);
+        }
+
+        @Override
+        public JsonValue value() {
+            return JsonValue.TRUE;
+        }
+
+        @Override
+        public boolean applyTo(final JsonValue instance) {
+            return !InstanceType.ARRAY.isInstance(instance) || matchesSchema(instance.asJsonArray());
         }
 
         private boolean matchesSchema(final JsonArray items) {

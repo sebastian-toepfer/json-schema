@@ -37,12 +37,26 @@ import org.junit.jupiter.api.Test;
 class DefaultJsonSchemaTest {
 
     private final DefaultJsonSchema schema = new DefaultJsonSchema(
-        Json.createObjectBuilder().add("type", "string").build()
+        Json
+            .createObjectBuilder()
+            .add("type", "array")
+            .add("items", Json.createObjectBuilder().add("type", "integer"))
+            .build()
     );
 
     @Test
-    void should_be_valid_for_string() {
-        assertThat(schema.validator().validate(Json.createValue("test")), is(empty()));
+    void should_be_valid_an_empty_array() {
+        assertThat(schema.validator().validate(JsonValue.EMPTY_JSON_ARRAY), is(empty()));
+    }
+
+    @Test
+    void should_be_valid_an_integer_array() {
+        assertThat(schema.validator().validate(Json.createArrayBuilder().add(1).add(2).build()), is(empty()));
+    }
+
+    @Test
+    void should_be_invalid_an_string_array() {
+        assertThat(schema.validator().validate(Json.createArrayBuilder().add("a").add("b").build()), is(not(empty())));
     }
 
     @Test

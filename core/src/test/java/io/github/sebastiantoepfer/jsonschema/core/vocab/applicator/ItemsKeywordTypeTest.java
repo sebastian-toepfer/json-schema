@@ -24,6 +24,7 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
@@ -54,8 +55,8 @@ class ItemsKeywordTypeTest {
                     new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
                     Json.createObjectBuilder().add("type", "number").build()
                 )
-                .asAssertion()
-                .isValidFor(Json.createArrayBuilder().add(1).add("invalid").add(2).build()),
+                .asApplicator()
+                .applyTo(Json.createArrayBuilder().add(1).add("invalid").add(2).build()),
             is(false)
         );
     }
@@ -68,8 +69,8 @@ class ItemsKeywordTypeTest {
                     new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
                     Json.createObjectBuilder().add("type", "number").build()
                 )
-                .asAssertion()
-                .isValidFor(Json.createArrayBuilder().add(1).add(2).build()),
+                .asApplicator()
+                .applyTo(Json.createArrayBuilder().add(1).add(2).build()),
             is(true)
         );
     }
@@ -92,6 +93,27 @@ class ItemsKeywordTypeTest {
                         JsonValue.EMPTY_JSON_OBJECT
                     )).getValueType(),
             is(JsonValue.ValueType.OBJECT)
+        );
+    }
+
+    @Test
+    void should_be_applicator_and_annotation() {
+        assertThat(
+            new ItemsKeywordType()
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
+                .categories(),
+            contains(Keyword.KeywordCategory.APPLICATOR, Keyword.KeywordCategory.ANNOTATION)
+        );
+    }
+
+    @Test
+    void should_produces_true_if_is_applied_to_any_instance() {
+        assertThat(
+            new ItemsKeywordType()
+                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
+                .asAnnotation()
+                .value(),
+            is(JsonValue.TRUE)
         );
     }
 }
