@@ -50,6 +50,7 @@ class InstanceTypeTest {
             Arguments.of(InstanceType.ARRAY, JsonValue.EMPTY_JSON_ARRAY),
             Arguments.of(InstanceType.NUMBER, Json.createValue(23L)),
             Arguments.of(InstanceType.INTEGER, Json.createValue(23L)),
+            Arguments.of(InstanceType.INTEGER, Json.createValue(10L)),
             Arguments.of(InstanceType.INTEGER, Json.createValue(0.0))
         );
     }

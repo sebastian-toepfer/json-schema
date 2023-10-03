@@ -33,6 +33,6 @@ class JsonTestSuiteIT {
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(JsonTestSuiteTestCaseProvider.class)
     void runJsonTestSuite(final JsonTestSuiteTestCase testcase) {
-        assertTrue(testcase.isValid());
+        assertTrue(testcase.isValid(), testcase.toString());
     }
 }
