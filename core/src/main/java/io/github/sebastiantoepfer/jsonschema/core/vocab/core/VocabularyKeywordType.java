@@ -75,13 +75,14 @@ public final class VocabularyKeywordType implements KeywordType {
         }
 
         @Override
-        public Collection<KeywordCategory> categories() {
-            return List.of();
+        public boolean hasName(final String name) {
+            return Objects.equals(name(), name);
         }
 
         @Override
-        public boolean hasName(final String name) {
-            return Objects.equals(name(), name);
+        public Collection<KeywordCategory> categories() {
+            //is a identifier after spec ... but how to implement it as it?
+            return List.of();
         }
 
         @Override
