@@ -21,14 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresentAndIs;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.OfficialVocabularies;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import org.junit.jupiter.api.Test;
+
+class ApplicatorVocabularyTest {
+
+    @Test
+    void should_find_items_keyword() {
+        assertThat(
+            new ApplicatorVocabulary().findKeywordTypeByName("items").map(KeywordType::name),
+            isPresentAndIs("items")
+        );
+    }
 }

@@ -21,14 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core.testsuite;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.OfficialVocabularies;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
+import jakarta.json.Json;
+import java.net.URI;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
+
+class DefaultSchemaLoadTest {
+
+    @Test
+    void should_load_default_json_schema() throws Exception {
+        assertThat(
+            JsonSchemas.load(
+                Json
+                    .createReader(URI.create("https://json-schema.org/draft/2020-12/schema").toURL().openStream())
+                    .readValue()
+            ),
+            is(not(Matchers.nullValue()))
+        );
+    }
 }

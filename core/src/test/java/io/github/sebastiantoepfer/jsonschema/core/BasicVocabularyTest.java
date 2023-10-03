@@ -25,40 +25,43 @@ package io.github.sebastiantoepfer.jsonschema.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreVocabulary;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
+import com.github.npathai.hamcrestopt.OptionalMatchers;
+import io.github.sebastiantoepfer.jsonschema.core.BasicVocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.JsonValue;
 import java.net.URI;
-import java.util.Collection;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class KeywordsTest {
+class BasicVocabularyTest {
 
     @Test
-    void should_not_be_createbale_without_mandantory_core_vocabulary() {
-        final Collection<VocabularyDefinition> vocabDefs = List.of(
-            new VocabularyDefinition(new CoreVocabulary().id(), false)
-        );
-        assertThrows(IllegalArgumentException.class, () -> new Keywords(vocabDefs));
-    }
-
-    @Test
-    void should_not_be_createbale_without_mandantory_base_vocabulary() {
-        final Collection<VocabularyDefinition> vocabDefs = List.of(
-            new VocabularyDefinition(new BasicVocabulary().id(), false)
-        );
-        assertThrows(IllegalArgumentException.class, () -> new Keywords(vocabDefs));
-    }
-
-    @Test
-    void should_be_createbale_with_optional_vocabularies() {
+    void should_return_a_fake_id() {
         assertThat(
-            new Keywords(List.of(new VocabularyDefinition(URI.create("http://optinal"), false))),
-            is(not(nullValue()))
+            new BasicVocabulary().id(),
+            is(URI.create("http://https://github.com/sebastian-toepfer/json-schema/basic"))
+        );
+    }
+
+    @Test
+    void should_return_the_type_keywordtype() {
+        assertThat(
+            new BasicVocabulary().findKeywordTypeByName("type").map(KeywordType::name),
+            OptionalMatchers.isPresentAndIs("type")
+        );
+    }
+
+    @Test
+    void should_return_the_custom_annotation_for_unknow_keyword() {
+        assertThat(
+            new BasicVocabulary()
+                .findKeywordTypeByName("unknow")
+                .map(keywordType ->
+                    keywordType.createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.FALSE)
+                )
+                .map(keyword -> keyword.hasName("unknow")),
+            OptionalMatchers.isPresentAndIs(true)
         );
     }
 }

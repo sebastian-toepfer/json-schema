@@ -21,14 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.OfficialVocabularies;
+import com.github.npathai.hamcrestopt.OptionalMatchers;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import java.net.URI;
+import org.junit.jupiter.api.Test;
+
+class CoreVocabularyTest {
+
+    @Test
+    void should_return_core_vocabulary_for_core_id() {
+        assertThat(new CoreVocabulary().id(), is(URI.create("https://json-schema.org/draft/2020-12/vocab/core")));
+    }
+
+    @Test
+    void should_load_schema_keyword() {
+        assertThat(
+            new CoreVocabulary().findKeywordTypeByName("$schema").map(KeywordType::name),
+            OptionalMatchers.isPresentAndIs("$schema")
+        );
+    }
 }

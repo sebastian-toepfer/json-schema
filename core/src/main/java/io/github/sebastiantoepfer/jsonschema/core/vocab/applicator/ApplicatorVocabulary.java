@@ -21,14 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.core {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.Vocabulary;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
+import java.net.URI;
+import java.util.Optional;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.OfficialVocabularies;
+public final class ApplicatorVocabulary implements Vocabulary {
+
+    private final Vocabulary vocab;
+
+    public ApplicatorVocabulary() {
+        this.vocab =
+            new DefaultVocabulary(
+                URI.create("https://json-schema.org/draft/2020-12/vocab/applicator"),
+                new ItemsKeywordType()
+            );
+    }
+
+    @Override
+    public URI id() {
+        return vocab.id();
+    }
+
+    @Override
+    public Optional<KeywordType> findKeywordTypeByName(final String name) {
+        return vocab.findKeywordTypeByName(name);
+    }
 }
