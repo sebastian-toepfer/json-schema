@@ -21,32 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.meta;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import io.github.sebastiantoepfer.jsonschema.Vocabulary;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
+import java.net.URI;
+import java.util.Optional;
 
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import jakarta.json.JsonValue;
-import org.junit.jupiter.api.Test;
+public final class MetaDataVocabulary implements Vocabulary {
 
-class DefsKeywordTypeTest {
+    private final Vocabulary vocab;
 
-    @Test
-    void should_not_be_creatable_from_non_objects() {
-        final DefsKeywordType schema = new DefsKeywordType();
-
-        assertThrows(IllegalArgumentException.class, () -> schema.createKeyword(null, JsonValue.FALSE));
+    public MetaDataVocabulary() {
+        this.vocab = new DefaultVocabulary(URI.create("https://json-schema.org/draft/2020-12/vocab/meta-data"));
     }
 
-    @Test
-    void should_know_his_name() {
-        final Keyword defs = new DefsKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT);
+    @Override
+    public URI id() {
+        return vocab.id();
+    }
 
-        assertThat(defs.hasName("$defs"), is(true));
-        assertThat(defs.hasName("test"), is(false));
+    @Override
+    public Optional<KeywordType> findKeywordTypeByName(final String name) {
+        return Optional.empty();
     }
 }

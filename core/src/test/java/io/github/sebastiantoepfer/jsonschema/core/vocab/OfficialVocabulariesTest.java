@@ -21,32 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
+package io.github.sebastiantoepfer.jsonschema.core.vocab;
 
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresentAndIs;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import jakarta.json.JsonValue;
-import org.junit.jupiter.api.Test;
+import io.github.sebastiantoepfer.jsonschema.Vocabulary;
+import java.net.URI;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-class DefsKeywordTypeTest {
+class OfficialVocabulariesTest {
 
-    @Test
-    void should_not_be_creatable_from_non_objects() {
-        final DefsKeywordType schema = new DefsKeywordType();
-
-        assertThrows(IllegalArgumentException.class, () -> schema.createKeyword(null, JsonValue.FALSE));
-    }
-
-    @Test
-    void should_know_his_name() {
-        final Keyword defs = new DefsKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT);
-
-        assertThat(defs.hasName("$defs"), is(true));
-        assertThat(defs.hasName("test"), is(false));
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "https://json-schema.org/draft/2020-12/vocab/core",
+            "https://json-schema.org/draft/2020-12/vocab/applicator",
+            "https://json-schema.org/draft/2020-12/vocab/validation",
+            "https://json-schema.org/draft/2020-12/vocab/meta-data",
+            "https://json-schema.org/draft/2020-12/vocab/format-annotation",
+            "https://json-schema.org/draft/2020-12/vocab/unevaluated",
+            "https://json-schema.org/draft/2020-12/vocab/content",
+        }
+    )
+    void should_load_all_offical_vocabs(final String id) {
+        assertThat(
+            new OfficialVocabularies().loadVocabularyWithId(URI.create(id)).map(Vocabulary::id).map(URI::toString),
+            isPresentAndIs(id)
+        );
     }
 }

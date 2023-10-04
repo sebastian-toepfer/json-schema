@@ -23,11 +23,19 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
+import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.Json;
+import jakarta.json.JsonPointer;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
+import java.io.IOException;
+import java.net.URI;
 import java.util.Objects;
 
 /**
@@ -43,16 +51,75 @@ final class RefKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        return new Applicator() {
-            @Override
-            public boolean applyTo(final JsonValue instance) {
-                return true; //something is wrong here
-            }
+        if (InstanceType.STRING.isInstance(value)) {
+            return new RefKeyword(schema, (JsonString) value);
+        } else {
+            throw new IllegalArgumentException("must be a string");
+        }
+    }
 
-            @Override
-            public boolean hasName(final String name) {
-                return Objects.equals(name(), name);
+    private class RefKeyword implements Applicator {
+
+        private final JsonSchema schema;
+        private final URI uri;
+
+        private RefKeyword(final JsonSchema schema, final JsonString uri) {
+            this.schema = schema;
+            this.uri = URI.create(uri.getString());
+        }
+
+        @Override
+        public boolean applyTo(final JsonValue instance) {
+            return retrieveJsonSchema().validator().validate(instance).isEmpty();
+        }
+
+        @Override
+        public boolean hasName(final String name) {
+            return Objects.equals(name(), name);
+        }
+
+        private JsonSchema retrieveJsonSchema() {
+            final JsonValue json;
+            try {
+                if (isRemote()) {
+                    json = retrieveValueFromRemoteLocation();
+                } else {
+                    json = retrievValueFromLocalSchema();
+                }
+                return JsonSchemas.load(json);
+            } catch (IOException ex) {
+                throw new IllegalStateException("can not load schema!", ex);
             }
-        };
+        }
+
+        private JsonValue retrievValueFromLocalSchema() throws IOException {
+            final JsonPointer pointer = createPointer();
+            if (schema.getValueType() == JsonValue.ValueType.OBJECT && pointer.containsValue(schema.asJsonObject())) {
+                return pointer.getValue(schema.asJsonObject());
+            } else {
+                throw new IOException("can not find referenced value.");
+            }
+        }
+
+        private JsonPointer createPointer() {
+            final String fragment = uri.getFragment();
+            final JsonPointer pointer;
+            if (fragment.startsWith("/")) {
+                pointer = Json.createPointer(fragment);
+            } else {
+                pointer = Json.createPointer("/".concat(fragment));
+            }
+            return pointer;
+        }
+
+        private JsonValue retrieveValueFromRemoteLocation() throws IOException {
+            try (final JsonReader reader = Json.createReader(uri.toURL().openStream())) {
+                return reader.readValue();
+            }
+        }
+
+        private boolean isRemote() {
+            return uri.getScheme() != null;
+        }
     }
 }

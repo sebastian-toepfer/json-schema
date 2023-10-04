@@ -21,32 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
+package io.github.sebastiantoepfer.jsonschema.core.testsuite;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.Matchers.not;
 
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import jakarta.json.JsonValue;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
+import jakarta.json.Json;
+import java.net.URI;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
-class DefsKeywordTypeTest {
+class DefaultSchemaLoadTest {
 
     @Test
-    void should_not_be_creatable_from_non_objects() {
-        final DefsKeywordType schema = new DefsKeywordType();
-
-        assertThrows(IllegalArgumentException.class, () -> schema.createKeyword(null, JsonValue.FALSE));
-    }
-
-    @Test
-    void should_know_his_name() {
-        final Keyword defs = new DefsKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT);
-
-        assertThat(defs.hasName("$defs"), is(true));
-        assertThat(defs.hasName("test"), is(false));
+    void should_load_default_json_schema() throws Exception {
+        assertThat(
+            JsonSchemas.load(
+                Json
+                    .createReader(URI.create("https://json-schema.org/draft/2020-12/schema").toURL().openStream())
+                    .readValue()
+            ),
+            is(not(Matchers.nullValue()))
+        );
     }
 }

@@ -25,32 +25,75 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import org.junit.jupiter.api.Test;
 
 class RefKeywordTypeTest {
 
     @Test
-    void should_create_keyword_with_name() {
-        assertThat(
-            new RefKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
-                .hasName("$ref"),
-            is(true)
-        );
+    void should_be_not_createbale_from_non_string() {
+        final RefKeywordType keywordType = new RefKeywordType();
+        final JsonSchema schema = new DefaultJsonSchemaFactory().create(JsonValue.TRUE);
+        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema, JsonValue.TRUE));
     }
 
     @Test
-    void notFinischedYet() {
+    void should_know_his_name() {
+        final Keyword ref = new RefKeywordType()
+            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue("#"));
+
+        assertThat(ref.hasName("$ref"), is(true));
+        assertThat(ref.hasName("test"), is(false));
+    }
+
+    @Test
+    void should_use_local_referenced_schema_for_validation() {
         final Keyword keyword = new RefKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.FALSE);
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(
+                        Json
+                            .createObjectBuilder()
+                            .add(
+                                "$defs",
+                                Json
+                                    .createObjectBuilder()
+                                    .add("positiveInteger", Json.createObjectBuilder().add("type", "integer"))
+                            )
+                            .build()
+                    ),
+                Json.createValue("#/$defs/positiveInteger")
+            );
 
-        assertThat(keyword.hasName("$ref"), is(true));
-        assertThat(keyword.hasName("$id"), is(false));
+        assertThat(keyword.asApplicator().applyTo(Json.createValue(1L)), is(true));
+        assertThat(keyword.asApplicator().applyTo(Json.createValue("invalid")), is(false));
+    }
 
-        assertThat(keyword.asApplicator().applyTo(JsonValue.TRUE), is(true));
+    @Test
+    void should_use_remote_referenced_schema_for_validation() {
+        final Keyword keyword = new RefKeywordType()
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(
+                        Json
+                            .createObjectBuilder()
+                            .add(
+                                "$defs",
+                                Json
+                                    .createObjectBuilder()
+                                    .add("positiveInteger", Json.createObjectBuilder().add("type", "integer"))
+                            )
+                            .build()
+                    ),
+                Json.createValue("#/$defs/positiveInteger")
+            );
+
+        assertThat(keyword.asApplicator().applyTo(Json.createValue(1L)), is(true));
     }
 }

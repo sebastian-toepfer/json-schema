@@ -26,15 +26,23 @@ package io.github.sebastiantoepfer.jsonschema.core;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
 import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.core.constraint.AllOfConstraint;
 import io.github.sebastiantoepfer.jsonschema.core.constraint.Constraint;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.core.VocabularyKeywordType;
+import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
+import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinitions;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 
 final class DefaultJsonSchema extends AbstractJsonValueSchema {
 
@@ -50,9 +58,8 @@ final class DefaultJsonSchema extends AbstractJsonValueSchema {
         return asJsonObject()
             .entrySet()
             .stream()
-            .map(keyword -> keywords.createKeywordFor(this, keyword))
-            .filter(Constraint.class::isInstance)
-            .map(k -> (Constraint<JsonValue>) k)
+            .map(this::asContraint)
+            .flatMap(Optional::stream)
             .collect(
                 collectingAndThen(toList(), constraints -> new DefaultValidator(new AllOfConstraint<>(constraints)))
             );
@@ -66,5 +73,58 @@ final class DefaultJsonSchema extends AbstractJsonValueSchema {
             .stream()
             .flatMap(VocabularyDefinitions::definitions)
             .toList();
+    }
+
+    private Optional<Constraint<JsonValue>> asContraint(final Entry<String, JsonValue> property) {
+        final Keyword keyword = keywords.createKeywordFor(this, property);
+        final Constraint<JsonValue> result;
+        if (keyword.hasCategory(Keyword.KeywordCategory.ASSERTION)) {
+            result = new AssertionConstraint(keyword.asAssertion());
+        } else if (keyword.hasCategory(Keyword.KeywordCategory.APPLICATOR)) {
+            result = new ApplicatorConstaint(keyword.asApplicator());
+        } else {
+            result = null;
+        }
+        return Optional.ofNullable(result);
+    }
+
+    private static final class AssertionConstraint implements Constraint<JsonValue> {
+
+        private final Assertion assertion;
+
+        public AssertionConstraint(final Assertion assertion) {
+            this.assertion = Objects.requireNonNull(assertion);
+        }
+
+        @Override
+        public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
+            final Collection<ConstraintViolation> result;
+            if (assertion.isValidFor(value)) {
+                result = List.of();
+            } else {
+                result = List.of(new ConstraintViolation());
+            }
+            return result;
+        }
+    }
+
+    private static final class ApplicatorConstaint implements Constraint<JsonValue> {
+
+        private final Applicator applicator;
+
+        public ApplicatorConstaint(final Applicator applicator) {
+            this.applicator = Objects.requireNonNull(applicator);
+        }
+
+        @Override
+        public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
+            final Collection<ConstraintViolation> result;
+            if (applicator.applyTo(value)) {
+                result = List.of();
+            } else {
+                result = List.of(new ConstraintViolation());
+            }
+            return result;
+        }
     }
 }

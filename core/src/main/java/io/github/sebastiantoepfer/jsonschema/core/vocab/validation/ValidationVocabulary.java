@@ -21,41 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
-import io.github.sebastiantoepfer.jsonschema.InstanceType;
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import io.github.sebastiantoepfer.jsonschema.Vocabulary;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import io.github.sebastiantoepfer.jsonschema.keyword.ReservedLocation;
-import jakarta.json.JsonValue;
-import java.util.Objects;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
+import java.net.URI;
+import java.util.Optional;
 
-/**
- *
- * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-schema-re-use-with-defs
- */
-final class DefsKeywordType implements KeywordType {
+public final class ValidationVocabulary implements Vocabulary {
 
-    @Override
-    public String name() {
-        return "$defs";
+    private final Vocabulary vocab;
+
+    public ValidationVocabulary() {
+        this.vocab =
+            new DefaultVocabulary(
+                URI.create("https://json-schema.org/draft/2020-12/vocab/validation"),
+                new TypeKeywordType(),
+                new MinLengthKeywordType(),
+                new MaxLengthKeywordType(),
+                new PatternKeywordType(),
+                new MinimumKeywordType(),
+                new ExclusiveMinimumKeywordType(),
+                new MaximumKeywordType(),
+                new ExclusiveMaximumKeywordType(),
+                new MultipleOfKeywordType()
+            );
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        if (InstanceType.OBJECT.isInstance(value)) {
-            return new DefsKeyword();
-        } else {
-            throw new IllegalArgumentException("must be an object!");
-        }
+    public URI id() {
+        return vocab.id();
     }
 
-    private class DefsKeyword implements ReservedLocation {
-
-        @Override
-        public boolean hasName(final String name) {
-            return Objects.equals(name(), name);
-        }
+    @Override
+    public Optional<KeywordType> findKeywordTypeByName(final String name) {
+        return vocab.findKeywordTypeByName(name);
     }
 }

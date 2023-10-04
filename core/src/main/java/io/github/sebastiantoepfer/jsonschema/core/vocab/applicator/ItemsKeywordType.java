@@ -21,57 +21,58 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
+import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
+import io.github.sebastiantoepfer.jsonschema.Validator;
+import io.github.sebastiantoepfer.jsonschema.keyword.Annotation;
+import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinitions;
-import jakarta.json.JsonObject;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
-import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
-/**
- * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-the-vocabulary-keyword
- */
-public final class VocabularyKeywordType implements KeywordType {
+final class ItemsKeywordType implements KeywordType {
 
     @Override
     public String name() {
-        return "$vocabulary";
+        return "items";
     }
 
     @Override
     public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        final Keyword result;
-        if (InstanceType.OBJECT.isInstance(value)) {
-            result = new VocabularyKeyword(value);
-        } else {
-            throw new IllegalArgumentException(
-                "must be an object! " +
-                "read https://json-schema.org/draft/2020-12/json-schema-core.html#name-the-vocabulary-keyword" +
-                "for more infromations"
-            );
-        }
-        return result;
+        return new ItemsKeyword(schema, JsonSchemas.load(value));
     }
 
-    public final class VocabularyKeyword implements Keyword, VocabularyDefinitions {
+    private class ItemsKeyword implements Applicator, Annotation, JsonSubSchema {
 
-        private final JsonObject vocabularies;
+        private final JsonSchema owner;
+        private final JsonSchema schema;
 
-        VocabularyKeyword(final JsonValue vocabularies) {
-            this(vocabularies.asJsonObject());
+        public ItemsKeyword(final JsonSchema owner, final JsonSchema schema) {
+            this.owner = Objects.requireNonNull(owner);
+            this.schema = Objects.requireNonNull(schema);
         }
 
-        VocabularyKeyword(final JsonObject vocabularies) {
-            this.vocabularies = Objects.requireNonNull(vocabularies);
+        @Override
+        public JsonSchema owner() {
+            return owner;
+        }
+
+        @Override
+        public Validator validator() {
+            return schema.validator();
+        }
+
+        @Override
+        public ValueType getValueType() {
+            return schema.getValueType();
         }
 
         @Override
@@ -81,16 +82,22 @@ public final class VocabularyKeywordType implements KeywordType {
 
         @Override
         public Collection<KeywordCategory> categories() {
-            //is a identifier after spec ... but how to implement it as it?
-            return List.of();
+            return List.of(KeywordCategory.APPLICATOR, KeywordCategory.ANNOTATION);
         }
 
         @Override
-        public Stream<VocabularyDefinition> definitions() {
-            return vocabularies
-                .entrySet()
-                .stream()
-                .map(entry -> new VocabularyDefinition(URI.create(entry.getKey()), entry.getValue() == JsonValue.TRUE));
+        public JsonValue value() {
+            return JsonValue.TRUE;
+        }
+
+        @Override
+        public boolean applyTo(final JsonValue instance) {
+            return !InstanceType.ARRAY.isInstance(instance) || matchesSchema(instance.asJsonArray());
+        }
+
+        private boolean matchesSchema(final JsonArray items) {
+            final Validator itemValidator = validator();
+            return items.stream().map(itemValidator::validate).allMatch(Collection::isEmpty);
         }
     }
 }

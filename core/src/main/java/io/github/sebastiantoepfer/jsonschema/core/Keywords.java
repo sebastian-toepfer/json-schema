@@ -28,8 +28,9 @@ import static java.util.stream.Collectors.toMap;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.basic.BasicVocabulary;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreLazyVocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.applicator.ApplicatorVocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreVocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.validation.ValidationVocabulary;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
 import jakarta.json.JsonValue;
@@ -46,13 +47,16 @@ import java.util.stream.Stream;
 final class Keywords {
 
     private static final Map<URI, Vocabulary> MANDANTORY_VOCABS;
+    private static final Collection<Vocabulary> DEFAULT_VOCABS;
 
     static {
         MANDANTORY_VOCABS =
             List
-                .of(new BasicVocabulary(), new CoreLazyVocabulary().vocab())
+                .of(new BasicVocabulary(), new CoreVocabulary())
                 .stream()
                 .collect(toMap(Vocabulary::id, Function.identity()));
+
+        DEFAULT_VOCABS = List.of(new ValidationVocabulary(), new ApplicatorVocabulary());
     }
 
     private final Collection<Vocabulary> vocabularies;
@@ -69,7 +73,7 @@ final class Keywords {
         vocabularies =
             Stream
                 .concat(
-                    MANDANTORY_VOCABS.values().stream(),
+                    Stream.concat(MANDANTORY_VOCABS.values().stream(), DEFAULT_VOCABS.stream()),
                     vocabDefs.stream().map(VocabularyDefinition::findVocabulary).flatMap(Optional::stream)
                 )
                 .collect(

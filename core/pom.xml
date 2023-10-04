@@ -101,81 +101,18 @@
                                 <resource>
                                     <directory>${project.build.directory}/jsonschematests</directory>
                                     <includes>
-                                        <inculde>**/tests/draft6/boolean_schema.json</inculde>
-                                        <inculde>**/tests/draft7/boolean_schema.json</inculde>
-                                        <inculde>**/tests/draft2019-09/boolean_schema.json</inculde>
                                         <inculde>**/tests/draft2020-12/boolean_schema.json</inculde>
-                                        <inculde>**/tests/draft-next/boolean_schema.json</inculde>
-
-                                        <inculde>**/tests/draft4/type.json</inculde>
-                                        <inculde>**/tests/draft6/type.json</inculde>
-                                        <inculde>**/tests/draft7/type.json</inculde>
-                                        <inculde>**/tests/draft2019-09/type.json</inculde>
                                         <inculde>**/tests/draft2020-12/type.json</inculde>
-                                        <inculde>**/tests/draft-next/type.json</inculde>
-
-                                        <inculde>**/tests/draft3/minLength.json</inculde>
-                                        <inculde>**/tests/draft4/minLength.json</inculde>
-                                        <inculde>**/tests/draft6/minLength.json</inculde>
-                                        <inculde>**/tests/draft7/minLength.json</inculde>
-                                        <inculde>**/tests/draft2019-09/minLength.json</inculde>
                                         <inculde>**/tests/draft2020-12/minLength.json</inculde>
-                                        <inculde>**/tests/draft-next/minLength.json</inculde>
-
-                                        <inculde>**/tests/draft4/maxLength.json</inculde>
-                                        <inculde>**/tests/draft6/maxLength.json</inculde>
-                                        <inculde>**/tests/draft7/maxLength.json</inculde>
-                                        <inculde>**/tests/draft2019-09/maxLength.json</inculde>
                                         <inculde>**/tests/draft2020-12/maxLength.json</inculde>
-                                        <inculde>**/tests/draft-next/maxLength.json</inculde>
-
-                                        <inculde>**/tests/draft3/pattern.json</inculde>
-                                        <inculde>**/tests/draft4/pattern.json</inculde>
-                                        <inculde>**/tests/draft6/pattern.json</inculde>
-                                        <inculde>**/tests/draft7/pattern.json</inculde>
-                                        <inculde>**/tests/draft2019-09/pattern.json</inculde>
                                         <inculde>**/tests/draft2020-12/pattern.json</inculde>
-                                        <inculde>**/tests/draft-next/pattern.json</inculde>
-
-                                        <inculde>**/tests/draft6/minimum.json</inculde>
-                                        <inculde>**/tests/draft7/minimum.json</inculde>
-                                        <inculde>**/tests/draft2019-09/minimum.json</inculde>
                                         <inculde>**/tests/draft2020-12/minimum.json</inculde>
-                                        <inculde>**/tests/draft-next/minimum.json</inculde>
-
-                                        <inculde>**/tests/draft6/exclusiveMinimum.json</inculde>
-                                        <inculde>**/tests/draft7/exclusiveMinimum.json</inculde>
-                                        <inculde>**/tests/draft2019-09/exclusiveMinimum.json</inculde>
                                         <inculde>**/tests/draft2020-12/exclusiveMinimum.json</inculde>
-                                        <inculde>**/tests/draft-next/exclusiveMinimum.json</inculde>
-
-                                        <inculde>**/tests/draft6/maximum.json</inculde>
-                                        <inculde>**/tests/draft7/maximum.json</inculde>
-                                        <inculde>**/tests/draft2019-09/maximum.json</inculde>
                                         <inculde>**/tests/draft2020-12/maximum.json</inculde>
-                                        <inculde>**/tests/draft-next/maximum.json</inculde>
-
-                                        <inculde>**/tests/draft6/exclusiveMaximum.json</inculde>
-                                        <inculde>**/tests/draft7/exclusiveMaximum.json</inculde>
-                                        <inculde>**/tests/draft2019-09/exclusiveMaximum.json</inculde>
                                         <inculde>**/tests/draft2020-12/exclusiveMaximum.json</inculde>
-                                        <inculde>**/tests/draft-next/exclusiveMaximum.json</inculde>
-
-                                        <inculde>**/tests/draft4/multipleOf.json</inculde>
-                                        <inculde>**/tests/draft6/multipleOf.json</inculde>
-                                        <inculde>**/tests/draft7/multipleOf.json</inculde>
-                                        <inculde>**/tests/draft2019-09/multipleOf.json</inculde>
                                         <inculde>**/tests/draft2020-12/multipleOf.json</inculde>
-                                        <inculde>**/tests/draft-next/multipleOf.json</inculde>
-
                                         <!-- more than items keyword needed :(
-                                        <inculde>**/tests/draft3/items.json</inculde>
-                                        <inculde>**/tests/draft4/items.json</inculde>
-                                        <inculde>**/tests/draft6/items.json</inculde>
-                                        <inculde>**/tests/draft7/items.json</inculde>
-                                        <inculde>**/tests/draft2019-09/items.json</inculde>
                                         <inculde>**/tests/draft2020-12/items.json</inculde>
-                                        <inculde>**/tests/draft-next/items.json</inculde>
                                         -->
                                     </includes>
                                 </resource>

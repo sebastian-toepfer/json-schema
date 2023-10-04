@@ -30,5 +30,5 @@ module io.github.sebastiantoepfer.jsonschema.core {
         with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 
     provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreLazyVocabulary;
+        with io.github.sebastiantoepfer.jsonschema.core.vocab.OfficialVocabularies;
 }

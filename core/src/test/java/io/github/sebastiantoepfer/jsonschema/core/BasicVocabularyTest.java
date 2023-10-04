@@ -21,32 +21,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
+package io.github.sebastiantoepfer.jsonschema.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.github.npathai.hamcrestopt.OptionalMatchers;
+import io.github.sebastiantoepfer.jsonschema.core.BasicVocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonValue;
+import java.net.URI;
 import org.junit.jupiter.api.Test;
 
-class DefsKeywordTypeTest {
+class BasicVocabularyTest {
 
     @Test
-    void should_not_be_creatable_from_non_objects() {
-        final DefsKeywordType schema = new DefsKeywordType();
-
-        assertThrows(IllegalArgumentException.class, () -> schema.createKeyword(null, JsonValue.FALSE));
+    void should_return_a_fake_id() {
+        assertThat(
+            new BasicVocabulary().id(),
+            is(URI.create("http://https://github.com/sebastian-toepfer/json-schema/basic"))
+        );
     }
 
     @Test
-    void should_know_his_name() {
-        final Keyword defs = new DefsKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT);
+    void should_return_the_type_keywordtype() {
+        assertThat(
+            new BasicVocabulary().findKeywordTypeByName("type").map(KeywordType::name),
+            OptionalMatchers.isPresentAndIs("type")
+        );
+    }
 
-        assertThat(defs.hasName("$defs"), is(true));
-        assertThat(defs.hasName("test"), is(false));
+    @Test
+    void should_return_the_custom_annotation_for_unknow_keyword() {
+        assertThat(
+            new BasicVocabulary()
+                .findKeywordTypeByName("unknow")
+                .map(keywordType ->
+                    keywordType.createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.FALSE)
+                )
+                .map(keyword -> keyword.hasName("unknow")),
+            OptionalMatchers.isPresentAndIs(true)
+        );
     }
 }

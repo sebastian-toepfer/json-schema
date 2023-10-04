@@ -29,8 +29,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.github.sebastiantoepfer.jsonschema.core.vocab.basic.BasicVocabulary;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreLazyVocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreVocabulary;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
 import java.net.URI;
 import java.util.Collection;
@@ -42,7 +41,7 @@ class KeywordsTest {
     @Test
     void should_not_be_createbale_without_mandantory_core_vocabulary() {
         final Collection<VocabularyDefinition> vocabDefs = List.of(
-            new VocabularyDefinition(new CoreLazyVocabulary().vocab().id(), false)
+            new VocabularyDefinition(new CoreVocabulary().id(), false)
         );
         assertThrows(IllegalArgumentException.class, () -> new Keywords(vocabDefs));
     }

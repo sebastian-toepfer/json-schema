@@ -25,28 +25,24 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import jakarta.json.JsonValue;
+import com.github.npathai.hamcrestopt.OptionalMatchers;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import java.net.URI;
 import org.junit.jupiter.api.Test;
 
-class DefsKeywordTypeTest {
+class CoreVocabularyTest {
 
     @Test
-    void should_not_be_creatable_from_non_objects() {
-        final DefsKeywordType schema = new DefsKeywordType();
-
-        assertThrows(IllegalArgumentException.class, () -> schema.createKeyword(null, JsonValue.FALSE));
+    void should_return_core_vocabulary_for_core_id() {
+        assertThat(new CoreVocabulary().id(), is(URI.create("https://json-schema.org/draft/2020-12/vocab/core")));
     }
 
     @Test
-    void should_know_his_name() {
-        final Keyword defs = new DefsKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT);
-
-        assertThat(defs.hasName("$defs"), is(true));
-        assertThat(defs.hasName("test"), is(false));
+    void should_load_schema_keyword() {
+        assertThat(
+            new CoreVocabulary().findKeywordTypeByName("$schema").map(KeywordType::name),
+            OptionalMatchers.isPresentAndIs("$schema")
+        );
     }
 }

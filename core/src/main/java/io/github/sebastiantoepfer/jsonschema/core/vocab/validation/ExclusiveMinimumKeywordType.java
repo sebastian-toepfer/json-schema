@@ -21,41 +21,60 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
+import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.ConstraintAssertion;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import io.github.sebastiantoepfer.jsonschema.keyword.ReservedLocation;
+import jakarta.json.JsonNumber;
 import jakarta.json.JsonValue;
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
-/**
- *
- * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-schema-re-use-with-defs
- */
-final class DefsKeywordType implements KeywordType {
+final class ExclusiveMinimumKeywordType implements KeywordType {
 
     @Override
     public String name() {
-        return "$defs";
+        return "exclusiveMinimum";
     }
 
     @Override
     public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        if (InstanceType.OBJECT.isInstance(value)) {
-            return new DefsKeyword();
+        if (InstanceType.NUMBER.isInstance(value)) {
+            return new ExclusiveMinimumKeyword((JsonNumber) value);
         } else {
-            throw new IllegalArgumentException("must be an object!");
+            throw new IllegalArgumentException("must be a number!");
         }
     }
 
-    private class DefsKeyword implements ReservedLocation {
+    private class ExclusiveMinimumKeyword implements ConstraintAssertion {
+
+        private final BigDecimal min;
+
+        public ExclusiveMinimumKeyword(final JsonNumber min) {
+            this.min = min.bigDecimalValue();
+        }
 
         @Override
         public boolean hasName(final String name) {
             return Objects.equals(name(), name);
+        }
+
+        @Override
+        public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
+            final Collection<ConstraintViolation> result;
+            if (!InstanceType.NUMBER.isInstance(value) || min.compareTo(((JsonNumber) value).bigDecimalValue()) < 0) {
+                result = Collections.emptyList();
+            } else {
+                result = List.of(new ConstraintViolation());
+            }
+            return result;
         }
     }
 }
