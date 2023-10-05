@@ -40,9 +40,9 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 final class DefaultJsonSchema extends AbstractJsonValueSchema {
 
@@ -55,14 +55,17 @@ final class DefaultJsonSchema extends AbstractJsonValueSchema {
 
     @Override
     public Validator validator() {
-        return asJsonObject()
-            .entrySet()
-            .stream()
+        return keywords()
             .map(this::asContraint)
             .flatMap(Optional::stream)
             .collect(
                 collectingAndThen(toList(), constraints -> new DefaultValidator(new AllOfConstraint<>(constraints)))
             );
+    }
+
+    @Override
+    public Optional<Keyword> keywordByName(final String name) {
+        return keywords().filter(k -> k.hasName(name)).findFirst();
     }
 
     private Collection<VocabularyDefinition> vocabulary() {
@@ -75,8 +78,11 @@ final class DefaultJsonSchema extends AbstractJsonValueSchema {
             .toList();
     }
 
-    private Optional<Constraint<JsonValue>> asContraint(final Entry<String, JsonValue> property) {
-        final Keyword keyword = keywords.createKeywordFor(this, property);
+    private Stream<Keyword> keywords() {
+        return asJsonObject().entrySet().stream().map(property -> keywords.createKeywordFor(this, property));
+    }
+
+    private Optional<Constraint<JsonValue>> asContraint(final Keyword keyword) {
         final Constraint<JsonValue> result;
         if (keyword.hasCategory(Keyword.KeywordCategory.ASSERTION)) {
             result = new AssertionConstraint(keyword.asAssertion());

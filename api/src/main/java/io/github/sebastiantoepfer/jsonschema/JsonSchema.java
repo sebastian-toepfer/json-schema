@@ -23,8 +23,12 @@
  */
 package io.github.sebastiantoepfer.jsonschema;
 
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonValue;
+import java.util.Optional;
 
 public interface JsonSchema extends JsonValue {
     public Validator validator();
+
+    Optional<Keyword> keywordByName(String name);
 }

@@ -23,8 +23,10 @@
  */
 package io.github.sebastiantoepfer.jsonschema;
 
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory;
 import jakarta.json.JsonValue;
+import java.util.Optional;
 
 public final class FakeJsonSchemaFactory implements JsonSchemaFactory {
 
@@ -38,6 +40,11 @@ public final class FakeJsonSchemaFactory implements JsonSchemaFactory {
 
             @Override
             public JsonValue.ValueType getValueType() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public Optional<Keyword> keywordByName(String name) {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
         };

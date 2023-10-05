@@ -25,7 +25,9 @@ package io.github.sebastiantoepfer.jsonschema.core;
 
 import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.core.constraint.UnfulfillableConstraint;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonValue;
+import java.util.Optional;
 
 final class FalseJsonSchema extends AbstractJsonValueSchema {
 
@@ -36,5 +38,10 @@ final class FalseJsonSchema extends AbstractJsonValueSchema {
     @Override
     public Validator validator() {
         return new DefaultValidator(new UnfulfillableConstraint<>());
+    }
+
+    @Override
+    public Optional<Keyword> keywordByName(final String name) {
+        return Optional.empty();
     }
 }

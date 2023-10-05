@@ -28,9 +28,11 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.jsonschema.Validator;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class AbstractJsonValueSchemaTest {
@@ -64,6 +66,11 @@ class AbstractJsonValueSchemaTest {
         @Override
         public Validator validator() {
             throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Optional<Keyword> keywordByName(final String name) {
+            return Optional.empty();
         }
     }
 }

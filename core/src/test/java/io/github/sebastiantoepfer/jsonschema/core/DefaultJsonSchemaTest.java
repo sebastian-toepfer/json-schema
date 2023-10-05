@@ -23,6 +23,8 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isEmpty;
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
@@ -75,5 +77,39 @@ class DefaultJsonSchemaTest {
             .build();
 
         Assertions.assertThrows(Exception.class, () -> new DefaultJsonSchema(invalidSchema));
+    }
+
+    @Test
+    void should_find_keyword_by_name() {
+        assertThat(
+            new DefaultJsonSchema(
+                Json
+                    .createObjectBuilder()
+                    .add(
+                        "$vocabulary",
+                        Json.createObjectBuilder().add("https://json-schema.org/draft/2020-12/vocab/core", true)
+                    )
+                    .build()
+            )
+                .keywordByName("$vocabulary"),
+            isPresent()
+        );
+    }
+
+    @Test
+    void should_return_empty_for_non_existing_keyword() {
+        assertThat(
+            new DefaultJsonSchema(
+                Json
+                    .createObjectBuilder()
+                    .add(
+                        "$vocabulary",
+                        Json.createObjectBuilder().add("https://json-schema.org/draft/2020-12/vocab/core", true)
+                    )
+                    .build()
+            )
+                .keywordByName("type"),
+            isEmpty()
+        );
     }
 }
