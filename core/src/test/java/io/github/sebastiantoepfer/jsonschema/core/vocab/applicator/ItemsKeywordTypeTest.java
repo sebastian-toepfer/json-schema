@@ -23,6 +23,8 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isEmpty;
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
@@ -114,6 +116,81 @@ class ItemsKeywordTypeTest {
                 .asAnnotation()
                 .value(),
             is(JsonValue.TRUE)
+        );
+    }
+
+    @Test
+    void should_find_know_keyword() {
+        assertThat(
+            ((JsonSubSchema) new ItemsKeywordType()
+                    .createKeyword(
+                        new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
+                        Json.createObjectBuilder().add("type", "string").build()
+                    )).keywordByName("type"),
+            isPresent()
+        );
+    }
+
+    @Test
+    void should_retrun_empty_for_non_existing_keyword() {
+        assertThat(
+            ((JsonSubSchema) new ItemsKeywordType()
+                    .createKeyword(
+                        new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
+                        Json.createObjectBuilder().add("type", "string").build()
+                    )).keywordByName("properties"),
+            isEmpty()
+        );
+    }
+
+    @Test
+    void should_return_false_if_not_applies_to_any_item() {
+        assertThat(
+            new ItemsKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json.createObjectBuilder().add("prefixItems", Json.createArrayBuilder().add(true)).build()
+                        ),
+                    JsonValue.FALSE
+                )
+                .asAnnotation()
+                .value(),
+            is(JsonValue.FALSE)
+        );
+    }
+
+    @Test
+    void should_be_valid_if_invaliditem_is_already_checked_by_prefixItems() {
+        assertThat(
+            new ItemsKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json.createObjectBuilder().add("prefixItems", Json.createArrayBuilder().add(true)).build()
+                        ),
+                    JsonValue.FALSE
+                )
+                .asApplicator()
+                .applyTo(Json.createArrayBuilder().add("1").build()),
+            is(true)
+        );
+    }
+
+    @Test
+    void should_be_invalid_if_invaliditem_is_not_already_checked_by_prefixItems() {
+        assertThat(
+            new ItemsKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json.createObjectBuilder().add("prefixItems", Json.createArrayBuilder().add(true)).build()
+                        ),
+                    JsonValue.FALSE
+                )
+                .asApplicator()
+                .applyTo(Json.createArrayBuilder().add("1").add("2").build()),
+            is(false)
         );
     }
 }

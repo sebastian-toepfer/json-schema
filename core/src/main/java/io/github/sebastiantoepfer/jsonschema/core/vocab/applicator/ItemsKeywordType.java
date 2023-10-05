@@ -33,10 +33,12 @@ import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonArray;
+import jakarta.json.JsonNumber;
 import jakarta.json.JsonValue;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 final class ItemsKeywordType implements KeywordType {
 
@@ -76,6 +78,11 @@ final class ItemsKeywordType implements KeywordType {
         }
 
         @Override
+        public Optional<Keyword> keywordByName(final String name) {
+            return schema.keywordByName(name);
+        }
+
+        @Override
         public boolean hasName(final String name) {
             return Objects.equals(name(), name);
         }
@@ -87,7 +94,17 @@ final class ItemsKeywordType implements KeywordType {
 
         @Override
         public JsonValue value() {
-            return JsonValue.TRUE;
+            final JsonValue result;
+            if (appliesToAny()) {
+                result = JsonValue.TRUE;
+            } else {
+                result = JsonValue.FALSE;
+            }
+            return result;
+        }
+
+        private boolean appliesToAny() {
+            return startIndex() < 0;
         }
 
         @Override
@@ -97,7 +114,18 @@ final class ItemsKeywordType implements KeywordType {
 
         private boolean matchesSchema(final JsonArray items) {
             final Validator itemValidator = validator();
-            return items.stream().map(itemValidator::validate).allMatch(Collection::isEmpty);
+            return items.stream().skip(startIndex() + 1).map(itemValidator::validate).allMatch(Collection::isEmpty);
+        }
+
+        private long startIndex() {
+            return owner()
+                .keywordByName("prefixItems")
+                .map(Keyword::asAnnotation)
+                .map(Annotation::value)
+                .filter(InstanceType.INTEGER::isInstance)
+                .map(JsonNumber.class::cast)
+                .map(JsonNumber::longValue)
+                .orElse(-1L);
         }
     }
 }
