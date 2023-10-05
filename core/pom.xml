@@ -114,6 +114,7 @@
                                         <!-- more than items keyword needed :(
                                         <inculde>**/tests/draft2020-12/items.json</inculde>
                                         -->
+                                        <inculde>**/tests/draft2020-12/minItems.json</inculde>
                                     </includes>
                                 </resource>
                             </resources>
