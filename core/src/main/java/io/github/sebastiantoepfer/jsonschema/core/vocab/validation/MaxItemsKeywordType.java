@@ -23,41 +23,43 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
-import io.github.sebastiantoepfer.jsonschema.Vocabulary;
+import io.github.sebastiantoepfer.jsonschema.InstanceType;
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
-import java.net.URI;
-import java.util.Optional;
+import jakarta.json.JsonNumber;
+import jakarta.json.JsonValue;
+import java.util.Objects;
 
-public final class ValidationVocabulary implements Vocabulary {
+final class MaxItemsKeywordType implements KeywordType {
 
-    private final Vocabulary vocab;
-
-    public ValidationVocabulary() {
-        this.vocab =
-            new DefaultVocabulary(
-                URI.create("https://json-schema.org/draft/2020-12/vocab/validation"),
-                new TypeKeywordType(),
-                new MinLengthKeywordType(),
-                new MaxLengthKeywordType(),
-                new PatternKeywordType(),
-                new MinimumKeywordType(),
-                new ExclusiveMinimumKeywordType(),
-                new MaximumKeywordType(),
-                new ExclusiveMaximumKeywordType(),
-                new MultipleOfKeywordType(),
-                new MinItemsKeywordType(),
-                new MaxItemsKeywordType()
-            );
+    @Override
+    public String name() {
+        return "maxItems";
     }
 
     @Override
-    public URI id() {
-        return vocab.id();
+    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
+        return new MaxItemsKeyword((JsonNumber) value);
     }
 
-    @Override
-    public Optional<KeywordType> findKeywordTypeByName(final String name) {
-        return vocab.findKeywordTypeByName(name);
+    private class MaxItemsKeyword implements Assertion {
+
+        private final int maxItems;
+
+        public MaxItemsKeyword(final JsonNumber maxItems) {
+            this.maxItems = maxItems.intValue();
+        }
+
+        @Override
+        public boolean isValidFor(final JsonValue instance) {
+            return !InstanceType.ARRAY.isInstance(instance) || instance.asJsonArray().size() <= maxItems;
+        }
+
+        @Override
+        public boolean hasName(final String name) {
+            return Objects.equals(name(), name);
+        }
     }
 }
