@@ -62,7 +62,7 @@ class PrefixItemsKeywordTypeTest {
     }
 
     @Test
-    void should_return_one_as_value() {
+    void should_return_zero_as_value() {
         assertThat(
             new PrefixItemsKeywordType()
                 .createKeyword(
@@ -70,8 +70,22 @@ class PrefixItemsKeywordTypeTest {
                     Json.createArrayBuilder().add(JsonValue.TRUE).build()
                 )
                 .asAnnotation()
-                .value(),
+                .valueFor(Json.createArrayBuilder().add(1).add(2).build()),
             is(Json.createValue(0))
+        );
+    }
+
+    @Test
+    void should_retrun_true_if_is_applies_to_all_values() {
+        assertThat(
+            new PrefixItemsKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
+                    Json.createArrayBuilder().add(JsonValue.TRUE).add(JsonValue.TRUE).build()
+                )
+                .asAnnotation()
+                .valueFor(Json.createArrayBuilder().add(1).add(2).build()),
+            is(JsonValue.TRUE)
         );
     }
 

@@ -52,7 +52,7 @@ class AnnotationTest {
     private static class TestAnnotation implements Annotation {
 
         @Override
-        public JsonValue value() {
+        public JsonValue valueFor(JsonValue value) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 

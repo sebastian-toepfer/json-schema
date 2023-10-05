@@ -76,8 +76,14 @@ final class PrefixItemsKeywordType implements KeywordType {
         }
 
         @Override
-        public JsonValue value() {
-            return Json.createValue(schemas.size() - 1);
+        public JsonValue valueFor(final JsonValue value) {
+            final JsonValue result;
+            if (value.asJsonArray().size() == schemas.size()) {
+                result = JsonValue.TRUE;
+            } else {
+                result = Json.createValue(Math.min(value.asJsonArray().size(), schemas.size()) - 1);
+            }
+            return result;
         }
 
         @Override

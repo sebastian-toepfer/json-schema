@@ -23,32 +23,30 @@
  */
 package io.github.sebastiantoepfer.jsonschema.keyword;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+import jakarta.json.Json;
 import jakarta.json.JsonValue;
-import java.util.Objects;
+import org.junit.jupiter.api.Test;
 
-/**
- * A JSON Schema MAY contain properties which are not schema keywords. Unknown keywords SHOULD be treated as
- * annotations, where the value of the keyword is the value of the annotation
- *
- * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-json-schema-objects-and-key
- */
-public final class DefaultAnnotation implements Annotation {
+class StaticAnnotationTest {
 
-    private final String name;
-    private final JsonValue value;
-
-    public DefaultAnnotation(final String name, final JsonValue value) {
-        this.name = Objects.requireNonNull(name);
-        this.value = Objects.requireNonNullElse(value, JsonValue.NULL);
+    @Test
+    void should_know_his_name() {
+        assertThat(new StaticAnnotation("myname", Json.createValue("string")).hasName("myname"), is(true));
     }
 
-    @Override
-    public boolean hasName(final String name) {
-        return Objects.equals(this.name, name);
+    @Test
+    void should_know_other_names() {
+        assertThat(new StaticAnnotation("myname", Json.createValue("string")).hasName("id"), is(false));
     }
 
-    @Override
-    public JsonValue value() {
-        return value;
+    @Test
+    void should_return_his_value() {
+        assertThat(
+            new StaticAnnotation("myname", Json.createValue("string")).valueFor(JsonValue.FALSE),
+            is(Json.createValue("string"))
+        );
     }
 }
