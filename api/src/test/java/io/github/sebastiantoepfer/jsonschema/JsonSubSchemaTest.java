@@ -23,33 +23,44 @@
  */
 package io.github.sebastiantoepfer.jsonschema;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
+
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory;
 import jakarta.json.JsonValue;
 import java.util.Optional;
+import org.junit.jupiter.api.Test;
 
-public final class FakeJsonSchemaFactory implements JsonSchemaFactory {
+class JsonSubSchemaTest {
 
-    @Override
-    public JsonSchema create(final JsonValue schema) {
-        return new FakeJsonSchema();
-    }
+    @Test
+    void should_return_its_owner_as_root() {
+        final JsonSchema root = new FakeJsonSchemaFactory.FakeJsonSchema();
+        assertThat(
+            new JsonSubSchema() {
+                @Override
+                public JsonSchema owner() {
+                    return root;
+                }
 
-    static class FakeJsonSchema implements JsonSchema {
+                @Override
+                public Validator validator() {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
 
-        @Override
-        public Validator validator() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
+                @Override
+                public Optional<Keyword> keywordByName(String name) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
 
-        @Override
-        public Optional<Keyword> keywordByName(String name) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public JsonValue.ValueType getValueType() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
+                @Override
+                public JsonValue.ValueType getValueType() {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+            }
+                .rootSchema(),
+            is(sameInstance(root))
+        );
     }
 }

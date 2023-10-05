@@ -29,4 +29,9 @@ package io.github.sebastiantoepfer.jsonschema;
  */
 public interface JsonSubSchema extends JsonSchema {
     JsonSchema owner();
+
+    @Override
+    default JsonSchema rootSchema() {
+        return owner().rootSchema();
+    }
 }
