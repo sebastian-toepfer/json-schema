@@ -114,7 +114,7 @@ class ItemsKeywordTypeTest {
             new ItemsKeywordType()
                 .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
                 .asAnnotation()
-                .value(),
+                .valueFor(Json.createArrayBuilder().add(1).build()),
             is(JsonValue.TRUE)
         );
     }
@@ -155,7 +155,7 @@ class ItemsKeywordTypeTest {
                     JsonValue.FALSE
                 )
                 .asAnnotation()
-                .value(),
+                .valueFor(Json.createArrayBuilder().add(1).build()),
             is(JsonValue.FALSE)
         );
     }
@@ -167,12 +167,15 @@ class ItemsKeywordTypeTest {
                 .createKeyword(
                     new DefaultJsonSchemaFactory()
                         .create(
-                            Json.createObjectBuilder().add("prefixItems", Json.createArrayBuilder().add(true)).build()
+                            Json
+                                .createObjectBuilder()
+                                .add("prefixItems", Json.createArrayBuilder().add(true).add(true))
+                                .build()
                         ),
-                    JsonValue.FALSE
+                    Json.createObjectBuilder().add("type", "integer").build()
                 )
                 .asApplicator()
-                .applyTo(Json.createArrayBuilder().add("1").build()),
+                .applyTo(Json.createArrayBuilder().add("1").add("2").add(1).build()),
             is(true)
         );
     }
@@ -186,10 +189,10 @@ class ItemsKeywordTypeTest {
                         .create(
                             Json.createObjectBuilder().add("prefixItems", Json.createArrayBuilder().add(true)).build()
                         ),
-                    JsonValue.FALSE
+                    Json.createObjectBuilder().add("type", "integer").build()
                 )
                 .asApplicator()
-                .applyTo(Json.createArrayBuilder().add("1").add("2").build()),
+                .applyTo(Json.createArrayBuilder().add("1").add("2").add(1).build()),
             is(false)
         );
     }

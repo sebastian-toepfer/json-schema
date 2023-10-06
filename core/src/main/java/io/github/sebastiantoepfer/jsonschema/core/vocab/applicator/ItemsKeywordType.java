@@ -93,9 +93,9 @@ final class ItemsKeywordType implements KeywordType {
         }
 
         @Override
-        public JsonValue value() {
+        public JsonValue valueFor(final JsonValue value) {
             final JsonValue result;
-            if (appliesToAny()) {
+            if (appliesToAnyFor(value.asJsonArray())) {
                 result = JsonValue.TRUE;
             } else {
                 result = JsonValue.FALSE;
@@ -103,8 +103,8 @@ final class ItemsKeywordType implements KeywordType {
             return result;
         }
 
-        private boolean appliesToAny() {
-            return startIndex() < 0;
+        private boolean appliesToAnyFor(final JsonArray value) {
+            return startIndexFor(value) == -1;
         }
 
         @Override
@@ -114,18 +114,42 @@ final class ItemsKeywordType implements KeywordType {
 
         private boolean matchesSchema(final JsonArray items) {
             final Validator itemValidator = validator();
-            return items.stream().skip(startIndex() + 1).map(itemValidator::validate).allMatch(Collection::isEmpty);
+            return items
+                .stream()
+                .skip(startIndexFor(items) + 1L)
+                .map(itemValidator::validate)
+                .allMatch(Collection::isEmpty);
         }
 
-        private long startIndex() {
+        private int startIndexFor(final JsonArray value) {
             return owner()
                 .keywordByName("prefixItems")
                 .map(Keyword::asAnnotation)
-                .map(Annotation::value)
-                .filter(InstanceType.INTEGER::isInstance)
-                .map(JsonNumber.class::cast)
-                .map(JsonNumber::longValue)
-                .orElse(-1L);
+                .map(anno -> anno.valueFor(value))
+                .map(v -> new MaxIndexCalculator(value, v))
+                .map(MaxIndexCalculator::maxIndex)
+                .orElse(-1);
+        }
+
+        private static class MaxIndexCalculator {
+
+            private final JsonArray array;
+            private final JsonValue index;
+
+            public MaxIndexCalculator(final JsonArray array, final JsonValue index) {
+                this.array = array;
+                this.index = index;
+            }
+
+            int maxIndex() {
+                final int result;
+                if (index == JsonValue.TRUE) {
+                    result = array.size();
+                } else {
+                    result = ((JsonNumber) index).intValue();
+                }
+                return result;
+            }
         }
     }
 }

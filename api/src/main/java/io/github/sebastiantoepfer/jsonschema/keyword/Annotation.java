@@ -38,5 +38,5 @@ public interface Annotation extends Keyword {
         return Set.of(KeywordCategory.ANNOTATION);
     }
 
-    JsonValue value();
+    JsonValue valueFor(JsonValue value);
 }
