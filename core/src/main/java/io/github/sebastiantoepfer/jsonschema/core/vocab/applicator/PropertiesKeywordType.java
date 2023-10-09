@@ -87,8 +87,8 @@ final class PropertiesKeywordType implements KeywordType {
         }
 
         @Override
-        public JsonValue valueFor(final JsonValue value) {
-            return value
+        public JsonValue valueFor(final JsonValue instance) {
+            return instance
                 .asJsonObject()
                 .keySet()
                 .stream()
