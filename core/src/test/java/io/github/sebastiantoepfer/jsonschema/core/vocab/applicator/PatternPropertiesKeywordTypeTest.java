@@ -106,6 +106,25 @@ class PatternPropertiesKeywordTypeTest {
         );
     }
 
+    /*
+        Attention can be falky.
+        JsonObject is a map, so the properties occurred in random order.
+        This means for this test it could be green without using all assertions.
+    */
+    @Test
+    void should_be_invalid_if_one_schema_doesn_apply() {
+        assertThat(
+            new PatternPropertiesKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
+                    Json.createObjectBuilder().add("t.st", JsonValue.TRUE).add("t.*", JsonValue.FALSE).build()
+                )
+                .asApplicator()
+                .applyTo(Json.createObjectBuilder().add("test", 1).build()),
+            is(false)
+        );
+    }
+
     @Test
     void should_be_valid_if_properties_not_covered() {
         assertThat(
