@@ -50,6 +50,7 @@ public enum InstanceType {
             return result;
         }
 
+        @SuppressWarnings("BigDecimalEquals")
         private boolean isIntegral(final BigDecimal decimal) {
             return (
                 BigDecimal.ZERO.equals(decimal) ||
@@ -61,6 +62,7 @@ public enum InstanceType {
     },
     STRING(JsonValue.ValueType.STRING);
 
+    @SuppressWarnings("ImmutableEnumChecker")
     private final Collection<JsonValue.ValueType> validTypes;
 
     InstanceType(final JsonValue.ValueType... validTypes) {
