@@ -23,12 +23,16 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
+import static jakarta.json.stream.JsonCollectors.toJsonArray;
+
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
+import io.github.sebastiantoepfer.jsonschema.keyword.Annotation;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import java.util.Collection;
@@ -50,7 +54,7 @@ final class PatternPropertiesKeywordType implements KeywordType {
         return new PatternPropertiesKeyword(value.asJsonObject());
     }
 
-    private class PatternPropertiesKeyword implements Applicator {
+    private class PatternPropertiesKeyword implements Applicator, Annotation {
 
         private final Map<Pattern, JsonValue> properties;
 
@@ -92,6 +96,17 @@ final class PatternPropertiesKeywordType implements KeywordType {
                 .map(JsonSchemas::load)
                 .map(schema -> schema.validator().validate(property.getValue()).isEmpty())
                 .orElse(true);
+        }
+
+        @Override
+        public JsonValue valueFor(final JsonValue value) {
+            return value
+                .asJsonObject()
+                .keySet()
+                .stream()
+                .filter(name -> properties.keySet().stream().anyMatch(p -> p.matcher(name).find()))
+                .map(Json::createValue)
+                .collect(toJsonArray());
         }
     }
 }
