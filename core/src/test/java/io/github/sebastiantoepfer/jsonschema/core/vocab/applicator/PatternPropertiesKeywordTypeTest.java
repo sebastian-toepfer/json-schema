@@ -30,7 +30,9 @@ import static org.hamcrest.Matchers.is;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
+import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 
 class PatternPropertiesKeywordTypeTest {
@@ -115,6 +117,32 @@ class PatternPropertiesKeywordTypeTest {
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("foo", 1).build()),
             is(true)
+        );
+    }
+
+    @Test
+    void should_return_the_matching_property_names() {
+        assertThat(
+            new PatternPropertiesKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
+                    Json.createObjectBuilder().add("f.o", JsonValue.TRUE).build()
+                )
+                .asAnnotation()
+                .valueFor(
+                    Json
+                        .createObjectBuilder()
+                        .add("foo", BigDecimal.ONE)
+                        .add("test", BigDecimal.ONE)
+                        .add("fao", 1)
+                        .build()
+                )
+                .asJsonArray()
+                .stream()
+                .map(JsonString.class::cast)
+                .map(JsonString::getString)
+                .toList(),
+            containsInAnyOrder("foo", "fao")
         );
     }
 }
