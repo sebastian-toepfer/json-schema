@@ -101,25 +101,33 @@
                                 <resource>
                                     <directory>${project.build.directory}/jsonschematests</directory>
                                     <includes>
+                                        <!-- no longer part ...
+                                        <inculde>**/tests/draft2019-09/additionalItems.json</inculde>
+                                        -->
+                                        <inculde>**/tests/draft2020-12/additionalProperties.json</inculde>
                                         <inculde>**/tests/draft2020-12/boolean_schema.json</inculde>
-                                        <inculde>**/tests/draft2020-12/type.json</inculde>
-                                        <inculde>**/tests/draft2020-12/minLength.json</inculde>
-                                        <inculde>**/tests/draft2020-12/maxLength.json</inculde>
-                                        <inculde>**/tests/draft2020-12/pattern.json</inculde>
-                                        <inculde>**/tests/draft2020-12/minimum.json</inculde>
-                                        <inculde>**/tests/draft2020-12/exclusiveMinimum.json</inculde>
-                                        <inculde>**/tests/draft2020-12/maximum.json</inculde>
+                                        <!-- needs required
+                                        <inculde>**/tests/draft2020-12/enum.json</inculde>
+                                        -->
                                         <inculde>**/tests/draft2020-12/exclusiveMaximum.json</inculde>
-                                        <inculde>**/tests/draft2020-12/multipleOf.json</inculde>
-                                        <inculde>**/tests/draft2020-12/prefixItems.json</inculde>
+                                        <inculde>**/tests/draft2020-12/exclusiveMinimum.json</inculde>
                                         <!-- more than items keyword needed :(
                                         <inculde>**/tests/draft2020-12/items.json</inculde>
                                         -->
-                                        <inculde>**/tests/draft2020-12/minItems.json</inculde>
                                         <inculde>**/tests/draft2020-12/maxItems.json</inculde>
+                                        <inculde>**/tests/draft2020-12/maxLength.json</inculde>
+                                        <inculde>**/tests/draft2020-12/maximum.json</inculde>
+                                        <inculde>**/tests/draft2020-12/minItems.json</inculde>
+                                        <inculde>**/tests/draft2020-12/minLength.json</inculde>
+                                        <inculde>**/tests/draft2020-12/minimum.json</inculde>
+                                        <inculde>**/tests/draft2020-12/multipleOf.json</inculde>
+                                        <inculde>**/tests/draft2020-12/pattern.json</inculde>
                                         <inculde>**/tests/draft2020-12/patternProperties.json</inculde>
+                                        <inculde>**/tests/draft2020-12/prefixItems.json</inculde>
                                         <inculde>**/tests/draft2020-12/properties.json</inculde>
-                                        <inculde>**/tests/draft2020-12/additionalProperties.json</inculde>
+                                        <!--inculde>**/tests/draft2020-12/ref.json</inculde-->
+                                        <inculde>**/tests/draft2020-12/required.json</inculde>
+                                        <inculde>**/tests/draft2020-12/type.json</inculde>
                                     </includes>
                                 </resource>
                             </resources>
