@@ -26,7 +26,6 @@ package io.github.sebastiantoepfer.jsonschema.core;
 import static com.github.npathai.hamcrestopt.OptionalMatchers.isEmpty;
 import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -48,22 +47,22 @@ class DefaultJsonSchemaTest {
 
     @Test
     void should_be_valid_an_empty_array() {
-        assertThat(schema.validator().validate(JsonValue.EMPTY_JSON_ARRAY), is(empty()));
+        assertThat(schema.validator().isValid(JsonValue.EMPTY_JSON_ARRAY), is(true));
     }
 
     @Test
     void should_be_valid_an_integer_array() {
-        assertThat(schema.validator().validate(Json.createArrayBuilder().add(1).add(2).build()), is(empty()));
+        assertThat(schema.validator().isValid(Json.createArrayBuilder().add(1).add(2).build()), is(true));
     }
 
     @Test
     void should_be_invalid_an_string_array() {
-        assertThat(schema.validator().validate(Json.createArrayBuilder().add("a").add("b").build()), is(not(empty())));
+        assertThat(schema.validator().isValid(Json.createArrayBuilder().add("a").add("b").build()), is(not(true)));
     }
 
     @Test
     void should_be_invalid_for_object() {
-        assertThat(schema.validator().validate(JsonValue.EMPTY_JSON_OBJECT), is(not(empty())));
+        assertThat(schema.validator().isValid(JsonValue.EMPTY_JSON_OBJECT), is(not(true)));
     }
 
     @Test

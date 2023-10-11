@@ -23,17 +23,13 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
-import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.ConstraintAssertion;
+import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -53,7 +49,7 @@ final class PatternKeywordType implements KeywordType {
         }
     }
 
-    private class PatternKeyword implements ConstraintAssertion {
+    private class PatternKeyword implements Assertion {
 
         private final Pattern pattern;
 
@@ -67,14 +63,10 @@ final class PatternKeywordType implements KeywordType {
         }
 
         @Override
-        public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-            final List<ConstraintViolation> result;
-            if (!InstanceType.STRING.isInstance(value) || pattern.matcher(((JsonString) value).getString()).find()) {
-                result = Collections.emptyList();
-            } else {
-                result = List.of(new ConstraintViolation());
-            }
-            return result;
+        public boolean isValidFor(final JsonValue instance) {
+            return (
+                !InstanceType.STRING.isInstance(instance) || pattern.matcher(((JsonString) instance).getString()).find()
+            );
         }
     }
 }

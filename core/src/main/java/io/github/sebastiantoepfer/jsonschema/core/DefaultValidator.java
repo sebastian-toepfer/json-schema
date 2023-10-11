@@ -23,23 +23,21 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
-import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
 import io.github.sebastiantoepfer.jsonschema.Validator;
-import io.github.sebastiantoepfer.jsonschema.core.constraint.Constraint;
+import io.github.sebastiantoepfer.jsonschema.core.codition.Condition;
 import jakarta.json.JsonValue;
-import java.util.Collection;
 import java.util.Objects;
 
 final class DefaultValidator implements Validator {
 
-    private final Constraint<? super JsonValue> contraint;
+    private final Condition<? super JsonValue> contraint;
 
-    public DefaultValidator(final Constraint<? super JsonValue> contraint) {
+    public DefaultValidator(final Condition<? super JsonValue> contraint) {
         this.contraint = Objects.requireNonNull(contraint);
     }
 
     @Override
-    public Collection<ConstraintViolation> validate(final JsonValue data) {
-        return contraint.violationsBy(data);
+    public boolean isValid(final JsonValue data) {
+        return contraint.isFulfilledBy(data);
     }
 }

@@ -70,7 +70,7 @@ final class RefKeywordType implements KeywordType {
 
         @Override
         public boolean applyTo(final JsonValue instance) {
-            return retrieveJsonSchema().validator().validate(instance).isEmpty();
+            return retrieveJsonSchema().validator().isValid(instance);
         }
 
         @Override

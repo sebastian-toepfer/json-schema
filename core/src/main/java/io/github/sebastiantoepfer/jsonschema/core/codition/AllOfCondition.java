@@ -21,11 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.constraint;
+package io.github.sebastiantoepfer.jsonschema.core.codition;
 
-import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
+import static java.util.Arrays.asList;
+
 import java.util.Collection;
+import java.util.List;
 
-public interface Constraint<T> {
-    Collection<ConstraintViolation> violationsBy(T value);
+public final class AllOfCondition<T> implements Condition<T> {
+
+    private final List<Condition<? super T>> contraints;
+
+    public AllOfCondition(final Condition<? super T>... constraints) {
+        this(asList(constraints));
+    }
+
+    public AllOfCondition(final Collection<? extends Condition<? super T>> contraints) {
+        this.contraints = List.copyOf(contraints);
+    }
+
+    @Override
+    public boolean isFulfilledBy(final T value) {
+        return contraints.stream().allMatch(c -> c.isFulfilledBy(value));
+    }
 }

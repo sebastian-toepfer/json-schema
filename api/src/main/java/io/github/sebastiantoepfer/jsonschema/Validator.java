@@ -27,14 +27,13 @@ import jakarta.json.Json;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
 import java.io.StringReader;
-import java.util.Collection;
 
 public interface Validator {
-    default Collection<ConstraintViolation> validate(final String data) {
+    default boolean isValid(final String data) {
         try (final JsonReader reader = Json.createReader(new StringReader(data))) {
-            return validate(reader.readValue());
+            return isValid(reader.readValue());
         }
     }
 
-    Collection<ConstraintViolation> validate(final JsonValue data);
+    boolean isValid(final JsonValue data);
 }

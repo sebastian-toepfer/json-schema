@@ -99,10 +99,7 @@ class JsonTestSuiteTestCaseProvider implements ArgumentsProvider {
 
                 @Override
                 public boolean isValid() {
-                    return (
-                        JsonSchemas.load(schema).validator().validate(test.get("data")).isEmpty() ==
-                        test.getBoolean("valid")
-                    );
+                    return (JsonSchemas.load(schema).validator().isValid(test.get("data")) == test.getBoolean("valid"));
                 }
 
                 @Override

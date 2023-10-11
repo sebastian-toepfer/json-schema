@@ -114,11 +114,7 @@ final class ItemsKeywordType implements KeywordType {
 
         private boolean matchesSchema(final JsonArray items) {
             final Validator itemValidator = validator();
-            return items
-                .stream()
-                .skip(startIndexFor(items) + 1L)
-                .map(itemValidator::validate)
-                .allMatch(Collection::isEmpty);
+            return items.stream().skip(startIndexFor(items) + 1L).allMatch(itemValidator::isValid);
         }
 
         private int startIndexFor(final JsonArray value) {

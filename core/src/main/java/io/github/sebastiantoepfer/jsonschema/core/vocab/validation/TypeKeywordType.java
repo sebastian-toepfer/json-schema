@@ -23,24 +23,17 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
-
-import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.constraint.AnyConstraint;
-import io.github.sebastiantoepfer.jsonschema.core.constraint.Constraint;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.ConstraintAssertion;
+import io.github.sebastiantoepfer.jsonschema.core.codition.Condition;
+import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
-import java.util.Collection;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * see: https://json-schema.org/understanding-json-schema/reference/type.html
@@ -57,7 +50,7 @@ final class TypeKeywordType implements KeywordType {
         return new TypeKeyword(value);
     }
 
-    private final class TypeKeyword implements ConstraintAssertion, Constraint<JsonValue> {
+    private final class TypeKeyword implements Assertion {
 
         private final JsonValue definition;
 
@@ -71,11 +64,11 @@ final class TypeKeywordType implements KeywordType {
         }
 
         @Override
-        public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-            return new JsonMappedTypeConstaint(definition).violationsBy(value);
+        public boolean isValidFor(final JsonValue instance) {
+            return new JsonMappedTypeConstaint(definition).isFulfilledBy(instance);
         }
 
-        private static final class JsonMappedTypeConstaint implements Constraint<JsonValue> {
+        private static final class JsonMappedTypeConstaint implements Condition<JsonValue> {
 
             private final JsonValue definition;
 
@@ -84,17 +77,17 @@ final class TypeKeywordType implements KeywordType {
             }
 
             @Override
-            public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-                final Constraint<JsonValue> typeContraint =
+            public boolean isFulfilledBy(final JsonValue value) {
+                final Condition<JsonValue> typeContraint =
                     switch (definition.getValueType()) {
                         case STRING -> new JsonStringTypeConstraint((JsonString) definition);
                         default -> new JsonArrayTypeConstraint(definition.asJsonArray());
                     };
-                return typeContraint.violationsBy(value);
+                return typeContraint.isFulfilledBy(value);
             }
         }
 
-        private static final class JsonArrayTypeConstraint implements Constraint<JsonValue> {
+        private static final class JsonArrayTypeConstraint implements Condition<JsonValue> {
 
             private final JsonArray types;
 
@@ -103,16 +96,12 @@ final class TypeKeywordType implements KeywordType {
             }
 
             @Override
-            public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-                return types
-                    .stream()
-                    .map(JsonMappedTypeConstaint::new)
-                    .collect(collectingAndThen(toList(), AnyConstraint::new))
-                    .violationsBy(value);
+            public boolean isFulfilledBy(final JsonValue value) {
+                return types.stream().map(JsonMappedTypeConstaint::new).anyMatch(c -> c.isFulfilledBy(value));
             }
         }
 
-        private static final class JsonStringTypeConstraint implements Constraint<JsonValue> {
+        private static final class JsonStringTypeConstraint implements Condition<JsonValue> {
 
             private final String type;
 
@@ -121,15 +110,8 @@ final class TypeKeywordType implements KeywordType {
             }
 
             @Override
-            public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-                final InstanceType instanceType = InstanceType.valueOf(type);
-                final Collection<ConstraintViolation> result;
-                if (instanceType.isInstance(value)) {
-                    result = Set.of();
-                } else {
-                    result = Set.of(new ConstraintViolation());
-                }
-                return result;
+            public boolean isFulfilledBy(final JsonValue value) {
+                return InstanceType.valueOf(type).isInstance(value);
             }
         }
     }
