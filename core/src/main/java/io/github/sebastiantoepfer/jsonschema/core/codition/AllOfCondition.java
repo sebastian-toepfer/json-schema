@@ -37,9 +37,6 @@ public final class AllOfCondition<T> implements Condition<T> {
     }
 
     public AllOfCondition(final Collection<? extends Condition<? super T>> contraints) {
-        if (contraints.isEmpty()) {
-            throw new IllegalArgumentException("min one constraint must be provided!");
-        }
         this.contraints = List.copyOf(contraints);
     }
 
