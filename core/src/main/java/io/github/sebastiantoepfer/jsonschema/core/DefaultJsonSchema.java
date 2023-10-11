@@ -26,21 +26,18 @@ package io.github.sebastiantoepfer.jsonschema.core;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
-import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
 import io.github.sebastiantoepfer.jsonschema.Validator;
-import io.github.sebastiantoepfer.jsonschema.core.constraint.AllOfConstraint;
-import io.github.sebastiantoepfer.jsonschema.core.constraint.Constraint;
+import io.github.sebastiantoepfer.jsonschema.core.codition.AllOfCondition;
+import io.github.sebastiantoepfer.jsonschema.core.codition.ApplicatorBasedCondtion;
+import io.github.sebastiantoepfer.jsonschema.core.codition.AssertionBasedCondition;
+import io.github.sebastiantoepfer.jsonschema.core.codition.Condition;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.core.VocabularyKeywordType;
-import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
-import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinitions;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -59,7 +56,7 @@ final class DefaultJsonSchema extends AbstractJsonValueSchema {
             .map(this::asContraint)
             .flatMap(Optional::stream)
             .collect(
-                collectingAndThen(toList(), constraints -> new DefaultValidator(new AllOfConstraint<>(constraints)))
+                collectingAndThen(toList(), constraints -> new DefaultValidator(new AllOfCondition<>(constraints)))
             );
     }
 
@@ -82,55 +79,15 @@ final class DefaultJsonSchema extends AbstractJsonValueSchema {
         return asJsonObject().entrySet().stream().map(property -> keywords.createKeywordFor(this, property));
     }
 
-    private Optional<Constraint<JsonValue>> asContraint(final Keyword keyword) {
-        final Constraint<JsonValue> result;
+    private Optional<Condition<JsonValue>> asContraint(final Keyword keyword) {
+        final Condition<JsonValue> result;
         if (keyword.hasCategory(Keyword.KeywordCategory.ASSERTION)) {
-            result = new AssertionConstraint(keyword.asAssertion());
+            result = new AssertionBasedCondition(keyword.asAssertion());
         } else if (keyword.hasCategory(Keyword.KeywordCategory.APPLICATOR)) {
-            result = new ApplicatorConstaint(keyword.asApplicator());
+            result = new ApplicatorBasedCondtion(keyword.asApplicator());
         } else {
             result = null;
         }
         return Optional.ofNullable(result);
-    }
-
-    private static final class AssertionConstraint implements Constraint<JsonValue> {
-
-        private final Assertion assertion;
-
-        public AssertionConstraint(final Assertion assertion) {
-            this.assertion = Objects.requireNonNull(assertion);
-        }
-
-        @Override
-        public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-            final Collection<ConstraintViolation> result;
-            if (assertion.isValidFor(value)) {
-                result = List.of();
-            } else {
-                result = List.of(new ConstraintViolation());
-            }
-            return result;
-        }
-    }
-
-    private static final class ApplicatorConstaint implements Constraint<JsonValue> {
-
-        private final Applicator applicator;
-
-        public ApplicatorConstaint(final Applicator applicator) {
-            this.applicator = Objects.requireNonNull(applicator);
-        }
-
-        @Override
-        public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-            final Collection<ConstraintViolation> result;
-            if (applicator.applyTo(value)) {
-                result = List.of();
-            } else {
-                result = List.of(new ConstraintViolation());
-            }
-            return result;
-        }
     }
 }

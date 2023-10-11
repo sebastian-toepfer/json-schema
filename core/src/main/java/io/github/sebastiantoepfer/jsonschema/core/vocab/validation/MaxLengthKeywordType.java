@@ -23,18 +23,14 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
-import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.ConstraintAssertion;
+import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 class MaxLengthKeywordType implements KeywordType {
@@ -53,7 +49,7 @@ class MaxLengthKeywordType implements KeywordType {
         }
     }
 
-    private class MaxLengthKeyword implements ConstraintAssertion {
+    private class MaxLengthKeyword implements Assertion {
 
         private final JsonNumber value;
 
@@ -67,17 +63,11 @@ class MaxLengthKeywordType implements KeywordType {
         }
 
         @Override
-        public Collection<ConstraintViolation> violationsBy(final JsonValue instance) {
-            final Collection<ConstraintViolation> result;
-            if (
+        public boolean isValidFor(final JsonValue instance) {
+            return (
                 !InstanceType.STRING.isInstance(instance) ||
                 ((JsonString) instance).getChars().codePoints().count() <= value.longValue()
-            ) {
-                result = Collections.emptyList();
-            } else {
-                result = List.of(new ConstraintViolation());
-            }
-            return result;
+            );
         }
     }
 }

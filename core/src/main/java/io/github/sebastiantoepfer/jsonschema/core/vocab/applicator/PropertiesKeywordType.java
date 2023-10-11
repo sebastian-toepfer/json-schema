@@ -82,7 +82,7 @@ final class PropertiesKeywordType implements KeywordType {
         private boolean propertyMatches(final Map.Entry<String, JsonValue> property) {
             return (
                 !schemas.containsKey(property.getKey()) ||
-                JsonSchemas.load(schemas.get(property.getKey())).validator().validate(property.getValue()).isEmpty()
+                JsonSchemas.load(schemas.get(property.getKey())).validator().isValid(property.getValue())
             );
         }
 

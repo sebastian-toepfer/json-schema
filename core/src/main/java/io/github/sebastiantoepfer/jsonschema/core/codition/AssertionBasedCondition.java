@@ -21,18 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab;
+package io.github.sebastiantoepfer.jsonschema.core.codition;
 
-import io.github.sebastiantoepfer.jsonschema.core.constraint.Constraint;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
 import jakarta.json.JsonValue;
+import java.util.Objects;
 
-/**
- * only simplify pitest :)
- */
-public interface ConstraintAssertion extends Assertion, Constraint<JsonValue> {
+public final class AssertionBasedCondition implements Condition<JsonValue> {
+
+    private final Assertion assertion;
+
+    public AssertionBasedCondition(final Assertion assertion) {
+        this.assertion = Objects.requireNonNull(assertion);
+    }
+
     @Override
-    default boolean isValidFor(JsonValue instance) {
-        return violationsBy(instance).isEmpty();
+    public boolean isFulfilledBy(final JsonValue value) {
+        return assertion.isValidFor(value);
     }
 }

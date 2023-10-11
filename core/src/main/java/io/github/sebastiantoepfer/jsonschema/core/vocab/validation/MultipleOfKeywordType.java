@@ -23,18 +23,14 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
-import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.ConstraintAssertion;
+import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonValue;
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 final class MultipleOfKeywordType implements KeywordType {
@@ -53,7 +49,7 @@ final class MultipleOfKeywordType implements KeywordType {
         }
     }
 
-    private class MultipleOfKeyword implements ConstraintAssertion {
+    private class MultipleOfKeyword implements Assertion {
 
         private final BigDecimal multipleOf;
 
@@ -67,19 +63,13 @@ final class MultipleOfKeywordType implements KeywordType {
         }
 
         @Override
-        public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-            final Collection<ConstraintViolation> result;
-            if (
-                !InstanceType.NUMBER.isInstance(value) ||
+        public boolean isValidFor(final JsonValue instance) {
+            return (
+                !InstanceType.NUMBER.isInstance(instance) ||
                 BigDecimal.ZERO.equals(
-                    ((JsonNumber) value).bigDecimalValue().remainder(multipleOf).stripTrailingZeros()
+                    ((JsonNumber) instance).bigDecimalValue().remainder(multipleOf).stripTrailingZeros()
                 )
-            ) {
-                result = Collections.emptyList();
-            } else {
-                result = List.of(new ConstraintViolation());
-            }
-            return result;
+            );
         }
     }
 }

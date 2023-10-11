@@ -21,11 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.constraint;
+package io.github.sebastiantoepfer.jsonschema.core.codition;
 
-import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
-import java.util.Collection;
+public final class UnfulfillableCondition<T> implements Condition<T> {
 
-public interface Constraint<T> {
-    Collection<ConstraintViolation> violationsBy(T value);
+    @Override
+    public boolean isFulfilledBy(final T value) {
+        return false;
+    }
 }

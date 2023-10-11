@@ -21,6 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema;
+package io.github.sebastiantoepfer.jsonschema.core.codition;
 
-public final class ConstraintViolation {}
+public interface Condition<T> {
+    boolean isFulfilledBy(T value);
+}

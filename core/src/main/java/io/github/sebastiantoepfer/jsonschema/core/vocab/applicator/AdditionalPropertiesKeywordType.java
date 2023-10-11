@@ -75,7 +75,7 @@ class AdditionalPropertiesKeywordType implements KeywordType {
             final JsonSchema additionalPropertiesSchema = new DefaultJsonSchemaFactory().create(additionalProperties);
             return findPropertiesForValidation(instance)
                 .map(Map.Entry::getValue)
-                .allMatch(value -> additionalPropertiesSchema.validator().validate(value).isEmpty());
+                .allMatch(value -> additionalPropertiesSchema.validator().isValid(value));
         }
 
         @Override

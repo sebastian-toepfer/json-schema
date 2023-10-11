@@ -23,18 +23,14 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
-import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.ConstraintAssertion;
+import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonValue;
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 final class ExclusiveMinimumKeywordType implements KeywordType {
@@ -53,7 +49,7 @@ final class ExclusiveMinimumKeywordType implements KeywordType {
         }
     }
 
-    private class ExclusiveMinimumKeyword implements ConstraintAssertion {
+    private class ExclusiveMinimumKeyword implements Assertion {
 
         private final BigDecimal min;
 
@@ -67,14 +63,11 @@ final class ExclusiveMinimumKeywordType implements KeywordType {
         }
 
         @Override
-        public Collection<ConstraintViolation> violationsBy(final JsonValue value) {
-            final Collection<ConstraintViolation> result;
-            if (!InstanceType.NUMBER.isInstance(value) || min.compareTo(((JsonNumber) value).bigDecimalValue()) < 0) {
-                result = Collections.emptyList();
-            } else {
-                result = List.of(new ConstraintViolation());
-            }
-            return result;
+        public boolean isValidFor(final JsonValue instance) {
+            return (
+                !InstanceType.NUMBER.isInstance(instance) ||
+                min.compareTo(((JsonNumber) instance).bigDecimalValue()) < 0
+            );
         }
     }
 }

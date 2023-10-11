@@ -24,7 +24,6 @@
 package io.github.sebastiantoepfer.jsonschema.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 
 import jakarta.json.JsonValue;
@@ -36,6 +35,6 @@ class EmptyJsonSchemaTest {
     @ParameterizedTest
     @ArgumentsSource(JsonValuesArguments.class)
     void should_be_valid_for_everything(final JsonValue value) {
-        assertThat(new EmptyJsonSchema().validator().validate(value), is(empty()));
+        assertThat(new EmptyJsonSchema().validator().isValid(value), is(true));
     }
 }

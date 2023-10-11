@@ -93,7 +93,7 @@ final class PatternPropertiesKeywordType implements KeywordType {
                 .filter(e -> e.getKey().matcher(property.getKey()).find())
                 .map(Map.Entry::getValue)
                 .map(JsonSchemas::load)
-                .allMatch(schema -> schema.validator().validate(property.getValue()).isEmpty());
+                .allMatch(schema -> schema.validator().isValid(property.getValue()));
         }
 
         @Override

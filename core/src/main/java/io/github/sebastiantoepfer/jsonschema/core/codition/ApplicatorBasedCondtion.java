@@ -21,38 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.constraint;
+package io.github.sebastiantoepfer.jsonschema.core.codition;
 
-import static java.util.Arrays.asList;
-import static java.util.function.Predicate.not;
+import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
+import jakarta.json.JsonValue;
+import java.util.Objects;
 
-import io.github.sebastiantoepfer.jsonschema.ConstraintViolation;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+public final class ApplicatorBasedCondtion implements Condition<JsonValue> {
 
-public final class AllOfConstraint<T> implements Constraint<T> {
+    private final Applicator applicator;
 
-    private final List<Constraint<? super T>> contraints;
-
-    public AllOfConstraint(final Constraint<? super T>... constraints) {
-        this(asList(constraints));
-    }
-
-    public AllOfConstraint(final Collection<? extends Constraint<? super T>> contraints) {
-        if (contraints.isEmpty()) {
-            throw new IllegalArgumentException("min one constraint must be provided!");
-        }
-        this.contraints = List.copyOf(contraints);
+    public ApplicatorBasedCondtion(final Applicator applicator) {
+        this.applicator = Objects.requireNonNull(applicator);
     }
 
     @Override
-    public Collection<ConstraintViolation> violationsBy(final T value) {
-        return contraints
-            .stream()
-            .map(c -> c.violationsBy(value))
-            .filter(not(Collection::isEmpty))
-            .findFirst()
-            .orElseGet(Set::of);
+    public boolean isFulfilledBy(final JsonValue value) {
+        return applicator.applyTo(value);
     }
 }
