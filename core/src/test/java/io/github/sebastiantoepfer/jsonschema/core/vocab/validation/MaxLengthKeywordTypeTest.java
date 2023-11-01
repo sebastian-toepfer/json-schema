@@ -29,8 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.validation.MaxLengthKeywordType;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.validation.MinLengthKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonNumber;
