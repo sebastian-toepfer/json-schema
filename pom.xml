@@ -54,7 +54,8 @@
         <module>testsuite-junit-platform-engine</module>
         <module>api</module>
         <module>vocabulary-spi</module>
-        <module>core</module>        
+        <module>core</module>
+        <module>vocabulary-format-assertion</module>
     </modules>
 
     <dependencyManagement>
