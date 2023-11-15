@@ -21,15 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.reader;
 
-open module io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion {
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires java.logging;
-    requires jakarta.json;
-
-    requires org.junit.jupiter.api;
-    requires org.junit.jupiter.params;
-    requires org.hamcrest;
-    requires nl.jqno.equalsverifier;
+interface Creator {
+    <T> T createAs(Class<T> cls);
 }

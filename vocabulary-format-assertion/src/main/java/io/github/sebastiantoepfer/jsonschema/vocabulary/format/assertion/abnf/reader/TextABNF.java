@@ -21,15 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.reader;
 
-open module io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion {
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires java.logging;
-    requires jakarta.json;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.RuleList;
+import java.util.logging.Logger;
 
-    requires org.junit.jupiter.api;
-    requires org.junit.jupiter.params;
-    requires org.hamcrest;
-    requires nl.jqno.equalsverifier;
+public final class TextABNF implements ABNF {
+
+    private static final Logger LOG = Logger.getLogger(TextABNF.class.getName());
+
+    public static TextABNF of(final String rules) {
+        return new TextABNF(rules);
+    }
+
+    private final String rules;
+
+    private TextABNF(final String rules) {
+        this.rules = rules;
+    }
+
+    @Override
+    public RuleList rules() {
+        LOG.entering(TextABNF.class.getName(), "rules");
+        final RuleList result = rules
+            .codePoints()
+            .boxed()
+            .reduce(RuleListExtractor.of(), Extractor::append, (l, r) -> null)
+            .finish()
+            .createAs(RuleList.class);
+        LOG.exiting(TextABNF.class.getName(), "rules", result);
+        return result;
+    }
 }

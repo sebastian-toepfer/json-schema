@@ -21,15 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.reader;
 
-open module io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion {
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires java.logging;
-    requires jakarta.json;
+final class UsefulCodepoints {
 
-    requires org.junit.jupiter.api;
-    requires org.junit.jupiter.params;
-    requires org.hamcrest;
-    requires nl.jqno.equalsverifier;
+    static final int QUOTATION_MARK = 0x22;
+    static final int PERCENT_SIGN = 0x25;
+    static final int LEFT_PARENTHESIS = 0x28;
+    static final int RIGHT_PARENTHESIS = 0x29;
+    static final int ASTERISK = 0x2A;
+    static final int HYPHEN_MINUS = 0x2D;
+    static final int SOLIDUS = 0x2F;
+    static final int SEMICOLON = 0x3B;
+    static final int EQUALS_SIGN = 0x3D;
+    static final int LEFT_SQUARE_BRACKET = 0x5B;
+    static final int RIGHT_SQUARE_BRACKET = 0x5D;
+
+    private UsefulCodepoints() {}
 }
