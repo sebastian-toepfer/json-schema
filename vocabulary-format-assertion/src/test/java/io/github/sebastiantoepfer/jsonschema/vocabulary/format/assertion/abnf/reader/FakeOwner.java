@@ -21,15 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.reader;
 
-open module io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion {
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires java.logging;
-    requires jakarta.json;
+final class FakeOwner implements Extractor, ExtractorOwner, Creator {
 
-    requires org.junit.jupiter.api;
-    requires org.junit.jupiter.params;
-    requires org.hamcrest;
-    requires nl.jqno.equalsverifier;
+    private final Creator creator;
+
+    FakeOwner() {
+        this(null);
+    }
+
+    private FakeOwner(final Creator creator) {
+        this.creator = creator;
+    }
+
+    @Override
+    public Extractor append(final int codePoint) {
+        return this;
+    }
+
+    @Override
+    public Extractor imDone(final Creator creator) {
+        return new FakeOwner(creator);
+    }
+
+    @Override
+    public Creator finish() {
+        return this;
+    }
+
+    @Override
+    public <T> T createAs(final Class<T> cls) {
+        return creator.createAs(cls);
+    }
 }

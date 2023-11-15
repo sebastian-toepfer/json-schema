@@ -21,15 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.reader;
 
-open module io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion {
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires java.logging;
-    requires jakarta.json;
+class CodePointBasedElementEndDelimiter implements ElementEndDetector {
 
-    requires org.junit.jupiter.api;
-    requires org.junit.jupiter.params;
-    requires org.hamcrest;
-    requires nl.jqno.equalsverifier;
+    private final int stop;
+    private final boolean reachStop;
+
+    CodePointBasedElementEndDelimiter(final int stop) {
+        this(stop, false);
+    }
+
+    private CodePointBasedElementEndDelimiter(final int stop, final boolean reachStop) {
+        this.stop = stop;
+        this.reachStop = reachStop;
+    }
+
+    @Override
+    public ElementEndDetector append(final int codePoint) {
+        return new CodePointBasedElementEndDelimiter(stop, codePoint == stop);
+    }
+
+    @Override
+    public boolean isEndReached() {
+        return reachStop;
+    }
+
+    @Override
+    public Extractor applyTo(final Extractor imDone) {
+        return imDone.append(stop);
+    }
 }
