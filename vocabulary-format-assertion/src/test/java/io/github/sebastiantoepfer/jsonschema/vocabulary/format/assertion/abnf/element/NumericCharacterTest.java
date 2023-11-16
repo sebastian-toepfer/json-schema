@@ -24,10 +24,14 @@
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import nl.jqno.equalsverifier.EqualsVerifier;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
 class NumericCharacterTest {
@@ -65,5 +69,17 @@ class NumericCharacterTest {
     @Test
     void should_throw_exception_for_invalid_shortname() {
         assertThrows(IllegalArgumentException.class, () -> NumericCharacter.BASE.findByShortName('h'));
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            NumericCharacter.of(NumericCharacter.BASE.BINARY, 0b10101).printOn(new HashMapMedia()),
+            allOf(
+                hasEntry(is("type"), is("num-val")),
+                hasEntry(is("base"), is("BINARY")),
+                (Matcher) hasEntry(is("value"), is(21))
+            )
+        );
     }
 }

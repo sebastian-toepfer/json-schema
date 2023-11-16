@@ -23,10 +23,12 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
+import io.github.sebastiantoepfer.ddd.common.Printable;
 import java.util.Locale;
 import java.util.Objects;
 
-public final class RuleName {
+public final class RuleName implements Printable {
 
     public static RuleName of(final String name) {
         return new RuleName(name);
@@ -36,6 +38,11 @@ public final class RuleName {
 
     private RuleName(final String name) {
         this.name = Objects.requireNonNull(name);
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue("name", name).withValue("type", "rulename");
     }
 
     @Override

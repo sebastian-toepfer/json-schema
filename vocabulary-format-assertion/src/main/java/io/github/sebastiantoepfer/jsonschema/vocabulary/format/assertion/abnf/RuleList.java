@@ -25,11 +25,13 @@ package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf;
 
 import static java.util.Arrays.asList;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
+import io.github.sebastiantoepfer.ddd.common.Printable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public final class RuleList {
+public final class RuleList implements Printable {
 
     public static RuleList of(final Rule rule, final Rule... rules) {
         final List<Rule> ruleList = new ArrayList<>();
@@ -46,6 +48,11 @@ public final class RuleList {
 
     private RuleList(final List<Rule> rules) {
         this.rules = List.copyOf(rules);
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue("rules", List.copyOf(rules));
     }
 
     @Override

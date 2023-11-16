@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import java.util.Objects;
 
 public final class VariableRepetition implements Element {
@@ -55,6 +56,21 @@ public final class VariableRepetition implements Element {
         this.minOccurrences = minOccurrences;
         this.maxOccurrences = maxOccurrences;
         this.element = Objects.requireNonNull(element);
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        final T result;
+        if (minOccurrences > 0 && maxOccurrences < Integer.MAX_VALUE) {
+            result = media.withValue("atLeast", minOccurrences).withValue("atMost", maxOccurrences);
+        } else if (minOccurrences > 0) {
+            result = media.withValue("atLeast", minOccurrences);
+        } else if (maxOccurrences < Integer.MAX_VALUE) {
+            result = media.withValue("atMost", maxOccurrences);
+        } else {
+            result = media;
+        }
+        return result.withValue("type", "repetition").withValue("element", element);
     }
 
     @Override

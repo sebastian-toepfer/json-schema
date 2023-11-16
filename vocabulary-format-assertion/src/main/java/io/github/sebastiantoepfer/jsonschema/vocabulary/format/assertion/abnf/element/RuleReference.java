@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import java.util.Objects;
 
 public final class RuleReference implements Element {
@@ -40,6 +41,11 @@ public final class RuleReference implements Element {
     @Override
     public boolean isValidFor(final int codePoint) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue("type", "rule-ref").withValue("name", name);
     }
 
     @Override

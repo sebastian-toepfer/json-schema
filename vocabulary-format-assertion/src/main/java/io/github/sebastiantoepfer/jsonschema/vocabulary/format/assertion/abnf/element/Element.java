@@ -23,7 +23,9 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element;
 
-public interface Element {
+import io.github.sebastiantoepfer.ddd.common.Printable;
+
+public interface Element extends Printable {
     //no no, but let get start simple
     boolean isValidFor(int codePoint);
 }

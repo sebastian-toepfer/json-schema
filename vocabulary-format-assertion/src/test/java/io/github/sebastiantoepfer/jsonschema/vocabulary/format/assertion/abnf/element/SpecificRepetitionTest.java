@@ -24,11 +24,15 @@
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import nl.jqno.equalsverifier.EqualsVerifier;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
 class SpecificRepetitionTest {
@@ -41,5 +45,17 @@ class SpecificRepetitionTest {
     @Test
     void should_create_new_element() {
         assertThat(SpecificRepetition.of(StringElement.of("1"), 1), is(not(nullValue())));
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            SpecificRepetition.of(StringElement.of("."), 2).printOn(new HashMapMedia()),
+            allOf(
+                (Matcher) hasEntry(is("type"), is("fix-repetition")),
+                (Matcher) hasEntry(is("repeat"), is(2)),
+                hasEntry(is("element"), allOf(hasEntry(is("type"), is("char-val")), hasEntry(is("value"), is("."))))
+            )
+        );
     }
 }

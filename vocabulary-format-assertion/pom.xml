@@ -14,11 +14,25 @@
     <artifactId>json-schema-vocabulary-format-assertion</artifactId>
     <name>Json Schema :: vocabulary :: format assertion</name>
 
+    <properties>
+        <ddd.verison>0.4.0</ddd.verison>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>json-schema-vocabulary-spi</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.sebastian-toepfer.ddd</groupId>
+            <artifactId>common</artifactId>
+            <version>${ddd.verison}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.sebastian-toepfer.ddd</groupId>
+            <artifactId>media-core</artifactId>
+            <version>${ddd.verison}</version>
         </dependency>
 
         <dependency>

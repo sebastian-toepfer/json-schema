@@ -24,11 +24,16 @@
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import nl.jqno.equalsverifier.EqualsVerifier;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
 class SequenceGroupTest {
@@ -47,6 +52,23 @@ class SequenceGroupTest {
                 SequenceGroup.of(NumericCharacter.of(NumericCharacter.BASE.BINARY, 0))
             ),
             is(not(nullValue()))
+        );
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            SequenceGroup.of(StringElement.of("/"), StringElement.of(";")).printOn(new HashMapMedia()),
+            allOf(
+                (Matcher) hasEntry(is("type"), is("group")),
+                hasEntry(
+                    is("elements"),
+                    contains(
+                        allOf(hasEntry("type", "char-val"), hasEntry("value", "/")),
+                        allOf(hasEntry("type", "char-val"), hasEntry("value", ";"))
+                    )
+                )
+            )
         );
     }
 }

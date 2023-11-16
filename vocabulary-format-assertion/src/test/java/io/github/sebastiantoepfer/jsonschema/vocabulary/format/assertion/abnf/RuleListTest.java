@@ -24,13 +24,19 @@
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.Alternative;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.RuleName;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.StringElement;
 import nl.jqno.equalsverifier.EqualsVerifier;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
 class RuleListTest {
@@ -43,5 +49,39 @@ class RuleListTest {
     @Test
     void equalsContract() {
         EqualsVerifier.forClass(RuleList.class).verify();
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            RuleList
+                .of(Rule.of(RuleName.of("rulename"), Alternative.of(StringElement.of("/"), StringElement.of(";"))))
+                .printOn(new HashMapMedia()),
+            (Matcher) hasEntry(
+                is("rules"),
+                contains(
+                    allOf(
+                        (Matcher) hasEntry(is("type"), is("rule")),
+                        hasEntry(
+                            is("name"),
+                            allOf(hasEntry(is("name"), is("rulename")), hasEntry(is("type"), is("rulename")))
+                        ),
+                        hasEntry(
+                            is("elements"),
+                            allOf(
+                                (Matcher) hasEntry(is("type"), is("alternative")),
+                                hasEntry(
+                                    is("alternatives"),
+                                    contains(
+                                        allOf(hasEntry("type", "char-val"), hasEntry("value", "/")),
+                                        allOf(hasEntry("type", "char-val"), hasEntry("value", ";"))
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        );
     }
 }

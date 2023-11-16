@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,6 +52,11 @@ public final class SequenceGroup implements Element {
 
     private SequenceGroup(final Collection<? extends Element> elements) {
         this.elements = List.copyOf(elements);
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue("type", "group").withValue("elements", List.copyOf(elements));
     }
 
     @Override

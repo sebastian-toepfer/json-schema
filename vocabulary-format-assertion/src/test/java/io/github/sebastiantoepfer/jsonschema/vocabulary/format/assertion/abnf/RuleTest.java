@@ -24,11 +24,18 @@
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.Alternative;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.RuleName;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.RuleReference;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.StringElement;
 import nl.jqno.equalsverifier.EqualsVerifier;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
 class RuleTest {
@@ -44,5 +51,31 @@ class RuleTest {
 
         assertThat(rule.hasRuleName(RuleName.of("date")), is(true));
         assertThat(rule.hasRuleName(RuleName.of("iso-date-time")), is(false));
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            Rule
+                .of(RuleName.of("rulename"), Alternative.of(StringElement.of("/"), StringElement.of(";")))
+                .printOn(new HashMapMedia()),
+            allOf(
+                (Matcher) hasEntry(is("type"), is("rule")),
+                hasEntry(is("name"), allOf(hasEntry(is("name"), is("rulename")), hasEntry(is("type"), is("rulename")))),
+                hasEntry(
+                    is("elements"),
+                    allOf(
+                        (Matcher) hasEntry(is("type"), is("alternative")),
+                        hasEntry(
+                            is("alternatives"),
+                            contains(
+                                allOf(hasEntry("type", "char-val"), hasEntry("value", "/")),
+                                allOf(hasEntry("type", "char-val"), hasEntry("value", ";"))
+                            )
+                        )
+                    )
+                )
+            )
+        );
     }
 }
