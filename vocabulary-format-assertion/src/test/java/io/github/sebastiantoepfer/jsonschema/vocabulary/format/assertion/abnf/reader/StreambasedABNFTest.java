@@ -23,8 +23,36 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.reader;
 
-import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.RuleList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-public interface ABNF extends AutoCloseable {
-    RuleList rules();
+import java.io.IOException;
+import java.io.Reader;
+import org.junit.jupiter.api.Test;
+
+class StreambasedABNFTest {
+
+    @Test
+    void should_close_underlining_reader() throws Exception {
+        final ReaderImpl r = new ReaderImpl();
+
+        StreambasedABNF.of(r).close();
+
+        assertThat(r.isClosed, is(true));
+    }
+
+    private class ReaderImpl extends Reader {
+
+        boolean isClosed = false;
+
+        @Override
+        public int read(char[] chars, int i, int i1) throws IOException {
+            return -1;
+        }
+
+        @Override
+        public void close() throws IOException {
+            isClosed = true;
+        }
+    }
 }

@@ -23,8 +23,24 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.reader;
 
-import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.RuleList;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.Charset;
 
-public interface ABNF extends AutoCloseable {
-    RuleList rules();
+public final class ABNFs {
+
+    public static ABNF of(final CharSequence sequence) {
+        return TextABNF.of(sequence);
+    }
+
+    public static ABNF of(final InputStream is, final Charset cs) {
+        return of(new InputStreamReader(is, cs));
+    }
+
+    public static ABNF of(final Reader input) {
+        return StreambasedABNF.of(input);
+    }
+
+    private ABNFs() {}
 }

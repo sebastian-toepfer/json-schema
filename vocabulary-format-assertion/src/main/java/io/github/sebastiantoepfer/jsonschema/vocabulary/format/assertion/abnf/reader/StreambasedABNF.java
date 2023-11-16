@@ -24,36 +24,46 @@
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.reader;
 
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.RuleList;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.Objects;
 import java.util.logging.Logger;
 
-final class TextABNF implements ABNF {
+final class StreambasedABNF implements ABNF {
 
-    private static final Logger LOG = Logger.getLogger(TextABNF.class.getName());
-
-    public static TextABNF of(final CharSequence rules) {
-        return new TextABNF(rules);
+    public static ABNF of(final Reader reader) {
+        return new StreambasedABNF(reader);
     }
 
-    private final CharSequence rules;
+    private static final Logger LOG = Logger.getLogger(StreambasedABNF.class.getName());
 
-    private TextABNF(final CharSequence rules) {
-        this.rules = rules;
+    private final Reader reader;
+
+    private StreambasedABNF(final Reader reader) {
+        this.reader = Objects.requireNonNull(reader);
     }
 
     @Override
-    public void close() {
-        //nothing to do!
+    public void close() throws IOException {
+        reader.close();
     }
 
     @Override
     public RuleList rules() {
-        LOG.entering(TextABNF.class.getName(), "rules");
-        final RuleList result = rules
-            .codePoints()
-            .boxed()
-            .reduce(RuleListExtractor.of(), Extractor::append, (l, r) -> null)
-            .finish()
-            .createAs(RuleList.class);
+        LOG.entering(StreambasedABNF.class.getName(), "rules");
+        final RuleList result;
+        try {
+            Extractor extractor = RuleListExtractor.of();
+            int codePoint;
+            while ((codePoint = reader.read()) != -1) {
+                extractor = extractor.append(codePoint);
+            }
+            result = extractor.finish().createAs(RuleList.class);
+        } catch (IOException ex) {
+            final IllegalArgumentException thrown = new IllegalArgumentException(ex);
+            LOG.throwing(StreambasedABNF.class.getName(), "rules", thrown);
+            throw thrown;
+        }
         LOG.exiting(TextABNF.class.getName(), "rules", result);
         return result;
     }
