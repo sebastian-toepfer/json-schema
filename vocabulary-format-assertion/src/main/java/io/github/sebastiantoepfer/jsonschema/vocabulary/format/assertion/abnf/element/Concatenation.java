@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,6 +48,11 @@ public final class Concatenation implements Element {
 
     private Concatenation(final Collection<? extends Element> concatenations) {
         this.concatenations = List.copyOf(concatenations);
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue("type", "concatenation").withValue("concatenations", List.copyOf(concatenations));
     }
 
     @Override

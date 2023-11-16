@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,6 +48,11 @@ public final class Alternative implements Element {
 
     private Alternative(final Collection<? extends Element> alternatives) {
         this.alternatives = List.copyOf(alternatives);
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue("type", "alternative").withValue("alternatives", List.copyOf(alternatives));
     }
 
     @Override

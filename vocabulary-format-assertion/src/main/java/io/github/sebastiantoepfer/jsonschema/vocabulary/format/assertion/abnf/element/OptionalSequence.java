@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -41,6 +42,11 @@ public final class OptionalSequence implements Element {
 
     public OptionalSequence(final Collection<Element> optionalElements) {
         this.optionalElements = List.copyOf(optionalElements);
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue("type", "option").withValue("optionals", List.copyOf(optionalElements));
     }
 
     @Override

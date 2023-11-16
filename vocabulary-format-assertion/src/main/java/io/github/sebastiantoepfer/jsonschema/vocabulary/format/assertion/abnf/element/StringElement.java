@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -47,6 +48,11 @@ public final class StringElement implements Element {
             );
         }
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue("type", "char-val").withValue("value", value);
     }
 
     @Override

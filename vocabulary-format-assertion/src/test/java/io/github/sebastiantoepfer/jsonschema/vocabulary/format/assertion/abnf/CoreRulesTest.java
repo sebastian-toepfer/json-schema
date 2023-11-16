@@ -24,15 +24,45 @@
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.RuleName;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class CoreRulesTest {
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            CoreRules.VCHAR.printOn(new HashMapMedia()),
+            allOf(
+                (Matcher) hasEntry(is("type"), is("corerule")),
+                hasEntry(is("name"), allOf(hasEntry(is("name"), is("VCHAR")), hasEntry(is("type"), is("rulename")))),
+                hasEntry(
+                    is("elements"),
+                    allOf(
+                        hasEntry(is("type"), is("val-range")),
+                        hasEntry(
+                            is("from"),
+                            allOf(hasEntry(is("base"), is("HEXADECIMAL")), (Matcher) hasEntry(is("value"), is(0x21)))
+                        ),
+                        hasEntry(
+                            is("to"),
+                            allOf(hasEntry(is("base"), is("HEXADECIMAL")), (Matcher) hasEntry(is("value"), is(0x7E)))
+                        )
+                    )
+                )
+            )
+        );
+    }
 
     @Nested
     class Alpha {
@@ -111,6 +141,41 @@ class CoreRulesTest {
         @Test
         void should_be_invalid_for_a() {
             assertThat(CoreRules.CR.isValidFor(0x41), is(false));
+        }
+    }
+
+    @Nested
+    class Crlf {
+
+        @Test
+        void should_return_rulename() {
+            assertThat(CoreRules.CRLF.asRuleName(), is(RuleName.of("CRLF")));
+        }
+
+        @Test
+        void should_nit_be_supported() {
+            assertThrows(UnsupportedOperationException.class, () -> CoreRules.CRLF.isValidFor(0x0D));
+        }
+    }
+
+    @Nested
+    class Ctl {
+
+        @Test
+        void should_return_rulename() {
+            assertThat(CoreRules.CTL.asRuleName(), is(RuleName.of("CTL")));
+        }
+
+        @ParameterizedTest(name = "{0} is a valid CTL")
+        @ValueSource(ints = { 0x00, 0x01, 0x11, 0x1A, 0x1F, 0x7F })
+        void should_be_valid_for(final int codePoint) {
+            assertThat(CoreRules.CTL.isValidFor(codePoint), is(true));
+        }
+
+        @ParameterizedTest(name = "{0} is not a valid CTL")
+        @ValueSource(ints = { 0x20, 0x30, 0x6A, 0x7A, 0x7E })
+        void should_be_invalid_for(final int codePoint) {
+            assertThat(CoreRules.CTL.isValidFor(codePoint), is(false));
         }
     }
 
@@ -239,6 +304,20 @@ class CoreRulesTest {
         @Test
         void should_be_invalid_for_a() {
             assertThat(CoreRules.LF.isValidFor(0x41), is(false));
+        }
+    }
+
+    @Nested
+    class Lwsp {
+
+        @Test
+        void should_return_rulename() {
+            assertThat(CoreRules.LWSP.asRuleName(), is(RuleName.of("LWSP")));
+        }
+
+        @Test
+        void should_nit_be_supported() {
+            assertThrows(UnsupportedOperationException.class, () -> CoreRules.LWSP.isValidFor(0x0D));
         }
     }
 

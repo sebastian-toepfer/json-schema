@@ -30,13 +30,13 @@ public final class TextABNF implements ABNF {
 
     private static final Logger LOG = Logger.getLogger(TextABNF.class.getName());
 
-    public static TextABNF of(final String rules) {
+    public static TextABNF of(final CharSequence rules) {
         return new TextABNF(rules);
     }
 
-    private final String rules;
+    private final CharSequence rules;
 
-    private TextABNF(final String rules) {
+    private TextABNF(final CharSequence rules) {
         this.rules = rules;
     }
 

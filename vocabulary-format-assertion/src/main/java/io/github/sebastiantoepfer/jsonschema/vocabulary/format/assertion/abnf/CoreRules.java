@@ -23,134 +23,155 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.Alternative;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.Concatenation;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.Element;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.NumericCharacter;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.RuleName;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.RuleReference;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.SequenceGroup;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.StringElement;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.ValueRangeAlternatives;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.VariableRepetition;
 
 public enum CoreRules implements Element {
     ALPHA() {
         @Override
-        public boolean isValidFor(final int codePoint) {
-            return Alternative
-                .of(
-                    ValueRangeAlternatives.of(
-                        NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x41),
-                        NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x5A)
-                    ),
-                    ValueRangeAlternatives.of(
-                        NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x61),
-                        NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x7A)
-                    )
+        Element definition() {
+            return Alternative.of(
+                ValueRangeAlternatives.of(
+                    NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x41),
+                    NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x5A)
+                ),
+                ValueRangeAlternatives.of(
+                    NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x61),
+                    NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x7A)
                 )
-                .isValidFor(codePoint);
+            );
         }
     },
     BIT() {
         @Override
-        public boolean isValidFor(final int codePoint) {
-            return Alternative.of(StringElement.of("0"), StringElement.of("1")).isValidFor(codePoint);
+        Element definition() {
+            return Alternative.of(StringElement.of("0"), StringElement.of("1"));
         }
     },
     CHAR() {
         @Override
-        public boolean isValidFor(final int codePoint) {
-            return ValueRangeAlternatives
-                .of(
-                    NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x01),
-                    NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x7F)
-                )
-                .isValidFor(codePoint);
+        Element definition() {
+            return ValueRangeAlternatives.of(
+                NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x01),
+                NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x7F)
+            );
         }
     },
     CR() {
         @Override
-        public boolean isValidFor(final int codePoint) {
-            return NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x0D).isValidFor(codePoint);
+        Element definition() {
+            return NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x0D);
         }
     },
-    CRLF, //CR LF
-    CTL, //%x00-1F / %x7F
+    CRLF() {
+        @Override
+        Element definition() {
+            return Concatenation.of(RuleReference.of(CR.asRuleName()), RuleReference.of(LF.asRuleName()));
+        }
+    },
+    CTL() {
+        @Override
+        Element definition() {
+            return Alternative.of(
+                ValueRangeAlternatives.of(
+                    NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x00),
+                    NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x1F)
+                ),
+                NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x7F)
+            );
+        }
+    },
     DIGIT() {
         @Override
-        public boolean isValidFor(final int codePoint) {
-            return ValueRangeAlternatives
-                .of(
-                    NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x30),
-                    NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x39)
-                )
-                .isValidFor(codePoint);
+        Element definition() {
+            return ValueRangeAlternatives.of(
+                NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x30),
+                NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x39)
+            );
         }
     },
     DQUOTE() {
         @Override
-        public boolean isValidFor(final int codePoint) {
-            return NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x22).isValidFor(codePoint);
+        Element definition() {
+            return NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x22);
         }
     },
     HEXDIG() {
         @Override
-        public boolean isValidFor(final int codePoint) {
-            return Alternative
-                .of(
-                    DIGIT,
-                    StringElement.of("A"),
-                    StringElement.of("B"),
-                    StringElement.of("C"),
-                    StringElement.of("D"),
-                    StringElement.of("E"),
-                    StringElement.of("F")
-                )
-                .isValidFor(codePoint);
+        Element definition() {
+            return Alternative.of(
+                DIGIT,
+                StringElement.of("A"),
+                StringElement.of("B"),
+                StringElement.of("C"),
+                StringElement.of("D"),
+                StringElement.of("E"),
+                StringElement.of("F")
+            );
         }
     },
     HTAB() {
         @Override
-        public boolean isValidFor(final int codePoint) {
-            return NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x09).isValidFor(codePoint);
+        Element definition() {
+            return NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x09);
         }
     },
     LF() {
         @Override
-        public boolean isValidFor(final int codePoint) {
-            return NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x0A).isValidFor(codePoint);
+        Element definition() {
+            return NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x0A);
         }
     },
-    LWSP, //*(WSP / CRLF WSP)
+    LWSP() {
+        @Override
+        Element definition() {
+            return VariableRepetition.of(
+                SequenceGroup.of(
+                    Concatenation.of(
+                        Alternative.of(RuleReference.of(WSP.asRuleName()), RuleReference.of(CRLF.asRuleName())),
+                        RuleReference.of(WSP.asRuleName())
+                    )
+                )
+            );
+        }
+    },
     OCTET() {
         @Override
-        public boolean isValidFor(final int codePoint) {
-            return ValueRangeAlternatives
-                .of(
-                    NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x00),
-                    NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0xFF)
-                )
-                .isValidFor(codePoint);
+        Element definition() {
+            return ValueRangeAlternatives.of(
+                NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x00),
+                NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0xFF)
+            );
         }
     },
     SP() {
         @Override
-        public boolean isValidFor(final int codePoint) {
-            return NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x20).isValidFor(codePoint);
+        Element definition() {
+            return NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x20);
         }
     },
     VCHAR() {
         @Override
-        public boolean isValidFor(final int codePoint) {
-            return ValueRangeAlternatives
-                .of(
-                    NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x21),
-                    NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x7E)
-                )
-                .isValidFor(codePoint);
+        Element definition() {
+            return ValueRangeAlternatives.of(
+                NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x21),
+                NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x7E)
+            );
         }
     },
     WSP {
         @Override
-        public boolean isValidFor(final int codePoint) {
-            return Alternative.of(SP, HTAB).isValidFor(codePoint);
+        Element definition() {
+            return Alternative.of(SP, HTAB);
         }
     };
 
@@ -159,7 +180,14 @@ public enum CoreRules implements Element {
     }
 
     @Override
-    public boolean isValidFor(final int codePoint) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public final <T extends Media<T>> T printOn(final T media) {
+        return Rule.of(asRuleName(), definition()).printOn(media).withValue("type", "corerule");
     }
+
+    @Override
+    public final boolean isValidFor(final int codePoint) {
+        return definition().isValidFor(codePoint);
+    }
+
+    abstract Element definition();
 }

@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import java.util.Objects;
 
 public final class SpecificRepetition implements Element {
@@ -37,6 +38,14 @@ public final class SpecificRepetition implements Element {
     private SpecificRepetition(final Element elementToRepeat, final int occurences) {
         this.elementToRepeat = Objects.requireNonNull(elementToRepeat);
         this.occurences = occurences;
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        return media
+            .withValue("type", "fix-repetition")
+            .withValue("repeat", occurences)
+            .withValue("element", elementToRepeat);
     }
 
     @Override

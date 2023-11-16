@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -43,6 +44,11 @@ public final class NumericCharacter implements Element {
     @Override
     public boolean isValidFor(final int codePoint) {
         return value == codePoint;
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue("type", "num-val").withValue("base", base.name()).withValue("value", value);
     }
 
     boolean lessThanOrEquals(final int codePoint) {

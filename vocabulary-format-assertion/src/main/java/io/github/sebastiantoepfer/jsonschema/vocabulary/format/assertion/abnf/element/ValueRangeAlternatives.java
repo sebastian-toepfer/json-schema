@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import java.util.Objects;
 
 public final class ValueRangeAlternatives implements Element {
@@ -37,6 +38,11 @@ public final class ValueRangeAlternatives implements Element {
     public ValueRangeAlternatives(final NumericCharacter start, final NumericCharacter end) {
         this.start = start;
         this.end = end;
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue("type", "val-range").withValue("from", start).withValue("to", end);
     }
 
     @Override
