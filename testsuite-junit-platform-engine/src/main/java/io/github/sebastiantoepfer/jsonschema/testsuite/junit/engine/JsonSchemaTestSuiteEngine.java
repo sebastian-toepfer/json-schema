@@ -41,11 +41,12 @@ public class JsonSchemaTestSuiteEngine implements TestEngine {
     @Override
     public TestDescriptor discover(final EngineDiscoveryRequest discoveryRequest, final UniqueId uniqueId) {
         final TestDescriptor result = new EngineDescriptor(uniqueId, "Json Schema Test");
-        new Resources()
-            .all()
-            .filter(resource -> resource.hasExtension("json"))
-            .map(JsonSchemaSuitesTestDescriptor::new)
-            .forEach(result::addChild);
+        try (final Stream<Resource> res = new Resources().all()) {
+            res
+                .filter(resource -> resource.hasExtension("json"))
+                .map(JsonSchemaSuitesTestDescriptor::new)
+                .forEach(result::addChild);
+        }
         return result;
     }
 

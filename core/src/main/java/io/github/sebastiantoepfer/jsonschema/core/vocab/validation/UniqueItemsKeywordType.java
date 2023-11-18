@@ -119,11 +119,12 @@ final class UniqueItemsKeywordType implements KeywordType {
         @Override
         public boolean equals(final Object obj) {
             return (
-                this == obj || (obj != null && getClass() == obj.getClass() && equals((JsonValueNumberEqualsFix) obj))
+                this == obj || (obj != null && getClass() == obj.getClass() && isEquals((JsonValueNumberEqualsFix) obj))
             );
         }
 
-        private boolean equals(final JsonValueNumberEqualsFix other) {
+        @SuppressWarnings("BigDecimalEquals")
+        private boolean isEquals(final JsonValueNumberEqualsFix other) {
             final boolean result;
             if (isNumber() && other.isNumber()) {
                 result = normalizeValue().equals(other.normalizeValue());
