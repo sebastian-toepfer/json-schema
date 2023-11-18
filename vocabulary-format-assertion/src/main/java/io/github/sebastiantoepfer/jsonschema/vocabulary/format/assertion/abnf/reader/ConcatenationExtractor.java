@@ -65,14 +65,12 @@ class ConcatenationExtractor implements Extractor, ExtractorOwner {
         } else if (Character.isWhitespace(codePoint)) {
             result = new ConcatenationExtractor(owner, elements, currentEndOfElementDetector);
         } else if (codePoint == SOLIDUS) {
-            final List<Element> newElements = new ArrayList<>(elements);
-            final Element element = newElements.remove(newElements.size() - 1);
             result =
-                AlternativeExtractor.of(
-                    new ConcatenationExtractor(owner, newElements, currentEndOfElementDetector),
-                    element,
-                    currentEndOfElementDetector
-                );
+                new ConcationTypeSwitch(owner, currentEndOfElementDetector, elements)
+                    .switchTo(
+                        (o, d, e) -> new ConcatenationExtractor(o, e, d),
+                        (o, d, e) -> AlternativeExtractor.of(o, e, d)
+                    );
         } else {
             result = RepetitionExtractor.of(this).append(codePoint);
         }
