@@ -26,6 +26,7 @@ open module io.github.sebastiantoepfer.jsonschema.core {
     requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
     requires jakarta.json;
 
+    requires com.google.errorprone.annotations;
     requires org.junit.jupiter.api;
     requires org.junit.jupiter.params;
     requires org.junit.jupiter.engine;

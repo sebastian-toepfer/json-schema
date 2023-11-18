@@ -31,5 +31,6 @@ module io.github.sebastiantoepfer.jsonschema.testsuite.junit {
     requires org.junit.platform.engine;
     requires org.junit.platform.commons;
     requires com.github.spotbugs.annotations;
+    requires com.google.errorprone.annotations;
     requires jakarta.json;
 }

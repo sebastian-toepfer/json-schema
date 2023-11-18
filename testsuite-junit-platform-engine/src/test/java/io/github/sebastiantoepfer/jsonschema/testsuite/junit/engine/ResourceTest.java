@@ -26,7 +26,8 @@ package io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine.Resource;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
@@ -45,16 +46,18 @@ class ResourceTest {
 
     @Test
     void should_return_content() throws Exception {
-        assertThat(
-            new String(new Resource("tests/test_resource.json").content().readAllBytes()),
-            is(
-                """
-                {
-                    "name": "sebastian"
-                }
-                """
-            )
-        );
+        try (final InputStream content = new Resource("tests/test_resource.json").content()) {
+            assertThat(
+                new String(content.readAllBytes(), StandardCharsets.UTF_8),
+                is(
+                    """
+                    {
+                        "name": "sebastian"
+                    }
+                    """
+                )
+            );
+        }
     }
 
     @Test

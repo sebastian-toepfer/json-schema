@@ -26,28 +26,30 @@ package io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 
-import io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine.Resource;
-import io.github.sebastiantoepfer.jsonschema.testsuite.junit.engine.Resources;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 class ResourcesTest {
 
     @Test
     void should_find_resources_from_classpath() {
-        assertThat(new Resources().all().toList(), hasItems(new Resource("tests/test_resource.json")));
+        try (final Stream<Resource> res = new Resources().all()) {
+            assertThat(res.toList(), hasItems(new Resource("tests/test_resource.json")));
+        }
     }
 
     @Test
     void should_find_resources_in_subdir_from_classpath() {
-        assertThat(new Resources("tests").all().toList(), hasItems(new Resource("tests/test_resource.json")));
+        try (final Stream<Resource> res = new Resources("tests").all()) {
+            assertThat(res.toList(), hasItems(new Resource("tests/test_resource.json")));
+        }
     }
 
     @Test
     void should_find_resources_in_metainf() {
-        //to kill all mutants, we need a resource from non-test classpath
-        assertThat(
-            new Resources("META-INF").all().toList(),
-            hasItems(new Resource("META-INF/services/org.junit.platform.engine.TestEngine"))
-        );
+        try (final Stream<Resource> res = new Resources("META-INF").all()) {
+            //to kill all mutants, we need a resource from non-test classpath
+            assertThat(res.toList(), hasItems(new Resource("META-INF/services/org.junit.platform.engine.TestEngine")));
+        }
     }
 }

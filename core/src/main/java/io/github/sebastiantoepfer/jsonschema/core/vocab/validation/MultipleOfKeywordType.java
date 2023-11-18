@@ -63,6 +63,7 @@ final class MultipleOfKeywordType implements KeywordType {
         }
 
         @Override
+        @SuppressWarnings("BigDecimalEquals")
         public boolean isValidFor(final JsonValue instance) {
             return (
                 !InstanceType.NUMBER.isInstance(instance) ||

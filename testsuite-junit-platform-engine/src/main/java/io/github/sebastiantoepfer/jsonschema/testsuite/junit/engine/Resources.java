@@ -48,6 +48,7 @@ final class Resources {
         this.baseDir = baseDir;
     }
 
+    @com.google.errorprone.annotations.MustBeClosed
     Stream<Resource> all() {
         try {
             return StreamSupport
@@ -83,6 +84,7 @@ final class Resources {
             this.path = Objects.requireNonNull(path);
         }
 
+        @SuppressWarnings("StreamResourceLeak")
         Stream<Resource> toResources() {
             final Stream<Resource> result;
             try {

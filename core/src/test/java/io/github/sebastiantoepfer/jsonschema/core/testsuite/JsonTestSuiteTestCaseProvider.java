@@ -37,6 +37,7 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 class JsonTestSuiteTestCaseProvider implements ArgumentsProvider {
 
     @Override
+    @SuppressWarnings("MustBeClosedChecker")
     public Stream<? extends Arguments> provideArguments(final ExtensionContext context) throws Exception {
         return new Resources()
             .all()
