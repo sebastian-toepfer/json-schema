@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Annotation;
@@ -50,9 +51,13 @@ class FormatAssertionKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        if (InstanceType.STRING.isInstance(value)) {
-            return createKeyword(((JsonString) value).getString());
+    public Keyword createKeyword(final JsonSchema js) {
+        if (
+            js.getValueType() == JsonValue.ValueType.OBJECT &&
+            js.asJsonObject().containsKey(name()) &&
+            js.asJsonObject().get(name()).getValueType() == JsonValue.ValueType.STRING
+        ) {
+            return createKeyword(js.asJsonObject().getString(name()));
         } else {
             throw new IllegalArgumentException("Value must be a string!");
         }
@@ -93,6 +98,11 @@ class FormatAssertionKeywordType implements KeywordType {
         @Override
         public boolean isValidFor(final JsonValue instance) {
             return !InstanceType.STRING.isInstance(instance) || format.isValidFor(((JsonString) instance).getString());
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            return media.withValue(name(), format.name());
         }
     }
 }

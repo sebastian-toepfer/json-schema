@@ -42,7 +42,7 @@ class FormatAssertionKeywordTypeTest {
     @Test
     void should_know_his_name() {
         final Keyword keyword = new FormatAssertionKeywordType(List.of(new TestFormat()))
-            .createKeyword(JsonSchemas.load(JsonValue.TRUE), Json.createValue("date"));
+            .createKeyword(JsonSchemas.load(Json.createObjectBuilder().add("format", "date").build()));
 
         assertThat(keyword.hasName("format"), is(true));
         assertThat(keyword.hasName("test"), is(false));
@@ -52,25 +52,21 @@ class FormatAssertionKeywordTypeTest {
     void should_not_be_createable_with_non_string() {
         final JsonSchema schema = JsonSchemas.load(JsonValue.TRUE);
         final KeywordType keywordType = new FormatAssertionKeywordType(List.of(new TestFormat()));
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> keywordType.createKeyword(schema, JsonValue.EMPTY_JSON_OBJECT)
-        );
+        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
     }
 
     @Test
     void should_not_be_createable_with_unknown_formatname() {
-        final JsonSchema schema = JsonSchemas.load(JsonValue.TRUE);
+        final JsonSchema schema = JsonSchemas.load(Json.createObjectBuilder().add("format", "test").build());
         final KeywordType keywordType = new FormatAssertionKeywordType(List.of(new TestFormat()));
-        final JsonValue unknownFormatName = Json.createValue("test");
-        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema, unknownFormatName));
+        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
     }
 
     @Test
     void should_be_assertion_and_annotation() {
         assertThat(
             new FormatAssertionKeywordType(List.of(new TestFormat()))
-                .createKeyword(JsonSchemas.load(JsonValue.TRUE), Json.createValue("date"))
+                .createKeyword(JsonSchemas.load(Json.createObjectBuilder().add("format", "date").build()))
                 .categories(),
             containsInAnyOrder(Keyword.KeywordCategory.ASSERTION, Keyword.KeywordCategory.ANNOTATION)
         );
@@ -80,7 +76,7 @@ class FormatAssertionKeywordTypeTest {
     void should_return_formatname_as_annotation() {
         assertThat(
             new FormatAssertionKeywordType(List.of(new TestFormat()))
-                .createKeyword(JsonSchemas.load(JsonValue.TRUE), Json.createValue("date"))
+                .createKeyword(JsonSchemas.load(Json.createObjectBuilder().add("format", "date").build()))
                 .asAnnotation()
                 .valueFor(JsonValue.EMPTY_JSON_OBJECT),
             is(Json.createValue("date"))
