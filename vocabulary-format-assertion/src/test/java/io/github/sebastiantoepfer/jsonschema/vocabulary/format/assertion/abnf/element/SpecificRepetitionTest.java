@@ -48,6 +48,54 @@ class SpecificRepetitionTest {
     }
 
     @Test
+    void should_dimension_as_multimple_of() {
+        assertThat(
+            SpecificRepetition.of(Alternative.of(StringElement.of("ab"), StringElement.of("cde")), 2).dimension(),
+            is(Dimension.of(4, 6))
+        );
+    }
+
+    @Test
+    void should_be_valid_if_codepoint_is_equals_codepoint_at_position_on_first_repeation() {
+        assertThat(
+            SpecificRepetition.of(StringElement.of("1"), 3).isValidFor(ValidateableCodePoint.of(0, '1')),
+            is(true)
+        );
+    }
+
+    @Test
+    void should_be_valid_if_codepoint_is_equals_codepoint_at_position_on_any_repeation() {
+        assertThat(
+            SpecificRepetition.of(StringElement.of("1"), 3).isValidFor(ValidateableCodePoint.of(1, '1')),
+            is(true)
+        );
+    }
+
+    @Test
+    void should_be_valid_if_codepoint_is_equals_codepoint_at_position_on_last_posible_repeation() {
+        assertThat(
+            SpecificRepetition.of(StringElement.of("1"), 3).isValidFor(ValidateableCodePoint.of(2, '1')),
+            is(true)
+        );
+    }
+
+    @Test
+    void should_be_invalid_if_codepoint_is_notequals_codepoint_at_position_on_any_posible_repeation() {
+        assertThat(
+            SpecificRepetition.of(StringElement.of("1"), 3).isValidFor(ValidateableCodePoint.of(1, '2')),
+            is(false)
+        );
+    }
+
+    @Test
+    void should_be_invalid_if_codepoint_is_out_of_position() {
+        assertThat(
+            SpecificRepetition.of(StringElement.of("1"), 3).isValidFor(ValidateableCodePoint.of(3, '1')),
+            is(false)
+        );
+    }
+
+    @Test
     void should_be_printable() {
         assertThat(
             SpecificRepetition.of(StringElement.of("."), 2).printOn(new HashMapMedia()),

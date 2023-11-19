@@ -42,8 +42,8 @@ public final class NumericCharacter implements Element {
     }
 
     @Override
-    public boolean isValidFor(final int codePoint) {
-        return value == codePoint;
+    public boolean isValidFor(final ValidateableCodePoint codePoint) {
+        return codePoint.isEqualsTo(value);
     }
 
     @Override
@@ -51,12 +51,12 @@ public final class NumericCharacter implements Element {
         return media.withValue("type", "num-val").withValue("base", base.name()).withValue("value", value);
     }
 
-    boolean lessThanOrEquals(final int codePoint) {
-        return value <= codePoint;
+    boolean lessThanOrEquals(final ValidateableCodePoint codePoint) {
+        return codePoint.isGreaterOrEqualsThan(value);
     }
 
-    boolean greatherThaneOrEquals(final int codePoint) {
-        return value >= codePoint;
+    boolean greatherThaneOrEquals(final ValidateableCodePoint codePoint) {
+        return codePoint.isLessOrEqualsThan(value);
     }
 
     @Override

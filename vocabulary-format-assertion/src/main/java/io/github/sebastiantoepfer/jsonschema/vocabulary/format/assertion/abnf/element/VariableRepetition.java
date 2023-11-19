@@ -74,8 +74,29 @@ public final class VariableRepetition implements Element {
     }
 
     @Override
-    public boolean isValidFor(final int codePoint) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public boolean isValidFor(final ValidateableCodePoint codePoint) {
+        final boolean result;
+        if (dimension().isInRange(codePoint)) {
+            if (element.dimension().isInRange(codePoint)) {
+                result = element.isValidFor(codePoint);
+            } else {
+                final int newMinOccurrences = Math.min(minOccurrences, 1);
+                result =
+                    ofBetween(element, newMinOccurrences, Math.max(newMinOccurrences, maxOccurrences - 1))
+                        .isValidFor(codePoint.repositionBackBy(element.dimension()));
+            }
+        } else {
+            result = false;
+        }
+        return result;
+    }
+
+    @Override
+    public Dimension dimension() {
+        return element
+            .dimension()
+            .multipliesBy(minOccurrences)
+            .expandTo(element.dimension().multipliesBy(maxOccurrences));
     }
 
     @Override

@@ -25,15 +25,11 @@ package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.e
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import java.util.List;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
@@ -46,11 +42,48 @@ class ConcatenationTest {
     }
 
     @Test
-    void should_be_created_an_equals_instance() {
+    void should_return_dimension_as_sum() {
         assertThat(
-            Concatenation.of(List.of(StringElement.of("a"), StringElement.of("b"))),
-            both(is(Concatenation.of(StringElement.of("a"), StringElement.of("b")))).and(not(nullValue()))
+            Concatenation
+                .of(
+                    Alternative.of(StringElement.of("ab"), StringElement.of("cde")),
+                    Alternative.of(StringElement.of("x"), StringElement.of("yz"))
+                )
+                .dimension(),
+            is(Dimension.of(3, 5))
         );
+    }
+
+    @Test
+    void should_be_valid_if_codepoint_is_equals_codepoint_at_position() {
+        final Concatenation concatenation = Concatenation.of(
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'a'),
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'b'),
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'c')
+        );
+        assertThat(concatenation.isValidFor(ValidateableCodePoint.of(0, 'a')), is(true));
+        assertThat(concatenation.isValidFor(ValidateableCodePoint.of(1, 'b')), is(true));
+        assertThat(concatenation.isValidFor(ValidateableCodePoint.of(2, 'c')), is(true));
+    }
+
+    @Test
+    void should_be_invalid_if_codepoint_is_out_of_position() {
+        final Concatenation concatenation = Concatenation.of(
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'a'),
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'b'),
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'c')
+        );
+        assertThat(concatenation.isValidFor(ValidateableCodePoint.of(3, 'c')), is(false));
+    }
+
+    @Test
+    void should_be_invalid_if_codepoint_is_notequals_codepoint_at_position() {
+        final Concatenation concatenation = Concatenation.of(
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'a'),
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'b'),
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'c')
+        );
+        assertThat(concatenation.isValidFor(ValidateableCodePoint.of(1, 'B')), is(false));
     }
 
     @Test

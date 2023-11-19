@@ -26,12 +26,13 @@ package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf;
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.Alternative;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.Concatenation;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.Dimension;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.Element;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.NumericCharacter;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.RuleName;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.RuleReference;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.SequenceGroup;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.StringElement;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.ValidateableCodePoint;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.ValueRangeAlternatives;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.VariableRepetition;
 
@@ -75,7 +76,7 @@ public enum CoreRules implements Element {
     CRLF() {
         @Override
         Element definition() {
-            return Concatenation.of(RuleReference.of(CR.asRuleName()), RuleReference.of(LF.asRuleName()));
+            return Concatenation.of(CR, LF);
         }
     },
     CTL() {
@@ -134,14 +135,7 @@ public enum CoreRules implements Element {
     LWSP() {
         @Override
         Element definition() {
-            return VariableRepetition.of(
-                SequenceGroup.of(
-                    Concatenation.of(
-                        Alternative.of(RuleReference.of(WSP.asRuleName()), RuleReference.of(CRLF.asRuleName())),
-                        RuleReference.of(WSP.asRuleName())
-                    )
-                )
-            );
+            return VariableRepetition.of(SequenceGroup.of(Concatenation.of(Alternative.of(WSP, CRLF), WSP)));
         }
     },
     OCTET() {
@@ -175,7 +169,7 @@ public enum CoreRules implements Element {
         }
     };
 
-    public RuleName asRuleName() {
+    public final RuleName asRuleName() {
         return RuleName.of(name());
     }
 
@@ -184,9 +178,18 @@ public enum CoreRules implements Element {
         return Rule.of(asRuleName(), definition()).printOn(media).withValue("type", "corerule");
     }
 
-    @Override
     public final boolean isValidFor(final int codePoint) {
+        return isValidFor(ValidateableCodePoint.of(0, codePoint));
+    }
+
+    @Override
+    public final boolean isValidFor(final ValidateableCodePoint codePoint) {
         return definition().isValidFor(codePoint);
+    }
+
+    @Override
+    public final Dimension dimension() {
+        return definition().dimension();
     }
 
     abstract Element definition();

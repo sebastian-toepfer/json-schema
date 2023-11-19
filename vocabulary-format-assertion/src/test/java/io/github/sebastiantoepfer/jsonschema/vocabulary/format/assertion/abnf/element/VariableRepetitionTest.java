@@ -117,4 +117,54 @@ class VariableRepetitionTest {
             )
         );
     }
+
+    @Test
+    void should_dimension_as_multimple_of() {
+        assertThat(
+            VariableRepetition
+                .ofBetween(Alternative.of(StringElement.of("ab"), StringElement.of("cde")), 2, 4)
+                .dimension(),
+            is(Dimension.of(4, 12))
+        );
+    }
+
+    @Test
+    void should_be_valid_if_codepoint_matches_codepoint_at_posion_of_first_repeation() {
+        assertThat(
+            VariableRepetition
+                .ofAtLeast(NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'a'), 2)
+                .isValidFor(ValidateableCodePoint.of(0, 'a')),
+            is(true)
+        );
+    }
+
+    @Test
+    void should_be_valid_if_codepoint_matches_codepoint_at_posion_of_any_repeation() {
+        assertThat(
+            VariableRepetition
+                .ofAtLeast(NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'a'), 2)
+                .isValidFor(ValidateableCodePoint.of(4, 'a')),
+            is(true)
+        );
+    }
+
+    @Test
+    void should_be_invalid_if_codepoint_not_equals_at_posion_for_min_repeation() {
+        assertThat(
+            VariableRepetition
+                .ofAtLeast(NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'a'), 2)
+                .isValidFor(ValidateableCodePoint.of(1, 'b')),
+            is(false)
+        );
+    }
+
+    @Test
+    void should_be_invalod_if_codepoint_out_of_posion() {
+        assertThat(
+            VariableRepetition
+                .ofAtMost(NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'a'), 2)
+                .isValidFor(ValidateableCodePoint.of(3, 'a')),
+            is(false)
+        );
+    }
 }

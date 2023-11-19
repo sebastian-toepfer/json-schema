@@ -46,7 +46,7 @@ public final class ValueRangeAlternatives implements Element {
     }
 
     @Override
-    public boolean isValidFor(final int codePoint) {
+    public boolean isValidFor(final ValidateableCodePoint codePoint) {
         return start.lessThanOrEquals(codePoint) && end.greatherThaneOrEquals(codePoint);
     }
 

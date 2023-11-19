@@ -49,8 +49,24 @@ public final class SpecificRepetition implements Element {
     }
 
     @Override
-    public boolean isValidFor(final int codePoint) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public boolean isValidFor(final ValidateableCodePoint codePoint) {
+        final boolean result;
+        if (dimension().isInRange(codePoint)) {
+            if (elementToRepeat.dimension().isInRange(codePoint)) {
+                result = elementToRepeat.isValidFor(codePoint);
+            } else {
+                result =
+                    of(elementToRepeat, occurences).isValidFor(codePoint.repositionBackBy(elementToRepeat.dimension()));
+            }
+        } else {
+            result = false;
+        }
+        return result;
+    }
+
+    @Override
+    public Dimension dimension() {
+        return elementToRepeat.dimension().multipliesBy(occurences);
     }
 
     @Override

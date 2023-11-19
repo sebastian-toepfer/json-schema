@@ -61,7 +61,7 @@ class ValueRangeAlternativesTest {
                     NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x02),
                     NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x04)
                 )
-                .isValidFor(0x01),
+                .isValidFor(ValidateableCodePoint.of(0, 0x01)),
             is(false)
         );
     }
@@ -74,7 +74,7 @@ class ValueRangeAlternativesTest {
                     NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x02),
                     NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x04)
                 )
-                .isValidFor(0x05),
+                .isValidFor(ValidateableCodePoint.of(0, 0x05)),
             is(false)
         );
     }
@@ -87,7 +87,7 @@ class ValueRangeAlternativesTest {
                     NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x02),
                     NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x04)
                 )
-                .isValidFor(0x03),
+                .isValidFor(ValidateableCodePoint.of(0, 0x03)),
             is(true)
         );
     }
@@ -100,7 +100,7 @@ class ValueRangeAlternativesTest {
                     NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x02),
                     NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x04)
                 )
-                .isValidFor(0x02),
+                .isValidFor(ValidateableCodePoint.of(0, 0x02)),
             is(true)
         );
     }
@@ -113,7 +113,7 @@ class ValueRangeAlternativesTest {
                     NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x02),
                     NumericCharacter.of(NumericCharacter.BASE.HEXADECIMAL, 0x04)
                 )
-                .isValidFor(0x04),
+                .isValidFor(ValidateableCodePoint.of(0, 0x04)),
             is(true)
         );
     }
@@ -135,6 +135,19 @@ class ValueRangeAlternativesTest {
                 ),
                 hasEntry(is("to"), allOf(hasEntry(is("base"), is("BINARY")), (Matcher) hasEntry(is("value"), is(23))))
             )
+        );
+    }
+
+    @Test
+    void should_return_two_as_dimension() {
+        assertThat(
+            ValueRangeAlternatives
+                .of(
+                    NumericCharacter.of(NumericCharacter.BASE.BINARY, 0b10101),
+                    NumericCharacter.of(NumericCharacter.BASE.BINARY, 0b10111)
+                )
+                .dimension(),
+            is(Dimension.of(1))
         );
     }
 }

@@ -56,6 +56,51 @@ class SequenceGroupTest {
     }
 
     @Test
+    void should_return_dimension_as_sum() {
+        assertThat(
+            SequenceGroup
+                .of(
+                    Alternative.of(StringElement.of("ab"), StringElement.of("cde")),
+                    Alternative.of(StringElement.of("x"), StringElement.of("yz"))
+                )
+                .dimension(),
+            is(Dimension.of(3, 5))
+        );
+    }
+
+    @Test
+    void should_be_valid_if_codepoint_is_equals_codepoint_at_position() {
+        final Element element = SequenceGroup.of(
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'a'),
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'b'),
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'c')
+        );
+        assertThat(element.isValidFor(ValidateableCodePoint.of(0, 'a')), is(true));
+        assertThat(element.isValidFor(ValidateableCodePoint.of(1, 'b')), is(true));
+        assertThat(element.isValidFor(ValidateableCodePoint.of(2, 'c')), is(true));
+    }
+
+    @Test
+    void should_be_invalid_if_codepoint_is_out_of_position() {
+        final Element element = SequenceGroup.of(
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'a'),
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'b'),
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'c')
+        );
+        assertThat(element.isValidFor(ValidateableCodePoint.of(3, 'c')), is(false));
+    }
+
+    @Test
+    void should_be_invalid_if_codepoint_is_notequals_codepoint_at_position() {
+        final Element element = SequenceGroup.of(
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'a'),
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'b'),
+            NumericCharacter.of(NumericCharacter.BASE.DECIMAL, 'c')
+        );
+        assertThat(element.isValidFor(ValidateableCodePoint.of(1, 'B')), is(false));
+    }
+
+    @Test
     void should_be_printable() {
         assertThat(
             SequenceGroup.of(StringElement.of("/"), StringElement.of(";")).printOn(new HashMapMedia()),

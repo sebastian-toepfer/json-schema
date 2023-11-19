@@ -25,19 +25,35 @@ package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.e
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
-class AlternativeTest {
+class ValidateableCodePointTest {
 
     @Test
-    void equalsContract() {
-        EqualsVerifier.forClass(Alternative.class).verify();
+    void should_equals_contract() {
+        EqualsVerifier.forClass(ValidateableCodePoint.class).verify();
     }
 
     @Test
-    void should_return_dimension_from_smallest_and_larges() {
-        assertThat(Alternative.of(StringElement.of("ab"), StringElement.of("cde")).dimension(), is(Dimension.of(2, 3)));
+    void should_not_be_creatable_with_position_lower_zero() {
+        assertThrows(IllegalArgumentException.class, () -> ValidateableCodePoint.of(-1, 0x00));
+    }
+
+    @Test
+    void should_not_be_creatable_with_codepoint_lower_zero() {
+        assertThrows(IllegalArgumentException.class, () -> ValidateableCodePoint.of(0, -1));
+    }
+
+    @Test
+    void should_return_his_position() {
+        assertThat(ValidateableCodePoint.of(10, 0x13).position(), is(10));
+    }
+
+    @Test
+    void should_repositionable_by_offset() {
+        assertThat(ValidateableCodePoint.of(10, 0x13).repositionBackBy(9), is(ValidateableCodePoint.of(1, 0x13)));
     }
 }

@@ -26,6 +26,9 @@ package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.e
 import io.github.sebastiantoepfer.ddd.common.Printable;
 
 public interface Element extends Printable {
-    //no no, but let get start simple
-    boolean isValidFor(int codePoint);
+    boolean isValidFor(ValidateableCodePoint codePoint);
+
+    default Dimension dimension() {
+        return Dimension.one();
+    }
 }

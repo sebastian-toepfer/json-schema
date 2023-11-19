@@ -60,8 +60,25 @@ public final class SequenceGroup implements Element {
     }
 
     @Override
-    public boolean isValidFor(final int codePoint) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public boolean isValidFor(final ValidateableCodePoint codePoint) {
+        final boolean result;
+        if (dimension().isInRange(codePoint)) {
+            final Element first = elements.get(0);
+            if (first.dimension().isInRange(codePoint)) {
+                result = first.isValidFor(codePoint);
+            } else {
+                result =
+                    of(elements.subList(1, elements.size())).isValidFor(codePoint.repositionBackBy(first.dimension()));
+            }
+        } else {
+            result = false;
+        }
+        return result;
+    }
+
+    @Override
+    public Dimension dimension() {
+        return elements.stream().map(Element::dimension).reduce(Dimension.zero(), Dimension::plus);
     }
 
     @Override

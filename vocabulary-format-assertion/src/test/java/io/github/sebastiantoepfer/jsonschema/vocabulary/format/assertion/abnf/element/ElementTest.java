@@ -26,18 +26,26 @@ package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.e
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import nl.jqno.equalsverifier.EqualsVerifier;
+import io.github.sebastiantoepfer.ddd.common.Media;
 import org.junit.jupiter.api.Test;
 
-class AlternativeTest {
+class ElementTest {
 
     @Test
-    void equalsContract() {
-        EqualsVerifier.forClass(Alternative.class).verify();
+    void should_had_dimension_of_one_by_default() {
+        assertThat(new TestElement().dimension(), is(Dimension.of(1)));
     }
 
-    @Test
-    void should_return_dimension_from_smallest_and_larges() {
-        assertThat(Alternative.of(StringElement.of("ab"), StringElement.of("cde")).dimension(), is(Dimension.of(2, 3)));
+    private static class TestElement implements Element {
+
+        @Override
+        public boolean isValidFor(ValidateableCodePoint codePoint) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(T media) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
     }
 }

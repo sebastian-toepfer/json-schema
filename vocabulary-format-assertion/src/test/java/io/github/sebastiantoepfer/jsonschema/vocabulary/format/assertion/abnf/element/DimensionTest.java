@@ -24,63 +24,60 @@
 package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 
-import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import java.util.List;
+import java.util.TreeSet;
 import nl.jqno.equalsverifier.EqualsVerifier;
-import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
-class OptionalSequenceTest {
+class DimensionTest {
 
     @Test
-    void equalsContract() {
-        EqualsVerifier.forClass(OptionalSequence.class).verify();
+    void should_equals_contract() {
+        EqualsVerifier.forClass(Dimension.class).verify();
     }
 
     @Test
-    void should_create_new_optionalsequence() {
-        assertThat(OptionalSequence.of(StringElement.of(".")), is(not(nullValue())));
+    void should_know_if_codepoint_is_in_range() {
+        assertThat(Dimension.of(1).isInRange(ValidateableCodePoint.of(0, 0x13)), is(true));
     }
 
     @Test
-    void should_has_dimension_from_zero_to_max() {
+    void should_know_if_codepoint_is_not_in_range() {
+        assertThat(Dimension.of(1).isInRange(ValidateableCodePoint.of(1, 0x13)), is(false));
+    }
+
+    @Test
+    void should_create_expanded_upper_bondary() {
+        assertThat(Dimension.of(2).expandTo(Dimension.of(3, 7)), is(Dimension.of(2, 7)));
+    }
+
+    @Test
+    void should_create_expanded_lower_and_upper_bondary() {
+        assertThat(Dimension.of(2).expandTo(Dimension.of(1, 7)), is(Dimension.of(1, 7)));
+    }
+
+    @Test
+    void should_create_expanded_lower_bondary() {
+        assertThat(Dimension.of(2, 8).expandTo(Dimension.of(1, 7)), is(Dimension.of(1, 8)));
+    }
+
+    @Test
+    void should_be_sortable() {
         assertThat(
-            OptionalSequence.of(List.of(StringElement.of("a"), StringElement.of("b"))).dimension(),
-            is(Dimension.of(0, 2))
-        );
-    }
-
-    @Test
-    void should_be_printable() {
-        assertThat(
-            OptionalSequence.of(List.of(StringElement.of("/"), StringElement.of(";"))).printOn(new HashMapMedia()),
-            allOf(
-                (Matcher) hasEntry(is("type"), is("option")),
-                hasEntry(
-                    is("optionals"),
-                    contains(
-                        allOf(hasEntry("type", "char-val"), hasEntry("value", "/")),
-                        allOf(hasEntry("type", "char-val"), hasEntry("value", ";"))
-                    )
+            new TreeSet<>(
+                List.of(
+                    Dimension.of(6),
+                    Dimension.of(2, 4),
+                    Dimension.of(2),
+                    Dimension.of(1, 7),
+                    Dimension.of(2, 4),
+                    Dimension.of(2, 6)
                 )
-            )
-        );
-    }
-
-    @Test
-    void should_be_valid_for_every_codepoint() {
-        assertThat(
-            OptionalSequence
-                .of(List.of(StringElement.of("/"), StringElement.of(";")))
-                .isValidFor(ValidateableCodePoint.of(0, ',')),
-            is(true)
+            ),
+            contains(Dimension.of(2), Dimension.of(2, 4), Dimension.of(2, 6), Dimension.of(6), Dimension.of(1, 7))
         );
     }
 }
