@@ -57,21 +57,14 @@ public final class Concatenation implements Element {
 
     @Override
     public Dimension dimension() {
-        return concatenations.stream().map(Element::dimension).reduce(Dimension::plus).orElseThrow();
+        return concatenations.stream().map(Element::dimension).reduce(Dimension.zero(), Dimension::plus);
     }
 
     @Override
     public boolean isValidFor(final ValidateableCodePoint codePoint) {
         final boolean result;
         if (dimension().isInRange(codePoint)) {
-            final Element first = concatenations.get(0);
-            if (first.dimension().isInRange(codePoint)) {
-                result = first.isValidFor(codePoint);
-            } else {
-                result =
-                    of(concatenations.subList(1, concatenations.size()))
-                        .isValidFor(codePoint.repositionBackBy(first.dimension()));
-            }
+            result = new ListValidation(concatenations, Concatenation::of).isValidFor(codePoint);
         } else {
             result = false;
         }
