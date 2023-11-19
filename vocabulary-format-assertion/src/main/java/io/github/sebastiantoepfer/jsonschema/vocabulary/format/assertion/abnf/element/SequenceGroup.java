@@ -63,13 +63,7 @@ public final class SequenceGroup implements Element {
     public boolean isValidFor(final ValidateableCodePoint codePoint) {
         final boolean result;
         if (dimension().isInRange(codePoint)) {
-            final Element first = elements.get(0);
-            if (first.dimension().isInRange(codePoint)) {
-                result = first.isValidFor(codePoint);
-            } else {
-                result =
-                    of(elements.subList(1, elements.size())).isValidFor(codePoint.repositionBackBy(first.dimension()));
-            }
+            result = new ListValidation(elements, SequenceGroup::of).isValidFor(codePoint);
         } else {
             result = false;
         }
