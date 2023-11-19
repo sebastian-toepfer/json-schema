@@ -27,7 +27,10 @@ import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.ddd.common.Printable;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.Element;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.RuleName;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.ValidateableCodePoint;
 import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 public final class Rule implements Printable {
 
@@ -45,6 +48,15 @@ public final class Rule implements Printable {
 
     public boolean hasRuleName(final RuleName name) {
         return Objects.equals(this.name, name);
+    }
+
+    Predicate<String> asPredicate() {
+        return s ->
+            IntStream
+                .range(0, s.length())
+                .boxed()
+                .map(i -> ValidateableCodePoint.of(i, s.codePointAt(i)))
+                .allMatch(elements::isValidFor);
     }
 
     @Override

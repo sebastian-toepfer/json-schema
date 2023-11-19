@@ -31,11 +31,16 @@ import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.Alternative;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.Concatenation;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.RuleName;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.RuleReference;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.SequenceGroup;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.StringElement;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.VariableRepetition;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.hamcrest.Matcher;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class RuleTest {
@@ -77,5 +82,50 @@ class RuleTest {
                 )
             )
         );
+    }
+
+    @Nested
+    class Validation {
+
+        private Rule ruleName;
+
+        @BeforeEach
+        void initRule() {
+            ruleName =
+                Rule.of(
+                    RuleName.of("rulename"),
+                    Concatenation.of(
+                        CoreRules.ALPHA,
+                        VariableRepetition.of(
+                            SequenceGroup.of(Alternative.of(CoreRules.ALPHA, CoreRules.DIGIT, StringElement.of("-")))
+                        )
+                    )
+                );
+        }
+
+        @Test
+        void should_be_valid_for_alphas_only() {
+            assertThat(ruleName.asPredicate().test("rulename"), is(true));
+        }
+
+        @Test
+        void should_be_valid_for_valid_alpha_and_digits() {
+            assertThat(ruleName.asPredicate().test("rul3nam3"), is(true));
+        }
+
+        @Test
+        void should_be_valid_for_valid_alpha_and_minus() {
+            assertThat(ruleName.asPredicate().test("rule-name"), is(true));
+        }
+
+        @Test
+        void should_be_invalid_for_value_with_digist_at_start() {
+            assertThat(ruleName.asPredicate().test("1rule"), is(false));
+        }
+
+        @Test
+        void should_be_invalid_for_value_with_solidus() {
+            assertThat(ruleName.asPredicate().test("rule/name"), is(false));
+        }
     }
 }
