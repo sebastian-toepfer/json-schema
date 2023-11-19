@@ -40,14 +40,18 @@ public final class StringElement implements Element {
     }
 
     @Override
-    public boolean isValidFor(final int codePoint) {
-        if (value.length() == 1) {
-            return (
-                value.codePointAt(0) == Character.toUpperCase(codePoint) ||
-                value.codePointAt(0) == Character.toLowerCase(codePoint)
-            );
-        }
-        throw new UnsupportedOperationException("Not supported yet.");
+    public boolean isValidFor(final ValidateableCodePoint codePoint) {
+        return (
+            dimension().isInRange(codePoint) &&
+            (codePoint.isEqualsTo(value.codePointAt(codePoint.position())) ||
+                codePoint.isUpperCaseOf(value.codePointAt(codePoint.position())) ||
+                codePoint.isLowerCaseOf(value.codePointAt(codePoint.position())))
+        );
+    }
+
+    @Override
+    public Dimension dimension() {
+        return Dimension.of(value.length());
     }
 
     @Override

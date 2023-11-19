@@ -25,6 +25,7 @@ package io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.r
 
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.CoreRules;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.NumericCharacter;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.ValidateableCodePoint;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.ValueRangeAlternatives;
 import java.util.Objects;
 
@@ -85,7 +86,7 @@ class NumValExtractor implements Extractor {
             final Extractor result;
             if (codePoint == UsefulCodepoints.HYPHEN_MINUS) {
                 result = new ValueRangeExtractor(owner, base, rule, value);
-            } else if (Character.isWhitespace(codePoint) || !rule.isValidFor(codePoint)) {
+            } else if (Character.isWhitespace(codePoint) || !rule.isValidFor(ValidateableCodePoint.of(0, codePoint))) {
                 result = owner.imDone(asCreator()).append(codePoint);
             } else {
                 result = new SpecificNumValExtractor(owner, base, rule, value.concat(Character.toString(codePoint)));
@@ -142,7 +143,7 @@ class NumValExtractor implements Extractor {
         @Override
         public Extractor append(final int codePoint) {
             final Extractor result;
-            if (Character.isWhitespace(codePoint) || !rule.isValidFor(codePoint)) {
+            if (Character.isWhitespace(codePoint) || !rule.isValidFor(ValidateableCodePoint.of(0, codePoint))) {
                 result = owner.imDone(asCreator()).append(codePoint);
             } else {
                 result = new ValueRangeExtractor(owner, base, rule, start, end.concat(Character.toString(codePoint)));

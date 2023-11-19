@@ -48,6 +48,11 @@ class RuleReferenceTest {
     }
 
     @Test
+    void should_has_dimension_of_rulename_length() {
+        assertThat(RuleReference.of(RuleName.of("rule")).dimension(), is(Dimension.of(4)));
+    }
+
+    @Test
     void should_be_printable() {
         assertThat(
             RuleReference.of(RuleName.of("test")).printOn(new HashMapMedia()),
@@ -59,5 +64,26 @@ class RuleReferenceTest {
                 )
             )
         );
+    }
+
+    @Test
+    void should_be_valid_if_codepoint_is_equals_codepoint_at_position() {
+        final Element element = RuleReference.of(RuleName.of("test"));
+        assertThat(element.isValidFor(ValidateableCodePoint.of(0, 't')), is(true));
+        assertThat(element.isValidFor(ValidateableCodePoint.of(1, 'e')), is(true));
+        assertThat(element.isValidFor(ValidateableCodePoint.of(2, 's')), is(true));
+        assertThat(element.isValidFor(ValidateableCodePoint.of(3, 't')), is(true));
+    }
+
+    @Test
+    void should_be_invalid_if_codepoint_is_not_equals_codepoint_at_position() {
+        final Element element = RuleReference.of(RuleName.of("test"));
+        assertThat(element.isValidFor(ValidateableCodePoint.of(1, 't')), is(false));
+    }
+
+    @Test
+    void should_be_invalid_if_codepoint_is_out_of_position() {
+        final Element element = RuleReference.of(RuleName.of("test"));
+        assertThat(element.isValidFor(ValidateableCodePoint.of(4, 't')), is(false));
     }
 }

@@ -40,6 +40,10 @@ public final class RuleName implements Printable {
         this.name = Objects.requireNonNull(name);
     }
 
+    String name() {
+        return name;
+    }
+
     @Override
     public <T extends Media<T>> T printOn(final T media) {
         return media.withValue("name", name).withValue("type", "rulename");

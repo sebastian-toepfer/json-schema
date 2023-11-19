@@ -27,10 +27,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.Element;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.RuleName;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.format.assertion.abnf.element.ValidateableCodePoint;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -153,8 +154,11 @@ class CoreRulesTest {
         }
 
         @Test
-        void should_nit_be_supported() {
-            assertThrows(UnsupportedOperationException.class, () -> CoreRules.CRLF.isValidFor(0x0D));
+        void should_be_valid_for_crlf() {
+            final Element element = CoreRules.CRLF;
+
+            assertThat(element.isValidFor(ValidateableCodePoint.of(0, '\r')), is(true));
+            assertThat(element.isValidFor(ValidateableCodePoint.of(1, '\n')), is(true));
         }
     }
 
@@ -316,8 +320,36 @@ class CoreRulesTest {
         }
 
         @Test
-        void should_nit_be_supported() {
-            assertThrows(UnsupportedOperationException.class, () -> CoreRules.LWSP.isValidFor(0x0D));
+        void should_be_valid_for_sp_sp() {
+            final Element element = CoreRules.LWSP;
+
+            assertThat(element.isValidFor(ValidateableCodePoint.of(0, 0x20)), is(true));
+            assertThat(element.isValidFor(ValidateableCodePoint.of(1, 0x20)), is(true));
+        }
+
+        @Test
+        void should_be_valid_for_sp_htab() {
+            final Element element = CoreRules.LWSP;
+
+            assertThat(element.isValidFor(ValidateableCodePoint.of(0, 0x20)), is(true));
+            assertThat(element.isValidFor(ValidateableCodePoint.of(1, 0x09)), is(true));
+        }
+
+        @Test
+        void should_be_valid_for_htab_sp() {
+            final Element element = CoreRules.LWSP;
+
+            assertThat(element.isValidFor(ValidateableCodePoint.of(0, 0x09)), is(true));
+            assertThat(element.isValidFor(ValidateableCodePoint.of(1, 0x20)), is(true));
+        }
+
+        @Test
+        void should_be_valid_for_crlf_sp() {
+            final Element element = CoreRules.LWSP;
+
+            assertThat(element.isValidFor(ValidateableCodePoint.of(0, '\r')), is(true));
+            assertThat(element.isValidFor(ValidateableCodePoint.of(1, '\n')), is(true));
+            assertThat(element.isValidFor(ValidateableCodePoint.of(2, 0x20)), is(true));
         }
     }
 

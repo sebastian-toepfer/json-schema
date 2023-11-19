@@ -50,8 +50,17 @@ public final class OptionalSequence implements Element {
     }
 
     @Override
-    public boolean isValidFor(final int codePoint) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public boolean isValidFor(final ValidateableCodePoint codePoint) {
+        return true;
+    }
+
+    @Override
+    public Dimension dimension() {
+        return Dimension
+            .zero()
+            .expandTo(
+                optionalElements.stream().map(Element::dimension).sorted().reduce(Dimension.zero(), Dimension::plus)
+            );
     }
 
     @Override

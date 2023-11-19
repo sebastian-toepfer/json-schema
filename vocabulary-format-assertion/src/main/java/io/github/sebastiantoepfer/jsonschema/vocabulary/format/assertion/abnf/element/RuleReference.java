@@ -39,8 +39,17 @@ public final class RuleReference implements Element {
     }
 
     @Override
-    public boolean isValidFor(final int codePoint) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public boolean isValidFor(final ValidateableCodePoint codePoint) {
+        return ruleNameAsStringElement().isValidFor(codePoint);
+    }
+
+    @Override
+    public Dimension dimension() {
+        return ruleNameAsStringElement().dimension();
+    }
+
+    Element ruleNameAsStringElement() {
+        return StringElement.of(name.name());
     }
 
     @Override

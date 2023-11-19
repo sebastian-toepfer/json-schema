@@ -56,8 +56,13 @@ public final class Alternative implements Element {
     }
 
     @Override
-    public boolean isValidFor(final int codePoint) {
+    public boolean isValidFor(final ValidateableCodePoint codePoint) {
         return alternatives.stream().anyMatch(e -> e.isValidFor(codePoint));
+    }
+
+    @Override
+    public Dimension dimension() {
+        return alternatives.stream().map(Element::dimension).sorted().reduce(Dimension::expandTo).orElseThrow();
     }
 
     @Override
