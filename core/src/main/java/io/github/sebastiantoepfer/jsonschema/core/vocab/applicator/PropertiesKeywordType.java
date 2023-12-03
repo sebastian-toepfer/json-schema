@@ -24,10 +24,13 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
 import static jakarta.json.stream.JsonCollectors.toJsonArray;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toMap;
 
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
+import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Annotation;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
@@ -39,6 +42,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 final class PropertiesKeywordType implements KeywordType {
 
@@ -49,15 +53,28 @@ final class PropertiesKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        return new PropertiesKeyword(schema.asJsonObject().getJsonObject(name()));
+        final DefaultJsonSchemaFactory factory = new DefaultJsonSchemaFactory();
+        return schema
+            .asJsonObject()
+            .getJsonObject(name())
+            .entrySet()
+            .stream()
+            .map(entry ->
+                Map.entry(
+                    entry.getKey(),
+                    factory.tryToCreateSchemaFrom(entry.getValue()).orElseThrow(IllegalArgumentException::new)
+                )
+            )
+            .map(entry -> Map.entry(entry.getKey(), new DefaultJsonSubSchema(schema, entry.getValue())))
+            .collect(collectingAndThen(toMap(Map.Entry::getKey, Map.Entry::getValue), PropertiesKeyword::new));
     }
 
     private class PropertiesKeyword implements Applicator, Annotation {
 
-        private final JsonObject schemas;
+        private final Map<String, JsonSchema> schemas;
 
-        public PropertiesKeyword(final JsonObject schemas) {
-            this.schemas = schemas;
+        public PropertiesKeyword(final Map<String, JsonSchema> schemas) {
+            this.schemas = Map.copyOf(schemas);
         }
 
         @Override
@@ -80,10 +97,11 @@ final class PropertiesKeywordType implements KeywordType {
         }
 
         private boolean propertyMatches(final Map.Entry<String, JsonValue> property) {
-            return (
-                !schemas.containsKey(property.getKey()) ||
-                JsonSchemas.load(schemas.get(property.getKey())).validator().isValid(property.getValue())
-            );
+            return Optional
+                .ofNullable(schemas.get(property.getKey()))
+                .map(JsonSchema::validator)
+                .map(validator -> validator.isValid(property.getValue()))
+                .orElse(true);
         }
 
         @Override

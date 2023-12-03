@@ -26,15 +26,69 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 class PropertiesKeywordTypeTest {
+
+    @Test
+    void should_not_be_createable_with_array_in_schemas() {
+        final JsonSchema schema = new DefaultJsonSchemaFactory()
+            .create(
+                Json
+                    .createObjectBuilder()
+                    .add(
+                        "properties",
+                        Json
+                            .createObjectBuilder()
+                            .add("test", JsonValue.TRUE)
+                            .add("invalid", JsonValue.EMPTY_JSON_ARRAY)
+                    )
+                    .build()
+            );
+        final KeywordType keywordType = new PropertiesKeywordType();
+        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
+    }
+
+    @Test
+    void should_not_be_createable_with_string_in_schemas() {
+        final JsonSchema schema = new DefaultJsonSchemaFactory()
+            .create(
+                Json
+                    .createObjectBuilder()
+                    .add(
+                        "properties",
+                        Json.createObjectBuilder().add("test", JsonValue.TRUE).add("invalid", Json.createValue("value"))
+                    )
+                    .build()
+            );
+        final KeywordType keywordType = new PropertiesKeywordType();
+        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
+    }
+
+    @Test
+    void should_not_be_createable_with_number_in_schemas() {
+        final JsonSchema schema = new DefaultJsonSchemaFactory()
+            .create(
+                Json
+                    .createObjectBuilder()
+                    .add(
+                        "properties",
+                        Json.createObjectBuilder().add("test", JsonValue.TRUE).add("invalid", Json.createValue(3.14))
+                    )
+                    .build()
+            );
+        final KeywordType keywordType = new PropertiesKeywordType();
+        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
+    }
 
     @Test
     void should_be_know_his_name() {

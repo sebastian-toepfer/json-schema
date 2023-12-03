@@ -33,6 +33,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonPointer;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonString;
+import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import java.io.IOException;
 import java.net.URI;
@@ -85,7 +86,7 @@ final class RefKeywordType implements KeywordType {
                 if (isRemote()) {
                     json = retrieveValueFromRemoteLocation();
                 } else {
-                    json = retrievValueFromLocalSchema();
+                    json = retrieveValueFromLocalSchema();
                 }
                 return JsonSchemas.load(json);
             } catch (IOException ex) {
@@ -93,13 +94,17 @@ final class RefKeywordType implements KeywordType {
             }
         }
 
-        private JsonValue retrievValueFromLocalSchema() throws IOException {
+        private JsonValue retrieveValueFromLocalSchema() throws IOException {
             final JsonPointer pointer = createPointer();
-            if (schema.getValueType() == JsonValue.ValueType.OBJECT && pointer.containsValue(schema.asJsonObject())) {
-                return pointer.getValue(schema.asJsonObject());
+            if (pointer.containsValue(searchAnchor())) {
+                return pointer.getValue(searchAnchor());
             } else {
                 throw new IOException("can not find referenced value.");
             }
+        }
+
+        private JsonStructure searchAnchor() {
+            return schema.rootSchema().asJsonObject();
         }
 
         private JsonPointer createPointer() {

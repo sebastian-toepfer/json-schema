@@ -23,13 +23,17 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
+
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.core.codition.AnyOfCondition;
 import io.github.sebastiantoepfer.jsonschema.core.codition.Condition;
+import io.github.sebastiantoepfer.jsonschema.core.codition.OfTypeCondition;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.JsonArray;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import java.util.Locale;
@@ -47,14 +51,32 @@ final class TypeKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        return new TypeKeyword(schema.asJsonObject().get(name()));
+        final JsonValue typeDefinition = schema.asJsonObject().get(name());
+        final Condition<JsonValue> typeContraint =
+            switch (typeDefinition.getValueType()) {
+                case STRING -> new OfTypeCondition(
+                    InstanceType.valueOf(((JsonString) typeDefinition).getString().toUpperCase(Locale.US))
+                );
+                case ARRAY -> typeDefinition
+                    .asJsonArray()
+                    .stream()
+                    .map(JsonString.class::cast)
+                    .map(JsonString::getString)
+                    .map(String::toUpperCase)
+                    .map(InstanceType::valueOf)
+                    .map(OfTypeCondition::new)
+                    .collect(collectingAndThen(toList(), AnyOfCondition::new));
+                default -> throw new IllegalArgumentException();
+            };
+
+        return new TypeKeyword(typeContraint);
     }
 
     private final class TypeKeyword implements Assertion {
 
-        private final JsonValue definition;
+        private final Condition<JsonValue> definition;
 
-        public TypeKeyword(final JsonValue definition) {
+        public TypeKeyword(final Condition<JsonValue> definition) {
             this.definition = Objects.requireNonNull(definition);
         }
 
@@ -65,54 +87,7 @@ final class TypeKeywordType implements KeywordType {
 
         @Override
         public boolean isValidFor(final JsonValue instance) {
-            return new JsonMappedTypeConstaint(definition).isFulfilledBy(instance);
-        }
-
-        private static final class JsonMappedTypeConstaint implements Condition<JsonValue> {
-
-            private final JsonValue definition;
-
-            public JsonMappedTypeConstaint(final JsonValue definition) {
-                this.definition = Objects.requireNonNull(definition);
-            }
-
-            @Override
-            public boolean isFulfilledBy(final JsonValue value) {
-                final Condition<JsonValue> typeContraint =
-                    switch (definition.getValueType()) {
-                        case STRING -> new JsonStringTypeConstraint((JsonString) definition);
-                        default -> new JsonArrayTypeConstraint(definition.asJsonArray());
-                    };
-                return typeContraint.isFulfilledBy(value);
-            }
-        }
-
-        private static final class JsonArrayTypeConstraint implements Condition<JsonValue> {
-
-            private final JsonArray types;
-
-            public JsonArrayTypeConstraint(final JsonArray types) {
-                this.types = Objects.requireNonNull(types);
-            }
-
-            @Override
-            public boolean isFulfilledBy(final JsonValue value) {
-                return types.stream().map(JsonMappedTypeConstaint::new).anyMatch(c -> c.isFulfilledBy(value));
-            }
-        }
-
-        private static final class JsonStringTypeConstraint implements Condition<JsonValue> {
-
-            private final String type;
-
-            public JsonStringTypeConstraint(final JsonString type) {
-                this.type = Objects.requireNonNull(type).getString().toUpperCase(Locale.US);
-            }
-
-            @Override
-            public boolean isFulfilledBy(final JsonValue value) {
-                return InstanceType.valueOf(type).isInstance(value);
-            }
+            return definition.isFulfilledBy(instance);
         }
     }
 }

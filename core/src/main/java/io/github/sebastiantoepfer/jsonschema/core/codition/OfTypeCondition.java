@@ -21,33 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.codition;
 
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import jakarta.json.JsonValue;
-import java.util.Optional;
 
-public final class DefaultJsonSchemaFactory implements JsonSchemaFactory {
+public final class OfTypeCondition implements Condition<JsonValue> {
 
-    @Override
-    public JsonSchema create(final JsonValue schema) {
-        return tryToCreateSchemaFrom(schema).orElseThrow(IllegalArgumentException::new);
+    private final InstanceType type;
+
+    public OfTypeCondition(final InstanceType type) {
+        this.type = type;
     }
 
-    public Optional<JsonSchema> tryToCreateSchemaFrom(final JsonValue schema) {
-        final JsonSchema result;
-        if (schema == JsonValue.TRUE) {
-            result = new TrueJsonSchema();
-        } else if (schema == JsonValue.FALSE) {
-            result = new FalseJsonSchema();
-        } else if (schema.equals(JsonValue.EMPTY_JSON_OBJECT)) {
-            result = new EmptyJsonSchema();
-        } else if (schema.getValueType() == JsonValue.ValueType.OBJECT) {
-            result = new DefaultJsonObjectSchema(schema.asJsonObject());
-        } else {
-            result = null;
-        }
-        return Optional.ofNullable(result);
+    @Override
+    public boolean isFulfilledBy(final JsonValue value) {
+        return type.isInstance(value);
     }
 }
