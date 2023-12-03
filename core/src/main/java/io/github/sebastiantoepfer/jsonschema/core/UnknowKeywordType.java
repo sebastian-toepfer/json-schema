@@ -27,7 +27,6 @@ import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.StaticAnnotation;
-import jakarta.json.JsonValue;
 import java.util.Objects;
 
 final class UnknowKeywordType implements KeywordType {
@@ -44,7 +43,7 @@ final class UnknowKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        return new StaticAnnotation(name(), value);
+    public Keyword createKeyword(final JsonSchema schema) {
+        return new StaticAnnotation(name(), schema.asJsonObject().get(name()));
     }
 }

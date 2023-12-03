@@ -38,7 +38,10 @@ class AdditionalPropertiesKeywordTypeTest {
     @Test
     void should_know_his_name() {
         final Keyword keyword = new AdditionalPropertiesKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT);
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("additionalProperties", JsonValue.EMPTY_JSON_OBJECT).build())
+            );
 
         assertThat(keyword.hasName("additionalProperties"), is(true));
         assertThat(keyword.hasName("test"), is(false));
@@ -54,9 +57,9 @@ class AdditionalPropertiesKeywordTypeTest {
                             Json
                                 .createObjectBuilder()
                                 .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
+                                .add("additionalProperties", JsonValue.FALSE)
                                 .build()
-                        ),
-                    JsonValue.FALSE
+                        )
                 )
                 .asApplicator()
                 .applyTo(JsonValue.EMPTY_JSON_ARRAY),
@@ -74,9 +77,9 @@ class AdditionalPropertiesKeywordTypeTest {
                             Json
                                 .createObjectBuilder()
                                 .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
+                                .add("additionalProperties", JsonValue.FALSE)
                                 .build()
-                        ),
-                    JsonValue.FALSE
+                        )
                 )
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("test", 1).add("foo", 1).build()),
@@ -94,9 +97,9 @@ class AdditionalPropertiesKeywordTypeTest {
                             Json
                                 .createObjectBuilder()
                                 .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
+                                .add("additionalProperties", JsonValue.TRUE)
                                 .build()
-                        ),
-                    JsonValue.TRUE
+                        )
                 )
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("test", 1).add("foo", 1).build()),
@@ -114,9 +117,9 @@ class AdditionalPropertiesKeywordTypeTest {
                             Json
                                 .createObjectBuilder()
                                 .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
+                                .add("additionalProperties", JsonValue.FALSE)
                                 .build()
-                        ),
-                    JsonValue.FALSE
+                        )
                 )
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("test", 1).build()),
@@ -128,7 +131,10 @@ class AdditionalPropertiesKeywordTypeTest {
     void should_be_an_applicator_and_an_annotation() {
         assertThat(
             new AdditionalPropertiesKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.TRUE)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("additionalProperties", JsonValue.TRUE).build())
+                )
                 .categories(),
             containsInAnyOrder(Keyword.KeywordCategory.APPLICATOR, Keyword.KeywordCategory.ANNOTATION)
         );
@@ -144,9 +150,9 @@ class AdditionalPropertiesKeywordTypeTest {
                             Json
                                 .createObjectBuilder()
                                 .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
+                                .add("additionalProperties", JsonValue.TRUE)
                                 .build()
-                        ),
-                    JsonValue.TRUE
+                        )
                 )
                 .asAnnotation()
                 .valueFor(Json.createObjectBuilder().add("test", 1).add("foo", 1).build())

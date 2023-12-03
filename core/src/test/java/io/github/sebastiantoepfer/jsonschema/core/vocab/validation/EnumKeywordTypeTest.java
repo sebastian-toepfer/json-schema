@@ -37,7 +37,10 @@ class EnumKeywordTypeTest {
     @Test
     void should_know_his_name() {
         final Keyword enumKeyword = new EnumKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_ARRAY);
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("enum", JsonValue.EMPTY_JSON_ARRAY).build())
+            );
 
         assertThat(enumKeyword.hasName("enum"), is(true));
         assertThat(enumKeyword.hasName("test"), is(false));
@@ -48,8 +51,13 @@ class EnumKeywordTypeTest {
         assertThat(
             new EnumKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createArrayBuilder().add("TEST").add("VALID").build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("enum", Json.createArrayBuilder().add("TEST").add("VALID"))
+                                .build()
+                        )
                 )
                 .asAssertion()
                 .isValidFor(Json.createValue("TEST")),
@@ -62,8 +70,13 @@ class EnumKeywordTypeTest {
         assertThat(
             new EnumKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createArrayBuilder().add("TEST").add("VALID").build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("enum", Json.createArrayBuilder().add("TEST").add("VALID"))
+                                .build()
+                        )
                 )
                 .asAssertion()
                 .isValidFor(Json.createValue(2)),
@@ -76,8 +89,8 @@ class EnumKeywordTypeTest {
         assertThat(
             new EnumKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createArrayBuilder().add(1).build()
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("enum", Json.createArrayBuilder().add(1)).build())
                 )
                 .asAssertion()
                 .isValidFor(Json.createValue(1.0)),

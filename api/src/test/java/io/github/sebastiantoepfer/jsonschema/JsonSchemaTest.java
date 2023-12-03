@@ -21,41 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 
-import jakarta.json.Json;
-import jakarta.json.JsonValue;
+import io.github.sebastiantoepfer.jsonschema.FakeJsonSchemaFactory.FakeJsonSchema;
 import org.junit.jupiter.api.Test;
 
-class DefaultJsonSchemaFactoryTest {
+class JsonSchemaTest {
 
     @Test
-    void should_return_truejsonschema_for_true() {
-        assertThat(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), is(instanceOf(TrueJsonSchema.class)));
-    }
-
-    @Test
-    void should_return_truejsonschema_for_false() {
-        assertThat(new DefaultJsonSchemaFactory().create(JsonValue.FALSE), is(instanceOf(FalseJsonSchema.class)));
-    }
-
-    @Test
-    void should_return_emptyjsonschema_for_emptyobject() {
-        assertThat(
-            new DefaultJsonSchemaFactory().create(JsonValue.EMPTY_JSON_OBJECT),
-            is(instanceOf(EmptyJsonSchema.class))
-        );
-    }
-
-    @Test
-    void should_return_defaultjsonschema_for_everything_else() {
-        assertThat(
-            new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("type", "string").build()),
-            is(instanceOf(DefaultJsonObjectSchema.class))
-        );
+    void should_return_itself_as_root_schema() {
+        final JsonSchema schema = new FakeJsonSchema();
+        assertThat(schema.rootSchema(), is(sameInstance(schema)));
     }
 }

@@ -21,28 +21,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
+package io.github.sebastiantoepfer.jsonschema;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import jakarta.json.Json;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonValue;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-class CommentKeywordTypeTest {
+class JsonSubSchemaTest {
 
     @Test
-    void should_create_keyword_with_name() {
+    void should_return_its_owner_as_root() {
+        final JsonSchema root = new FakeJsonSchemaFactory.FakeJsonSchema();
         assertThat(
-            new CommentKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("$comment", JsonValue.EMPTY_JSON_OBJECT).build())
-                )
-                .hasName("$comment"),
-            is(true)
+            new JsonSubSchema() {
+                @Override
+                public JsonSchema owner() {
+                    return root;
+                }
+
+                @Override
+                public Validator validator() {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+
+                @Override
+                public Optional<Keyword> keywordByName(String name) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+
+                @Override
+                public JsonValue.ValueType getValueType() {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+
+                @Override
+                public Optional<JsonSubSchema> asSubSchema(String name) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+            }
+                .rootSchema(),
+            is(sameInstance(root))
         );
     }
 }

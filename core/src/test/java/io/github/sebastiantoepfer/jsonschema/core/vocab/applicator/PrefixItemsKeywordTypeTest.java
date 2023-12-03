@@ -42,8 +42,13 @@ class PrefixItemsKeywordTypeTest {
     void should_know_his_name() {
         final Keyword items = new PrefixItemsKeywordType()
             .createKeyword(
-                new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                Json.createArrayBuilder().add(JsonValue.TRUE).build()
+                new DefaultJsonSchemaFactory()
+                    .create(
+                        Json
+                            .createObjectBuilder()
+                            .add("prefixItems", Json.createArrayBuilder().add(JsonValue.TRUE))
+                            .build()
+                    )
             );
 
         assertThat(items.hasName("prefixItems"), is(true));
@@ -53,12 +58,10 @@ class PrefixItemsKeywordTypeTest {
     @Test
     void should_not_be_createbale_from_non_array() {
         final KeywordType keywordType = new PrefixItemsKeywordType();
-        final JsonSchema schema = new DefaultJsonSchemaFactory().create(JsonValue.TRUE);
+        final JsonSchema schema = new DefaultJsonSchemaFactory()
+            .create(Json.createObjectBuilder().add("prefixItems", JsonValue.EMPTY_JSON_OBJECT).build());
 
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> keywordType.createKeyword(schema, JsonValue.EMPTY_JSON_OBJECT)
-        );
+        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
     }
 
     @Test
@@ -66,8 +69,13 @@ class PrefixItemsKeywordTypeTest {
         assertThat(
             new PrefixItemsKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createArrayBuilder().add(JsonValue.TRUE).build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("prefixItems", Json.createArrayBuilder().add(JsonValue.TRUE))
+                                .build()
+                        )
                 )
                 .asAnnotation()
                 .valueFor(Json.createArrayBuilder().add(1).add(2).build()),
@@ -80,8 +88,13 @@ class PrefixItemsKeywordTypeTest {
         assertThat(
             new PrefixItemsKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createArrayBuilder().add(JsonValue.TRUE).add(JsonValue.TRUE).build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("prefixItems", Json.createArrayBuilder().add(JsonValue.TRUE).add(JsonValue.TRUE))
+                                .build()
+                        )
                 )
                 .asAnnotation()
                 .valueFor(Json.createArrayBuilder().add(1).add(2).build()),
@@ -94,8 +107,13 @@ class PrefixItemsKeywordTypeTest {
         assertThat(
             new PrefixItemsKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createArrayBuilder().add(JsonValue.FALSE).build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("prefixItems", Json.createArrayBuilder().add(JsonValue.FALSE))
+                                .build()
+                        )
                 )
                 .asApplicator()
                 .applyTo(Json.createValue(1)),
@@ -108,8 +126,13 @@ class PrefixItemsKeywordTypeTest {
         assertThat(
             new PrefixItemsKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createArrayBuilder().add(JsonValue.TRUE).build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("prefixItems", Json.createArrayBuilder().add(JsonValue.TRUE))
+                                .build()
+                        )
                 )
                 .asApplicator()
                 .applyTo(Json.createArrayBuilder().add(1).build()),
@@ -122,8 +145,13 @@ class PrefixItemsKeywordTypeTest {
         assertThat(
             new PrefixItemsKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createArrayBuilder().add(JsonValue.TRUE).add(JsonValue.FALSE).build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("prefixItems", Json.createArrayBuilder().add(JsonValue.TRUE).add(JsonValue.FALSE))
+                                .build()
+                        )
                 )
                 .asApplicator()
                 .applyTo(Json.createArrayBuilder().add(1).add(3).build()),
@@ -135,7 +163,10 @@ class PrefixItemsKeywordTypeTest {
     void should_be_applicator_and_annotation() {
         assertThat(
             new PrefixItemsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_ARRAY)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("prefixItems", JsonValue.EMPTY_JSON_ARRAY).build())
+                )
                 .categories(),
             containsInAnyOrder(Keyword.KeywordCategory.APPLICATOR, Keyword.KeywordCategory.ANNOTATION)
         );

@@ -48,8 +48,8 @@ final class PropertiesKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        return new PropertiesKeyword(value.asJsonObject());
+    public Keyword createKeyword(final JsonSchema schema) {
+        return new PropertiesKeyword(schema.asJsonObject().getJsonObject(name()));
     }
 
     private class PropertiesKeyword implements Applicator, Annotation {

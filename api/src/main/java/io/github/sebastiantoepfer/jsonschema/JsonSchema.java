@@ -28,7 +28,13 @@ import jakarta.json.JsonValue;
 import java.util.Optional;
 
 public interface JsonSchema extends JsonValue {
-    public Validator validator();
+    Validator validator();
 
     Optional<Keyword> keywordByName(String name);
+
+    Optional<JsonSubSchema> asSubSchema(String name);
+
+    default JsonSchema rootSchema() {
+        return this;
+    }
 }

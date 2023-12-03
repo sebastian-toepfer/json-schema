@@ -32,21 +32,29 @@ public final class FakeJsonSchemaFactory implements JsonSchemaFactory {
 
     @Override
     public JsonSchema create(final JsonValue schema) {
-        return new JsonSchema() {
-            @Override
-            public Validator validator() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+        return new FakeJsonSchema();
+    }
 
-            @Override
-            public JsonValue.ValueType getValueType() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+    static class FakeJsonSchema implements JsonSchema {
 
-            @Override
-            public Optional<Keyword> keywordByName(String name) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        };
+        @Override
+        public Validator validator() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Optional<Keyword> keywordByName(String name) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public JsonValue.ValueType getValueType() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Optional<JsonSubSchema> asSubSchema(String name) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
     }
 }

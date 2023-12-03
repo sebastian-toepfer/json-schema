@@ -21,45 +21,53 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
+package io.github.sebastiantoepfer.jsonschema.core;
 
-import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
+import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
+import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.JsonNumber;
-import jakarta.json.JsonValue;
+import jakarta.json.JsonObject;
 import java.util.Objects;
+import java.util.Optional;
 
-final class MaxItemsKeywordType implements KeywordType {
+final class DefaultJsonSubSchema implements JsonSubSchema {
 
-    @Override
-    public String name() {
-        return "maxItems";
+    private final JsonSchema owner;
+    private final JsonSchema schema;
+
+    public DefaultJsonSubSchema(final JsonSchema owner, final JsonSchema schema) {
+        this.owner = Objects.requireNonNull(owner);
+        this.schema = Objects.requireNonNull(schema);
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema) {
-        return new MaxItemsKeyword(schema.asJsonObject().getJsonNumber(name()));
+    public JsonSchema owner() {
+        return owner;
     }
 
-    private class MaxItemsKeyword implements Assertion {
+    @Override
+    public Validator validator() {
+        return schema.validator();
+    }
 
-        private final int maxItems;
+    @Override
+    public Optional<Keyword> keywordByName(final String name) {
+        return schema.keywordByName(name);
+    }
 
-        public MaxItemsKeyword(final JsonNumber maxItems) {
-            this.maxItems = maxItems.intValue();
-        }
+    @Override
+    public Optional<JsonSubSchema> asSubSchema(final String name) {
+        return schema.asSubSchema(name);
+    }
 
-        @Override
-        public boolean isValidFor(final JsonValue instance) {
-            return !InstanceType.ARRAY.isInstance(instance) || instance.asJsonArray().size() <= maxItems;
-        }
+    @Override
+    public ValueType getValueType() {
+        return schema.getValueType();
+    }
 
-        @Override
-        public boolean hasName(final String name) {
-            return Objects.equals(name(), name);
-        }
+    @Override
+    public JsonObject asJsonObject() {
+        return schema.asJsonObject();
     }
 }

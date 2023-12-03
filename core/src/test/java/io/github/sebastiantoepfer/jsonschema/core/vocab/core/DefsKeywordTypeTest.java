@@ -27,8 +27,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import org.junit.jupiter.api.Test;
 
@@ -36,15 +39,20 @@ class DefsKeywordTypeTest {
 
     @Test
     void should_not_be_creatable_from_non_objects() {
-        final DefsKeywordType schema = new DefsKeywordType();
+        final KeywordType defs = new DefsKeywordType();
+        final JsonSchema schema = new DefaultJsonSchemaFactory()
+            .create(Json.createObjectBuilder().add("$defs", JsonValue.FALSE).build());
 
-        assertThrows(IllegalArgumentException.class, () -> schema.createKeyword(null, JsonValue.FALSE));
+        assertThrows(IllegalArgumentException.class, () -> defs.createKeyword(schema));
     }
 
     @Test
     void should_know_his_name() {
         final Keyword defs = new DefsKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT);
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("$defs", JsonValue.EMPTY_JSON_OBJECT).build())
+            );
 
         assertThat(defs.hasName("$defs"), is(true));
         assertThat(defs.hasName("test"), is(false));

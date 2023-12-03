@@ -42,7 +42,7 @@ final class DynamicRefKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
+    public Keyword createKeyword(final JsonSchema schema) {
         return new Applicator() {
             @Override
             public boolean applyTo(final JsonValue instance) {

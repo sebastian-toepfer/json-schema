@@ -21,25 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
 
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import java.util.Objects;
-import java.util.Optional;
+open module io.github.sebastiantoepfer.jsonschema {
+    requires jakarta.json;
 
-final class KeywordSearch {
-
-    private final KeywordType keywordType;
-
-    public KeywordSearch(final KeywordType keywordType) {
-        this.keywordType = Objects.requireNonNull(keywordType);
-    }
-
-    public Optional<Keyword> searchForKeywordIn(final JsonSchema schema) {
-        return Optional
-            .ofNullable(schema.asJsonObject().get(keywordType.name()))
-            .map(keywordValue -> keywordType.createKeyword(schema, keywordValue));
-    }
+    requires org.junit.jupiter.api;
+    requires org.junit.jupiter.params;
+    requires org.hamcrest;
 }

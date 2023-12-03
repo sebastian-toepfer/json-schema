@@ -33,7 +33,6 @@ import io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreVocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.validation.ValidationVocabulary;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
-import jakarta.json.JsonValue;
 import java.net.URI;
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -85,13 +84,13 @@ final class Keywords {
                 );
     }
 
-    public Keyword createKeywordFor(final JsonSchema schema, final Map.Entry<String, JsonValue> property) {
+    public Keyword createKeywordFor(final JsonSchema schema, final String propertyName) {
         return vocabularies
             .stream()
-            .map(vocab -> vocab.findKeywordTypeByName(property.getKey()))
+            .map(vocab -> vocab.findKeywordTypeByName(propertyName))
             .flatMap(Optional::stream)
             .findFirst()
-            .map(keywordType -> keywordType.createKeyword(schema, property.getValue()))
+            .map(keywordType -> keywordType.createKeyword(schema))
             .orElseThrow();
     }
 }

@@ -29,10 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.validation.MinLengthKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonNumber;
 import jakarta.json.JsonValue;
 import org.junit.jupiter.api.Test;
 
@@ -40,16 +38,19 @@ class MinLengthKeywordTypeTest {
 
     @Test
     void should_not_be_createbale_with_non_integer() {
-        final JsonNumber value = Json.createValue(12.3);
         final MinLengthKeywordType keywordType = new MinLengthKeywordType();
-        final JsonSchema schema = new DefaultJsonSchemaFactory().create(JsonValue.TRUE);
-        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema, value));
+        final JsonSchema schema = new DefaultJsonSchemaFactory()
+            .create(Json.createObjectBuilder().add("minLength", Json.createValue(12.3)).build());
+        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
     }
 
     @Test
     void should_know_his_name() {
         final Keyword keyword = new MinLengthKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(1));
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("minLength", Json.createValue(1)).build())
+            );
 
         assertThat(keyword.hasName("test"), is(false));
         assertThat(keyword.hasName("minLength"), is(true));
@@ -59,7 +60,10 @@ class MinLengthKeywordTypeTest {
     void should_be_invalid_with_shorter_string() {
         assertThat(
             new MinLengthKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(2))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createValue("A")),
             is(false)
@@ -70,7 +74,10 @@ class MinLengthKeywordTypeTest {
     void should_be_valid_with_string_with_equal_length() {
         assertThat(
             new MinLengthKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(2))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createValue("AB")),
             is(true)
@@ -81,7 +88,10 @@ class MinLengthKeywordTypeTest {
     void should_be_valid_with_string_that_is_longer() {
         assertThat(
             new MinLengthKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(2))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createValue("ABC")),
             is(true)
@@ -92,7 +102,10 @@ class MinLengthKeywordTypeTest {
     void should_be_valid_for_non_string_values() {
         assertThat(
             new MinLengthKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(2))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build())
+                )
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_ARRAY),
             is(true)

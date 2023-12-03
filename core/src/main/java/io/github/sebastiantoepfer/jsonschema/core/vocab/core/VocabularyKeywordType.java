@@ -48,7 +48,8 @@ public final class VocabularyKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
+    public Keyword createKeyword(final JsonSchema schema) {
+        final JsonValue value = schema.asJsonObject().get((name()));
         final Keyword result;
         if (InstanceType.OBJECT.isInstance(value)) {
             result = new VocabularyKeyword(value);

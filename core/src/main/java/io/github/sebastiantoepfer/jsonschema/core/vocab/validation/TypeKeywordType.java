@@ -46,8 +46,8 @@ final class TypeKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        return new TypeKeyword(value);
+    public Keyword createKeyword(final JsonSchema schema) {
+        return new TypeKeyword(schema.asJsonObject().get(name()));
     }
 
     private final class TypeKeyword implements Assertion {

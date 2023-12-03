@@ -27,7 +27,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import jakarta.json.JsonValue;
 import org.junit.jupiter.api.Test;
 
 class KeywordTypeTest {
@@ -46,7 +45,7 @@ class KeywordTypeTest {
         }
 
         @Override
-        public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
+        public Keyword createKeyword(final JsonSchema schema) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
     }

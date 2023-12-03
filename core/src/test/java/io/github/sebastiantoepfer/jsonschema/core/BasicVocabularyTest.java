@@ -27,9 +27,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import com.github.npathai.hamcrestopt.OptionalMatchers;
-import io.github.sebastiantoepfer.jsonschema.core.BasicVocabulary;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import java.net.URI;
 import org.junit.jupiter.api.Test;
@@ -58,7 +57,10 @@ class BasicVocabularyTest {
             new BasicVocabulary()
                 .findKeywordTypeByName("unknow")
                 .map(keywordType ->
-                    keywordType.createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.FALSE)
+                    keywordType.createKeyword(
+                        new DefaultJsonSchemaFactory()
+                            .create(Json.createObjectBuilder().add("unknow", JsonValue.FALSE).build())
+                    )
                 )
                 .map(keyword -> keyword.hasName("unknow")),
             OptionalMatchers.isPresentAndIs(true)

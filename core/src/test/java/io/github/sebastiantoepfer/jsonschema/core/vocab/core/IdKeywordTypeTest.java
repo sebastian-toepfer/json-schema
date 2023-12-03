@@ -27,6 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
@@ -38,15 +39,20 @@ class IdKeywordTypeTest {
 
     @Test
     void should_not_be_creatable_from_non_string() {
-        final IdKeywordType schema = new IdKeywordType();
+        final IdKeywordType keyword = new IdKeywordType();
+        final JsonSchema schema = new DefaultJsonSchemaFactory()
+            .create(Json.createObjectBuilder().add("$id", JsonValue.FALSE).build());
 
-        assertThrows(IllegalArgumentException.class, () -> schema.createKeyword(null, JsonValue.FALSE));
+        assertThrows(IllegalArgumentException.class, () -> keyword.createKeyword(schema));
     }
 
     @Test
     void should_know_his_name() {
         final Keyword id = new IdKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue("/test"));
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("$id", Json.createValue("/test")).build())
+            );
 
         assertThat(id.hasName("$id"), is(true));
         assertThat(id.hasName("test"), is(false));
@@ -57,8 +63,13 @@ class IdKeywordTypeTest {
         assertThat(
             new IdKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createValue("https://json-schema.org/draft/2020-12/schema")
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("$id", Json.createValue("https://json-schema.org/draft/2020-12/schema"))
+                                .build()
+                        )
                 )
                 .asIdentifier()
                 .asUri(),

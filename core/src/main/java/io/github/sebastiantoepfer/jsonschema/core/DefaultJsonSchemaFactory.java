@@ -39,7 +39,7 @@ public final class DefaultJsonSchemaFactory implements JsonSchemaFactory {
         } else if (schema.equals(JsonValue.EMPTY_JSON_OBJECT)) {
             result = new EmptyJsonSchema();
         } else {
-            result = new DefaultJsonSchema(schema.asJsonObject());
+            result = new DefaultJsonObjectSchema(schema.asJsonObject());
         }
         return result;
     }

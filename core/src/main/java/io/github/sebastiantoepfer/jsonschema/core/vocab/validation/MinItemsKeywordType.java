@@ -40,8 +40,8 @@ final class MinItemsKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        return new MinItemsKeyword((JsonNumber) value);
+    public Keyword createKeyword(final JsonSchema schema) {
+        return new MinItemsKeyword(schema.asJsonObject().getJsonNumber(name()));
     }
 
     private class MinItemsKeyword implements Assertion {

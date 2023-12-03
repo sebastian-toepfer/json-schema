@@ -41,7 +41,8 @@ final class PatternKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
+    public Keyword createKeyword(final JsonSchema schema) {
+        final JsonValue value = schema.asJsonObject().get(name());
         if (InstanceType.STRING.isInstance(value)) {
             return new PatternKeyword((JsonString) value);
         } else {

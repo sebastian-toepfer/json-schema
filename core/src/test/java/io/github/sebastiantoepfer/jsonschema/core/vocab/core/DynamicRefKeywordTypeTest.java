@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +38,10 @@ class DynamicRefKeywordTypeTest {
     void should_create_keyword_with_name() {
         assertThat(
             new DynamicRefKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("$dynamicRef", JsonValue.EMPTY_JSON_OBJECT).build())
+                )
                 .hasName("$dynamicRef"),
             is(true)
         );
@@ -46,7 +50,10 @@ class DynamicRefKeywordTypeTest {
     @Test
     void notFinischedYet() {
         final Keyword keyword = new DynamicRefKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.FALSE);
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("$dynamicRef", JsonValue.FALSE).build())
+            );
 
         assertThat(keyword.hasName("$dynamicRef"), is(true));
         assertThat(keyword.hasName("$id"), is(false));
