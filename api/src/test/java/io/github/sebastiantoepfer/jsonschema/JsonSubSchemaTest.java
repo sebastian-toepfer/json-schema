@@ -58,6 +58,11 @@ class JsonSubSchemaTest {
                 public JsonValue.ValueType getValueType() {
                     throw new UnsupportedOperationException("Not supported yet.");
                 }
+
+                @Override
+                public Optional<JsonSubSchema> asSubSchema(String name) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
             }
                 .rootSchema(),
             is(sameInstance(root))

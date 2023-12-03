@@ -229,4 +229,28 @@ class ItemsKeywordTypeTest {
             is(false)
         );
     }
+
+    @Test
+    void should_be_return_subSchemas() {
+        assertThat(
+            ((JsonSubSchema) new ItemsKeywordType()
+                    .createKeyword(
+                        new DefaultJsonSchemaFactory()
+                            .create(
+                                Json
+                                    .createObjectBuilder()
+                                    .add("prefixItems", Json.createArrayBuilder().add(true))
+                                    .add(
+                                        "items",
+                                        Json
+                                            .createObjectBuilder()
+                                            .add("type", "object")
+                                            .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
+                                    )
+                                    .build()
+                            )
+                    )).asSubSchema("properties"),
+            isPresent()
+        );
+    }
 }

@@ -55,7 +55,7 @@ class DefaultJsonSchemaFactoryTest {
     void should_return_defaultjsonschema_for_everything_else() {
         assertThat(
             new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("type", "string").build()),
-            is(instanceOf(DefaultJsonSchema.class))
+            is(instanceOf(DefaultJsonObjectSchema.class))
         );
     }
 }

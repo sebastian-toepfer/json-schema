@@ -51,5 +51,10 @@ public final class FakeJsonSchemaFactory implements JsonSchemaFactory {
         public JsonValue.ValueType getValueType() {
             throw new UnsupportedOperationException("Not supported yet.");
         }
+
+        @Override
+        public Optional<JsonSubSchema> asSubSchema(String name) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
     }
 }

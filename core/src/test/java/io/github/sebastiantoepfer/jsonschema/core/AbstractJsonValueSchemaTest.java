@@ -27,6 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonArray;
@@ -70,6 +71,11 @@ class AbstractJsonValueSchemaTest {
 
         @Override
         public Optional<Keyword> keywordByName(final String name) {
+            return Optional.empty();
+        }
+
+        @Override
+        public Optional<JsonSubSchema> asSubSchema(final String name) {
             return Optional.empty();
         }
     }

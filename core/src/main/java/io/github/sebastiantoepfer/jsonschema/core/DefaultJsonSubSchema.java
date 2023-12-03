@@ -24,23 +24,50 @@
 package io.github.sebastiantoepfer.jsonschema.core;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
+import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.JsonObject;
 import java.util.Objects;
 import java.util.Optional;
 
-@Deprecated
-final class KeywordSearch {
+final class DefaultJsonSubSchema implements JsonSubSchema {
 
-    private final KeywordType keywordType;
+    private final JsonSchema owner;
+    private final JsonSchema schema;
 
-    public KeywordSearch(final KeywordType keywordType) {
-        this.keywordType = Objects.requireNonNull(keywordType);
+    public DefaultJsonSubSchema(final JsonSchema owner, final JsonSchema schema) {
+        this.owner = Objects.requireNonNull(owner);
+        this.schema = Objects.requireNonNull(schema);
     }
 
-    public Optional<Keyword> searchForKeywordIn(final JsonSchema schema) {
-        return Optional
-            .ofNullable(schema.asJsonObject().get(keywordType.name()))
-            .map(keywordValue -> keywordType.createKeyword(schema));
+    @Override
+    public JsonSchema owner() {
+        return owner;
+    }
+
+    @Override
+    public Validator validator() {
+        return schema.validator();
+    }
+
+    @Override
+    public Optional<Keyword> keywordByName(final String name) {
+        return schema.keywordByName(name);
+    }
+
+    @Override
+    public Optional<JsonSubSchema> asSubSchema(final String name) {
+        return schema.asSubSchema(name);
+    }
+
+    @Override
+    public ValueType getValueType() {
+        return schema.getValueType();
+    }
+
+    @Override
+    public JsonObject asJsonObject() {
+        return schema.asJsonObject();
     }
 }

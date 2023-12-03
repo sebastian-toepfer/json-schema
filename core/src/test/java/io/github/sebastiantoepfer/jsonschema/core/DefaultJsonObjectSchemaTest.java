@@ -28,16 +28,15 @@ import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class DefaultJsonSchemaTest {
+class DefaultJsonObjectSchemaTest {
 
-    private final DefaultJsonSchema schema = new DefaultJsonSchema(
+    private final DefaultJsonObjectSchema schema = new DefaultJsonObjectSchema(
         Json
             .createObjectBuilder()
             .add("type", "array")
@@ -66,22 +65,24 @@ class DefaultJsonSchemaTest {
     }
 
     @Test
-    void should_not_be_loadable_without_mandantory_core_vocabulary() {
-        final JsonObject invalidSchema = Json
-            .createObjectBuilder()
-            .add(
-                "$vocabulary",
-                Json.createObjectBuilder().add("https://json-schema.org/draft/2020-12/vocab/core", false)
-            )
-            .build();
+    void should_not_be_usable_without_mandantory_core_vocabulary() {
+        final DefaultJsonObjectSchema invalidSchema = new DefaultJsonObjectSchema(
+            Json
+                .createObjectBuilder()
+                .add(
+                    "$vocabulary",
+                    Json.createObjectBuilder().add("https://json-schema.org/draft/2020-12/vocab/core", false)
+                )
+                .build()
+        );
 
-        Assertions.assertThrows(Exception.class, () -> new DefaultJsonSchema(invalidSchema));
+        assertThrows(IllegalArgumentException.class, () -> invalidSchema.keywordByName("$vocabulary"));
     }
 
     @Test
     void should_find_keyword_by_name() {
         assertThat(
-            new DefaultJsonSchema(
+            new DefaultJsonObjectSchema(
                 Json
                     .createObjectBuilder()
                     .add(
@@ -98,7 +99,7 @@ class DefaultJsonSchemaTest {
     @Test
     void should_return_empty_for_non_existing_keyword() {
         assertThat(
-            new DefaultJsonSchema(
+            new DefaultJsonObjectSchema(
                 Json
                     .createObjectBuilder()
                     .add(
@@ -108,6 +109,33 @@ class DefaultJsonSchemaTest {
                     .build()
             )
                 .keywordByName("type"),
+            isEmpty()
+        );
+    }
+
+    @Test
+    void should_return_empty_if_non_subschema_exists_under_the_given_name() {
+        assertThat(
+            new DefaultJsonObjectSchema(Json.createObjectBuilder().add("test", "hallo").build())
+                .asSubSchema("properties"),
+            isEmpty()
+        );
+    }
+
+    @Test
+    void should_return_subschema_if_subschema_exists_under_the_given_name() {
+        assertThat(
+            new DefaultJsonObjectSchema(Json.createObjectBuilder().add("test", JsonValue.FALSE).build())
+                .asSubSchema("test"),
+            isPresent()
+        );
+    }
+
+    @Test
+    void should_return_empty_if_given_name_not_resolve_to_a_valid_schematype() {
+        assertThat(
+            new DefaultJsonObjectSchema(Json.createObjectBuilder().add("test", JsonValue.EMPTY_JSON_ARRAY).build())
+                .asSubSchema("test"),
             isEmpty()
         );
     }

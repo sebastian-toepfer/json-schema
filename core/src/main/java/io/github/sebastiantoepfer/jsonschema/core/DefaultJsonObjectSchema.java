@@ -26,6 +26,8 @@ package io.github.sebastiantoepfer.jsonschema.core;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+import io.github.sebastiantoepfer.jsonschema.InstanceType;
+import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.core.codition.AllOfCondition;
 import io.github.sebastiantoepfer.jsonschema.core.codition.ApplicatorBasedCondtion;
@@ -33,6 +35,7 @@ import io.github.sebastiantoepfer.jsonschema.core.codition.AssertionBasedConditi
 import io.github.sebastiantoepfer.jsonschema.core.codition.Condition;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.core.VocabularyKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinitions;
 import jakarta.json.JsonObject;
@@ -41,13 +44,10 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-final class DefaultJsonSchema extends AbstractJsonValueSchema {
+final class DefaultJsonObjectSchema extends AbstractJsonValueSchema {
 
-    private final Keywords keywords;
-
-    public DefaultJsonSchema(final JsonObject value) {
+    public DefaultJsonObjectSchema(final JsonObject value) {
         super(value);
-        keywords = new Keywords(vocabulary());
     }
 
     @Override
@@ -65,9 +65,16 @@ final class DefaultJsonSchema extends AbstractJsonValueSchema {
         return keywords().filter(k -> k.hasName(name)).findFirst();
     }
 
+    private Stream<Keyword> keywords() {
+        final Keywords keywords = new Keywords(vocabulary());
+        return asJsonObject().keySet().stream().map(propertyName -> keywords.createKeywordFor(this, propertyName));
+    }
+
     private Collection<VocabularyDefinition> vocabulary() {
-        return new KeywordSearch(new VocabularyKeywordType())
-            .searchForKeywordIn(this)
+        final KeywordType keywordType = new VocabularyKeywordType();
+        return Optional
+            .ofNullable(asJsonObject().get(keywordType.name()))
+            .map(keywordValue -> keywordType.createKeyword(this))
             .filter(VocabularyDefinitions.class::isInstance)
             .map(VocabularyDefinitions.class::cast)
             .stream()
@@ -75,8 +82,15 @@ final class DefaultJsonSchema extends AbstractJsonValueSchema {
             .toList();
     }
 
-    private Stream<Keyword> keywords() {
-        return asJsonObject().keySet().stream().map(propertyName -> keywords.createKeywordFor(this, propertyName));
+    @Override
+    public Optional<JsonSubSchema> asSubSchema(final String name) {
+        return Optional
+            .ofNullable(asJsonObject().get(name))
+            .filter(value ->
+                Stream.of(InstanceType.BOOLEAN, InstanceType.OBJECT).anyMatch(type -> type.isInstance(value))
+            )
+            .map(new DefaultJsonSchemaFactory()::create)
+            .map(subSchema -> new DefaultJsonSubSchema(this, subSchema));
     }
 
     private Optional<Condition<JsonValue>> asContraint(final Keyword keyword) {

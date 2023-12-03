@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.core.codition.NoCondition;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
@@ -42,6 +43,11 @@ final class EmptyJsonSchema extends AbstractJsonValueSchema {
 
     @Override
     public Optional<Keyword> keywordByName(final String name) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<JsonSubSchema> asSubSchema(final String name) {
         return Optional.empty();
     }
 }

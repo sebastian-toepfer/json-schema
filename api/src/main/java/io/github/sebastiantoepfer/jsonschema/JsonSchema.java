@@ -32,6 +32,8 @@ public interface JsonSchema extends JsonValue {
 
     Optional<Keyword> keywordByName(String name);
 
+    Optional<JsonSubSchema> asSubSchema(String name);
+
     default JsonSchema rootSchema() {
         return this;
     }

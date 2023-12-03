@@ -25,7 +25,6 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Annotation;
@@ -49,22 +48,20 @@ final class ItemsKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        return new ItemsKeyword(schema, JsonSchemas.load(schema.asJsonObject().get(name())));
+        return schema.asSubSchema(name()).map(ItemsKeyword::new).orElseThrow(IllegalArgumentException::new);
     }
 
     private class ItemsKeyword implements Applicator, Annotation, JsonSubSchema {
 
-        private final JsonSchema owner;
-        private final JsonSchema schema;
+        private final JsonSubSchema schema;
 
-        public ItemsKeyword(final JsonSchema owner, final JsonSchema schema) {
-            this.owner = Objects.requireNonNull(owner);
+        public ItemsKeyword(final JsonSubSchema schema) {
             this.schema = Objects.requireNonNull(schema);
         }
 
         @Override
         public JsonSchema owner() {
-            return owner;
+            return schema.owner();
         }
 
         @Override
@@ -80,6 +77,11 @@ final class ItemsKeywordType implements KeywordType {
         @Override
         public Optional<Keyword> keywordByName(final String name) {
             return schema.keywordByName(name);
+        }
+
+        @Override
+        public Optional<JsonSubSchema> asSubSchema(final String name) {
+            return schema.asSubSchema(name);
         }
 
         @Override
