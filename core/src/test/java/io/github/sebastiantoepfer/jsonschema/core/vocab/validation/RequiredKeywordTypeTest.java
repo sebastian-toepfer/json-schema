@@ -38,7 +38,10 @@ class RequiredKeywordTypeTest {
     @Test
     void should_know_his_name() {
         final Keyword required = new RequiredKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_ARRAY);
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("required", JsonValue.EMPTY_JSON_ARRAY).build())
+            );
 
         assertThat(required.hasName("required"), is(true));
         assertThat(required.hasName("test"), is(false));
@@ -49,8 +52,13 @@ class RequiredKeywordTypeTest {
         assertThat(
             new RequiredKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createArrayBuilder().add("foo").add("bar").build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("required", Json.createArrayBuilder().add("foo").add("bar"))
+                                .build()
+                        )
                 )
                 .asAssertion()
                 .isValidFor(Json.createObjectBuilder().add("foo", BigDecimal.ONE).build()),
@@ -63,8 +71,13 @@ class RequiredKeywordTypeTest {
         assertThat(
             new RequiredKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createArrayBuilder().add("foo").add("bar").build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("required", Json.createArrayBuilder().add("foo").add("bar"))
+                                .build()
+                        )
                 )
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_ARRAY),
@@ -77,8 +90,13 @@ class RequiredKeywordTypeTest {
         assertThat(
             new RequiredKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createArrayBuilder().add("foo").add("bar").build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("required", Json.createArrayBuilder().add("foo").add("bar"))
+                                .build()
+                        )
                 )
                 .asAssertion()
                 .isValidFor(Json.createObjectBuilder().add("foo", BigDecimal.ONE).add("bar", "test").build()),

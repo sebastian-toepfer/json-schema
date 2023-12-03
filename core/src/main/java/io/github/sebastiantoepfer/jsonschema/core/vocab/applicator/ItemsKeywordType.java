@@ -48,8 +48,8 @@ final class ItemsKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        return new ItemsKeyword(schema, JsonSchemas.load(value));
+    public Keyword createKeyword(final JsonSchema schema) {
+        return new ItemsKeyword(schema, JsonSchemas.load(schema.asJsonObject().get(name())));
     }
 
     private class ItemsKeyword implements Applicator, Annotation, JsonSubSchema {

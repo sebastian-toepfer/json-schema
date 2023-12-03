@@ -41,7 +41,8 @@ class MaxLengthKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
+    public Keyword createKeyword(final JsonSchema schema) {
+        final JsonValue value = schema.asJsonObject().get(name());
         if (InstanceType.INTEGER.isInstance(value)) {
             return new MaxLengthKeyword((JsonNumber) value);
         } else {

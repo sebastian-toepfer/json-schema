@@ -40,8 +40,8 @@ final class MaxItemsKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        return new MaxItemsKeyword((JsonNumber) value);
+    public Keyword createKeyword(final JsonSchema schema) {
+        return new MaxItemsKeyword(schema.asJsonObject().getJsonNumber(name()));
     }
 
     private class MaxItemsKeyword implements Assertion {

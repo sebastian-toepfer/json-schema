@@ -39,14 +39,18 @@ class RefKeywordTypeTest {
     @Test
     void should_be_not_createbale_from_non_string() {
         final RefKeywordType keywordType = new RefKeywordType();
-        final JsonSchema schema = new DefaultJsonSchemaFactory().create(JsonValue.TRUE);
-        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema, JsonValue.TRUE));
+        final JsonSchema schema = new DefaultJsonSchemaFactory()
+            .create(Json.createObjectBuilder().add("$ref", JsonValue.TRUE).build());
+        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
     }
 
     @Test
     void should_know_his_name() {
         final Keyword ref = new RefKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue("#"));
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("$ref", Json.createValue("#")).build())
+            );
 
         assertThat(ref.hasName("$ref"), is(true));
         assertThat(ref.hasName("test"), is(false));
@@ -66,9 +70,9 @@ class RefKeywordTypeTest {
                                     .createObjectBuilder()
                                     .add("positiveInteger", Json.createObjectBuilder().add("type", "integer"))
                             )
+                            .add("$ref", Json.createValue("#/$defs/positiveInteger"))
                             .build()
-                    ),
-                Json.createValue("#/$defs/positiveInteger")
+                    )
             );
 
         assertThat(keyword.asApplicator().applyTo(Json.createValue(1L)), is(true));
@@ -89,9 +93,9 @@ class RefKeywordTypeTest {
                                     .createObjectBuilder()
                                     .add("positiveInteger", Json.createObjectBuilder().add("type", "integer"))
                             )
+                            .add("$ref", Json.createValue("#/$defs/positiveInteger"))
                             .build()
-                    ),
-                Json.createValue("#/$defs/positiveInteger")
+                    )
             );
 
         assertThat(keyword.asApplicator().applyTo(Json.createValue(1L)), is(true));

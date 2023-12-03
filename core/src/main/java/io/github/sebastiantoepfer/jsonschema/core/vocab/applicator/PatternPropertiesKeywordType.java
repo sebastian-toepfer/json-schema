@@ -50,8 +50,8 @@ final class PatternPropertiesKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        return new PatternPropertiesKeyword(value.asJsonObject());
+    public Keyword createKeyword(final JsonSchema schema) {
+        return new PatternPropertiesKeyword(schema.asJsonObject().getJsonObject(name()));
     }
 
     private class PatternPropertiesKeyword implements Applicator, Annotation {

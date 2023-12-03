@@ -52,8 +52,8 @@ class AdditionalPropertiesKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        return new AdditionalPropertiesKeyword(schema, value);
+    public Keyword createKeyword(final JsonSchema schema) {
+        return new AdditionalPropertiesKeyword(schema, schema.asJsonObject().get(name()));
     }
 
     private class AdditionalPropertiesKeyword implements Applicator, Annotation {

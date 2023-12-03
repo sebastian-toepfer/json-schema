@@ -37,7 +37,10 @@ class MinItemsKeywordTypeTest {
     @Test
     void should_be_know_his_name() {
         final Keyword minItems = new MinItemsKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(1));
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
+            );
 
         assertThat(minItems.hasName("minItems"), is(true));
         assertThat(minItems.hasName("test"), is(false));
@@ -47,7 +50,10 @@ class MinItemsKeywordTypeTest {
     void should_be_valid_for_non_arrays() {
         assertThat(
             new MinItemsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(1))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
+                )
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
@@ -58,7 +64,10 @@ class MinItemsKeywordTypeTest {
     void should_be_valid_for_arrays_with_equals_size() {
         assertThat(
             new MinItemsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(1))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add(1).build()),
             is(true)
@@ -69,7 +78,10 @@ class MinItemsKeywordTypeTest {
     void should_be_valid_for_arrays_with_greater_size() {
         assertThat(
             new MinItemsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(1))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add(1).add(2).build()),
             is(true)
@@ -80,7 +92,10 @@ class MinItemsKeywordTypeTest {
     void should_be_invalid_for_arrays_with_smaller_size() {
         assertThat(
             new MinItemsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(1))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().build()),
             is(false)

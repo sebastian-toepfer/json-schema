@@ -40,7 +40,10 @@ class PatternPropertiesKeywordTypeTest {
     @Test
     void should_know_his_name() {
         final Keyword keyword = new PatternPropertiesKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT);
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("patternProperties", JsonValue.EMPTY_JSON_OBJECT).build())
+            );
 
         assertThat(keyword.hasName("patternProperties"), is(true));
         assertThat(keyword.hasName("test"), is(false));
@@ -50,7 +53,12 @@ class PatternPropertiesKeywordTypeTest {
     void should_be_an_applicator_and_an_annotation() {
         assertThat(
             new PatternPropertiesKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json.createObjectBuilder().add("patternProperties", JsonValue.EMPTY_JSON_OBJECT).build()
+                        )
+                )
                 .categories(),
             containsInAnyOrder(Keyword.KeywordCategory.APPLICATOR, Keyword.KeywordCategory.ANNOTATION)
         );
@@ -60,7 +68,12 @@ class PatternPropertiesKeywordTypeTest {
     void should_be_valid_for_non_object() {
         assertThat(
             new PatternPropertiesKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json.createObjectBuilder().add("patternProperties", JsonValue.EMPTY_JSON_OBJECT).build()
+                        )
+                )
                 .asApplicator()
                 .applyTo(JsonValue.FALSE),
             is(true)
@@ -71,7 +84,12 @@ class PatternPropertiesKeywordTypeTest {
     void should_be_valid_for_empty_object() {
         assertThat(
             new PatternPropertiesKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json.createObjectBuilder().add("patternProperties", JsonValue.EMPTY_JSON_OBJECT).build()
+                        )
+                )
                 .asApplicator()
                 .applyTo(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
@@ -83,8 +101,13 @@ class PatternPropertiesKeywordTypeTest {
         assertThat(
             new PatternPropertiesKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createObjectBuilder().add("t.st", JsonValue.TRUE).build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("patternProperties", Json.createObjectBuilder().add("t.st", JsonValue.TRUE))
+                                .build()
+                        )
                 )
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("test", 1).build()),
@@ -97,8 +120,13 @@ class PatternPropertiesKeywordTypeTest {
         assertThat(
             new PatternPropertiesKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createObjectBuilder().add("t.st", JsonValue.FALSE).build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("patternProperties", Json.createObjectBuilder().add("t.st", JsonValue.FALSE))
+                                .build()
+                        )
                 )
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("test", 1).build()),
@@ -116,8 +144,16 @@ class PatternPropertiesKeywordTypeTest {
         assertThat(
             new PatternPropertiesKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createObjectBuilder().add("t.st", JsonValue.TRUE).add("t.*", JsonValue.FALSE).build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add(
+                                    "patternProperties",
+                                    Json.createObjectBuilder().add("t.st", JsonValue.TRUE).add("t.*", JsonValue.FALSE)
+                                )
+                                .build()
+                        )
                 )
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("test", 1).build()),
@@ -130,8 +166,13 @@ class PatternPropertiesKeywordTypeTest {
         assertThat(
             new PatternPropertiesKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createObjectBuilder().add("t.st", JsonValue.FALSE).build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("patternProperties", Json.createObjectBuilder().add("t.st", JsonValue.FALSE))
+                                .build()
+                        )
                 )
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("foo", 1).build()),
@@ -144,8 +185,13 @@ class PatternPropertiesKeywordTypeTest {
         assertThat(
             new PatternPropertiesKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createObjectBuilder().add("f.o", JsonValue.TRUE).build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("patternProperties", Json.createObjectBuilder().add("f.o", JsonValue.TRUE))
+                                .build()
+                        )
                 )
                 .asAnnotation()
                 .valueFor(

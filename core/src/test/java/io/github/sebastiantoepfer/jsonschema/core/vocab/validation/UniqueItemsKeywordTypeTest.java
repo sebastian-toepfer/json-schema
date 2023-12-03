@@ -42,7 +42,10 @@ class UniqueItemsKeywordTypeTest {
     @Test
     void should_know_his_name() {
         final Keyword keyword = new UniqueItemsKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.FALSE);
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("uniqueItems", JsonValue.FALSE).build())
+            );
 
         assertThat(keyword.hasName("uniqueItems"), is(true));
         assertThat(keyword.hasName("test"), is(false));
@@ -50,19 +53,20 @@ class UniqueItemsKeywordTypeTest {
 
     @Test
     void should_not_be_createbale_from_non_boolean() {
-        final JsonSchema schema = new DefaultJsonSchemaFactory().create(JsonValue.TRUE);
+        final JsonSchema schema = new DefaultJsonSchemaFactory()
+            .create(Json.createObjectBuilder().add("uniqueItems", JsonValue.EMPTY_JSON_OBJECT).build());
         final KeywordType keywordType = new UniqueItemsKeywordType();
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> keywordType.createKeyword(schema, JsonValue.EMPTY_JSON_OBJECT)
-        );
+        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
     }
 
     @Test
     void should_be_valid_for_uniqueItems() {
         assertThat(
             new UniqueItemsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.TRUE)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("1").add("2").build()),
             is(true)
@@ -73,7 +77,10 @@ class UniqueItemsKeywordTypeTest {
     void should_be_valid_for_non_uniqueItems_if_false() {
         assertThat(
             new UniqueItemsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.FALSE)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("uniqueItems", JsonValue.FALSE).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("1").add("1").build()),
             is(true)
@@ -84,7 +91,10 @@ class UniqueItemsKeywordTypeTest {
     void should_be_invalid_for_non_uniqueItems() {
         assertThat(
             new UniqueItemsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.TRUE)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("1").add("1").build()),
             is(false)
@@ -95,7 +105,10 @@ class UniqueItemsKeywordTypeTest {
     void should_be_valid_for_non_arrays() {
         assertThat(
             new UniqueItemsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.FALSE)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("uniqueItems", JsonValue.FALSE).build())
+                )
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
@@ -106,7 +119,10 @@ class UniqueItemsKeywordTypeTest {
     void should_be_invalid_if_numbers_mathematically_unequal() {
         assertThat(
             new UniqueItemsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.TRUE)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createReader(new StringReader("[1.0,1.00,1]")).readArray()),
             is(false)

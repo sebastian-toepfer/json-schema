@@ -31,7 +31,6 @@ import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonNumber;
 import jakarta.json.JsonValue;
 import org.junit.jupiter.api.Test;
 
@@ -39,16 +38,18 @@ class MaxLengthKeywordTypeTest {
 
     @Test
     void should_not_be_createbale_with_non_integer() {
-        final JsonNumber value = Json.createValue(12.3);
         final MinLengthKeywordType keywordType = new MinLengthKeywordType();
-        final JsonSchema schema = new DefaultJsonSchemaFactory().create(JsonValue.TRUE);
-        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema, value));
+        final JsonSchema schema = new DefaultJsonSchemaFactory()
+            .create(Json.createObjectBuilder().add("maxLength", 12.3).build());
+        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
     }
 
     @Test
     void should_know_his_name() {
         final Keyword keyword = new MaxLengthKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(1));
+            .createKeyword(
+                new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("maxLength", 1).build())
+            );
 
         assertThat(keyword.hasName("test"), is(false));
         assertThat(keyword.hasName("maxLength"), is(true));
@@ -58,7 +59,10 @@ class MaxLengthKeywordTypeTest {
     void should_be_valid_for_non_string_values() {
         assertThat(
             new MaxLengthKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(2))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("maxLength", Json.createValue(2)).build())
+                )
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_ARRAY),
             is(true)
@@ -69,7 +73,10 @@ class MaxLengthKeywordTypeTest {
     void should_be_invalid_for_longer_string() {
         assertThat(
             new MaxLengthKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(2))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("maxLength", Json.createValue(2)).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createValue("1234")),
             is(false)
@@ -80,7 +87,10 @@ class MaxLengthKeywordTypeTest {
     void should_be_valid_for_string_with_length_is_equal() {
         assertThat(
             new MaxLengthKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(2))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("maxLength", Json.createValue(2)).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createValue("12")),
             is(true)
@@ -91,7 +101,10 @@ class MaxLengthKeywordTypeTest {
     void should_ne_valid_for_string_with_is_shorter() {
         assertThat(
             new MaxLengthKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(2))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("maxLength", Json.createValue(2)).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createValue("1")),
             is(true)

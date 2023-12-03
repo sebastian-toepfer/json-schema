@@ -31,7 +31,6 @@ import static org.hamcrest.Matchers.is;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.JsonValue;
 import java.net.URI;
 import org.junit.jupiter.api.Test;
 
@@ -77,7 +76,7 @@ class DefaultVocabularyTest {
         }
 
         @Override
-        public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
+        public Keyword createKeyword(final JsonSchema schema) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
     }

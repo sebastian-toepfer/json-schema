@@ -27,7 +27,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
@@ -35,25 +34,17 @@ import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import java.net.URI;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class VocabularyKeywordTypeTest {
 
     @Test
-    void should_not_create_keyword_for_non_jsonobject() {
-        final VocabularyKeywordType keywordType = new VocabularyKeywordType();
-        final JsonSchema schema = new DefaultJsonSchemaFactory().create(JsonValue.TRUE);
-        Assertions.assertThrows(
-            IllegalArgumentException.class,
-            () -> keywordType.createKeyword(schema, JsonValue.FALSE)
-        );
-    }
-
-    @Test
     void should_created_keyword_should_know_his_name() {
         final Keyword vocabulary = new VocabularyKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT);
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("$vocabulary", JsonValue.EMPTY_JSON_OBJECT).build())
+            );
 
         assertThat(vocabulary.hasName("$vocabulary"), is(true));
         assertThat(vocabulary.hasName("$id"), is(false));
@@ -64,16 +55,23 @@ class VocabularyKeywordTypeTest {
         assertThat(
             ((VocabularyDefinitions) new VocabularyKeywordType()
                     .createKeyword(
-                        new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                        Json
-                            .createObjectBuilder()
-                            .add("http://json-schema.org/test", true)
-                            .add("http://openapi.org/test", false)
-                            .build()
+                        new DefaultJsonSchemaFactory()
+                            .create(
+                                Json
+                                    .createObjectBuilder()
+                                    .add(
+                                        "$vocabulary",
+                                        Json
+                                            .createObjectBuilder()
+                                            .add("https://json-schema.org/draft/2020-12/vocab/core", true)
+                                            .add("http://openapi.org/test", false)
+                                    )
+                                    .build()
+                            )
                     )).definitions()
                 .toList(),
             containsInAnyOrder(
-                new VocabularyDefinition(URI.create("http://json-schema.org/test"), true),
+                new VocabularyDefinition(URI.create("https://json-schema.org/draft/2020-12/vocab/core"), true),
                 new VocabularyDefinition(URI.create("http://openapi.org/test"), false)
             )
         );

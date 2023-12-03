@@ -27,6 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
@@ -38,15 +39,19 @@ class SchemaKeywordTypeTest {
 
     @Test
     void should_not_be_creatable_from_non_string() {
-        final SchemaKeywordType schema = new SchemaKeywordType();
-
-        assertThrows(IllegalArgumentException.class, () -> schema.createKeyword(null, JsonValue.FALSE));
+        final SchemaKeywordType keywordType = new SchemaKeywordType();
+        final JsonSchema schema = new DefaultJsonSchemaFactory()
+            .create(Json.createObjectBuilder().add("$schema", JsonValue.FALSE).build());
+        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
     }
 
     @Test
     void should_know_his_name() {
         final Keyword schema = new SchemaKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue("/test"));
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("$schema", Json.createValue("/test")).build())
+            );
 
         assertThat(schema.hasName("$schema"), is(true));
         assertThat(schema.hasName("test"), is(false));
@@ -57,8 +62,13 @@ class SchemaKeywordTypeTest {
         assertThat(
             new SchemaKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createValue("https://json-schema.org/draft/2020-12/schema")
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("$schema", Json.createValue("https://json-schema.org/draft/2020-12/schema"))
+                                .build()
+                        )
                 )
                 .asIdentifier()
                 .asUri(),

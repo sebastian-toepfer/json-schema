@@ -28,7 +28,6 @@ import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.ReservedLocation;
-import jakarta.json.JsonValue;
 import java.util.Objects;
 
 /**
@@ -43,8 +42,8 @@ final class DefsKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        if (InstanceType.OBJECT.isInstance(value)) {
+    public Keyword createKeyword(final JsonSchema schema) {
+        if (InstanceType.OBJECT.isInstance(schema.asJsonObject().get(name()))) {
             return new DefsKeyword();
         } else {
             throw new IllegalArgumentException("must be an object!");

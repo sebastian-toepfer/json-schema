@@ -39,7 +39,10 @@ class PropertiesKeywordTypeTest {
     @Test
     void should_be_know_his_name() {
         final Keyword keyword = new PropertiesKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT);
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("properties", JsonValue.EMPTY_JSON_OBJECT).build())
+            );
 
         assertThat(keyword.hasName("properties"), is(true));
         assertThat(keyword.hasName("test"), is(false));
@@ -49,7 +52,10 @@ class PropertiesKeywordTypeTest {
     void should_be_an_applicator_and_annotation() {
         assertThat(
             new PropertiesKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("properties", JsonValue.EMPTY_JSON_OBJECT).build())
+                )
                 .categories(),
             Matchers.containsInAnyOrder(Keyword.KeywordCategory.APPLICATOR, Keyword.KeywordCategory.ANNOTATION)
         );
@@ -59,7 +65,10 @@ class PropertiesKeywordTypeTest {
     void should_be_valid_for_non_objects() {
         assertThat(
             new PropertiesKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("properties", JsonValue.EMPTY_JSON_OBJECT).build())
+                )
                 .asApplicator()
                 .applyTo(JsonValue.EMPTY_JSON_ARRAY),
             is(true)
@@ -71,8 +80,13 @@ class PropertiesKeywordTypeTest {
         assertThat(
             new PropertiesKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createObjectBuilder().add("test", JsonValue.TRUE).build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
+                                .build()
+                        )
                 )
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("test", 1).build()),
@@ -85,8 +99,13 @@ class PropertiesKeywordTypeTest {
         assertThat(
             new PropertiesKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createObjectBuilder().add("test", JsonValue.FALSE).build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("properties", Json.createObjectBuilder().add("test", JsonValue.FALSE))
+                                .build()
+                        )
                 )
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("test", 1).build()),
@@ -99,8 +118,13 @@ class PropertiesKeywordTypeTest {
         assertThat(
             new PropertiesKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createObjectBuilder().add("test", JsonValue.FALSE).build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("properties", Json.createObjectBuilder().add("test", JsonValue.FALSE))
+                                .build()
+                        )
                 )
                 .asApplicator()
                 .applyTo(JsonValue.EMPTY_JSON_OBJECT),
@@ -113,8 +137,13 @@ class PropertiesKeywordTypeTest {
         assertThat(
             new PropertiesKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createObjectBuilder().add("test", true).add("foo", true).build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("properties", Json.createObjectBuilder().add("test", true).add("foo", true))
+                                .build()
+                        )
                 )
                 .asAnnotation()
                 .valueFor(Json.createObjectBuilder().add("foo", 1).build())

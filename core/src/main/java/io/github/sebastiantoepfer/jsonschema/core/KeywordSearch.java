@@ -29,6 +29,7 @@ import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import java.util.Objects;
 import java.util.Optional;
 
+@Deprecated
 final class KeywordSearch {
 
     private final KeywordType keywordType;
@@ -40,6 +41,6 @@ final class KeywordSearch {
     public Optional<Keyword> searchForKeywordIn(final JsonSchema schema) {
         return Optional
             .ofNullable(schema.asJsonObject().get(keywordType.name()))
-            .map(keywordValue -> keywordType.createKeyword(schema, keywordValue));
+            .map(keywordValue -> keywordType.createKeyword(schema));
     }
 }

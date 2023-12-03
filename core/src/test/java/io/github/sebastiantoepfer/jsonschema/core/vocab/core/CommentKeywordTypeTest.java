@@ -27,6 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +37,10 @@ class CommentKeywordTypeTest {
     void should_create_keyword_with_name() {
         assertThat(
             new CommentKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("$comment", JsonValue.EMPTY_JSON_OBJECT).build())
+                )
                 .hasName("$comment"),
             is(true)
         );

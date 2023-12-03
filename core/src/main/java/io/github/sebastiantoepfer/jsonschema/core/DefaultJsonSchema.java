@@ -76,7 +76,7 @@ final class DefaultJsonSchema extends AbstractJsonValueSchema {
     }
 
     private Stream<Keyword> keywords() {
-        return asJsonObject().entrySet().stream().map(property -> keywords.createKeywordFor(this, property));
+        return asJsonObject().keySet().stream().map(propertyName -> keywords.createKeywordFor(this, propertyName));
     }
 
     private Optional<Condition<JsonValue>> asContraint(final Keyword keyword) {

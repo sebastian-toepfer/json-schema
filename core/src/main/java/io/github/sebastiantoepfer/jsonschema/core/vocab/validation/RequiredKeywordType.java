@@ -42,8 +42,8 @@ class RequiredKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        return new RequiredKeyword(value.asJsonArray());
+    public Keyword createKeyword(final JsonSchema schema) {
+        return new RequiredKeyword(schema.asJsonObject().getJsonArray(name()));
     }
 
     private class RequiredKeyword implements Assertion {

@@ -28,7 +28,6 @@ import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.validation.ExclusiveMinimumKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
@@ -40,7 +39,10 @@ class ExclusiveMinimumKeywordTypeTest {
     @Test
     void should_know_his_name() {
         final Keyword minimum = new ExclusiveMinimumKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(1));
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("exclusiveMinimum", Json.createValue(1)).build())
+            );
 
         assertThat(minimum.hasName("exclusiveMinimum"), is(true));
         assertThat(minimum.hasName("test"), is(false));
@@ -49,18 +51,19 @@ class ExclusiveMinimumKeywordTypeTest {
     @Test
     void should_not_becreatable_with_non_number() {
         final ExclusiveMinimumKeywordType keywordType = new ExclusiveMinimumKeywordType();
-        final JsonSchema schema = new DefaultJsonSchemaFactory().create(JsonValue.TRUE);
-        Assertions.assertThrows(
-            IllegalArgumentException.class,
-            () -> keywordType.createKeyword(schema, JsonValue.FALSE)
-        );
+        final JsonSchema schema = new DefaultJsonSchemaFactory()
+            .create(Json.createObjectBuilder().add("exclusiveMinimum", JsonValue.FALSE).build());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
     }
 
     @Test
     void should_be_valid_for_non_number_values() {
         assertThat(
             new ExclusiveMinimumKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(1))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("exclusiveMinimum", Json.createValue(1)).build())
+                )
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
@@ -71,7 +74,10 @@ class ExclusiveMinimumKeywordTypeTest {
     void should_be_invalid_for_smaller_numbers() {
         assertThat(
             new ExclusiveMinimumKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(0))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("exclusiveMinimum", Json.createValue(0)).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createValue(-1)),
             is(false)
@@ -82,7 +88,10 @@ class ExclusiveMinimumKeywordTypeTest {
     void should_be_invalid_for_equals_numbers() {
         assertThat(
             new ExclusiveMinimumKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(0))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("exclusiveMinimum", Json.createValue(0)).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createValue(0)),
             is(false)
@@ -93,7 +102,10 @@ class ExclusiveMinimumKeywordTypeTest {
     void shhould_be_valid_for_greater_numbers() {
         assertThat(
             new ExclusiveMinimumKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(0))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("exclusiveMinimum", Json.createValue(0)).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createValue(1)),
             is(true)

@@ -28,6 +28,7 @@ import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
@@ -35,7 +36,6 @@ import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 class ItemsKeywordTypeTest {
@@ -43,7 +43,10 @@ class ItemsKeywordTypeTest {
     @Test
     void should_know_his_name() {
         final Keyword items = new ItemsKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT);
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("items", JsonValue.EMPTY_JSON_OBJECT).build())
+            );
 
         assertThat(items.hasName("items"), is(true));
         assertThat(items.hasName("test"), is(false));
@@ -54,8 +57,13 @@ class ItemsKeywordTypeTest {
         assertThat(
             new ItemsKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createObjectBuilder().add("type", "number").build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("items", Json.createObjectBuilder().add("type", "number"))
+                                .build()
+                        )
                 )
                 .asApplicator()
                 .applyTo(Json.createArrayBuilder().add(1).add("invalid").add(2).build()),
@@ -68,8 +76,13 @@ class ItemsKeywordTypeTest {
         assertThat(
             new ItemsKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                    Json.createObjectBuilder().add("type", "number").build()
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("items", Json.createObjectBuilder().add("type", "number"))
+                                .build()
+                        )
                 )
                 .asApplicator()
                 .applyTo(Json.createArrayBuilder().add(1).add(2).build()),
@@ -79,11 +92,9 @@ class ItemsKeywordTypeTest {
 
     @Test
     void should_return_his_owning_schema() {
-        final JsonSchema schema = new DefaultJsonSchemaFactory().create(JsonValue.TRUE);
-        assertThat(
-            ((JsonSubSchema) new ItemsKeywordType().createKeyword(schema, JsonValue.TRUE)).owner(),
-            is(Matchers.sameInstance(schema))
-        );
+        final JsonSchema schema = new DefaultJsonSchemaFactory()
+            .create(Json.createObjectBuilder().add("items", JsonValue.TRUE).build());
+        assertThat(((JsonSubSchema) new ItemsKeywordType().createKeyword(schema)).owner(), is(sameInstance(schema)));
     }
 
     @Test
@@ -91,8 +102,8 @@ class ItemsKeywordTypeTest {
         assertThat(
             ((JsonSubSchema) new ItemsKeywordType()
                     .createKeyword(
-                        new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                        JsonValue.EMPTY_JSON_OBJECT
+                        new DefaultJsonSchemaFactory()
+                            .create(Json.createObjectBuilder().add("items", JsonValue.EMPTY_JSON_OBJECT).build())
                     )).getValueType(),
             is(JsonValue.ValueType.OBJECT)
         );
@@ -102,7 +113,10 @@ class ItemsKeywordTypeTest {
     void should_be_applicator_and_annotation() {
         assertThat(
             new ItemsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("items", JsonValue.EMPTY_JSON_OBJECT).build())
+                )
                 .categories(),
             contains(Keyword.KeywordCategory.APPLICATOR, Keyword.KeywordCategory.ANNOTATION)
         );
@@ -112,7 +126,10 @@ class ItemsKeywordTypeTest {
     void should_produces_true_if_is_applied_to_any_instance() {
         assertThat(
             new ItemsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), JsonValue.EMPTY_JSON_OBJECT)
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("items", JsonValue.EMPTY_JSON_OBJECT).build())
+                )
                 .asAnnotation()
                 .valueFor(Json.createArrayBuilder().add(1).build()),
             is(JsonValue.TRUE)
@@ -124,8 +141,13 @@ class ItemsKeywordTypeTest {
         assertThat(
             ((JsonSubSchema) new ItemsKeywordType()
                     .createKeyword(
-                        new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                        Json.createObjectBuilder().add("type", "string").build()
+                        new DefaultJsonSchemaFactory()
+                            .create(
+                                Json
+                                    .createObjectBuilder()
+                                    .add("items", Json.createObjectBuilder().add("type", "string"))
+                                    .build()
+                            )
                     )).keywordByName("type"),
             isPresent()
         );
@@ -136,8 +158,13 @@ class ItemsKeywordTypeTest {
         assertThat(
             ((JsonSubSchema) new ItemsKeywordType()
                     .createKeyword(
-                        new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                        Json.createObjectBuilder().add("type", "string").build()
+                        new DefaultJsonSchemaFactory()
+                            .create(
+                                Json
+                                    .createObjectBuilder()
+                                    .add("items", Json.createObjectBuilder().add("type", "string"))
+                                    .build()
+                            )
                     )).keywordByName("properties"),
             isEmpty()
         );
@@ -150,9 +177,12 @@ class ItemsKeywordTypeTest {
                 .createKeyword(
                     new DefaultJsonSchemaFactory()
                         .create(
-                            Json.createObjectBuilder().add("prefixItems", Json.createArrayBuilder().add(true)).build()
-                        ),
-                    JsonValue.FALSE
+                            Json
+                                .createObjectBuilder()
+                                .add("prefixItems", Json.createArrayBuilder().add(true))
+                                .add("items", JsonValue.FALSE)
+                                .build()
+                        )
                 )
                 .asAnnotation()
                 .valueFor(Json.createArrayBuilder().add(1).build()),
@@ -170,9 +200,9 @@ class ItemsKeywordTypeTest {
                             Json
                                 .createObjectBuilder()
                                 .add("prefixItems", Json.createArrayBuilder().add(true).add(true))
+                                .add("items", Json.createObjectBuilder().add("type", "integer"))
                                 .build()
-                        ),
-                    Json.createObjectBuilder().add("type", "integer").build()
+                        )
                 )
                 .asApplicator()
                 .applyTo(Json.createArrayBuilder().add("1").add("2").add(1).build()),
@@ -187,9 +217,12 @@ class ItemsKeywordTypeTest {
                 .createKeyword(
                     new DefaultJsonSchemaFactory()
                         .create(
-                            Json.createObjectBuilder().add("prefixItems", Json.createArrayBuilder().add(true)).build()
-                        ),
-                    Json.createObjectBuilder().add("type", "integer").build()
+                            Json
+                                .createObjectBuilder()
+                                .add("prefixItems", Json.createArrayBuilder().add(true))
+                                .add("items", Json.createObjectBuilder().add("type", "integer"))
+                                .build()
+                        )
                 )
                 .asApplicator()
                 .applyTo(Json.createArrayBuilder().add("1").add("2").add(1).build()),

@@ -44,8 +44,8 @@ final class EnumKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
-        return new EnumKeyword(value.asJsonArray());
+    public Keyword createKeyword(final JsonSchema schema) {
+        return new EnumKeyword(schema.asJsonObject().getJsonArray(name()));
     }
 
     private class EnumKeyword implements Assertion {

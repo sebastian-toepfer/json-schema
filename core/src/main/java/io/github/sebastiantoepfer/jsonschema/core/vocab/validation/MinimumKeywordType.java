@@ -41,7 +41,8 @@ final class MinimumKeywordType implements KeywordType {
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema, final JsonValue value) {
+    public Keyword createKeyword(final JsonSchema schema) {
+        final JsonValue value = schema.asJsonObject().get(name());
         if (InstanceType.NUMBER.isInstance(value)) {
             return new MinimumKeyword((JsonNumber) value);
         } else {

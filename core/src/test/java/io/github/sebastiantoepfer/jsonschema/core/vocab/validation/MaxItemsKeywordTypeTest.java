@@ -37,7 +37,10 @@ class MaxItemsKeywordTypeTest {
     @Test
     void should_know_his_name() {
         final Keyword keyword = new MaxItemsKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(1));
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("maxItems", Json.createValue(1)).build())
+            );
 
         assertThat(keyword.hasName("maxItems"), is(true));
         assertThat(keyword.hasName("test"), is(false));
@@ -47,7 +50,10 @@ class MaxItemsKeywordTypeTest {
     void should_be_valid_for_non_arrays() {
         assertThat(
             new MaxItemsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(2))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("maxItems", Json.createValue(2)).build())
+                )
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
@@ -58,7 +64,10 @@ class MaxItemsKeywordTypeTest {
     void should_be_valid_for_array_with_same_size() {
         assertThat(
             new MaxItemsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(2))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("maxItems", Json.createValue(2)).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add(1).add(2).build()),
             is(true)
@@ -69,7 +78,10 @@ class MaxItemsKeywordTypeTest {
     void should_be_valid_for_array_with_smaller_size() {
         assertThat(
             new MaxItemsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(2))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("maxItems", Json.createValue(2)).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add(1).build()),
             is(true)
@@ -80,7 +92,10 @@ class MaxItemsKeywordTypeTest {
     void should_be_invalid_for_array_with_greather_size() {
         assertThat(
             new MaxItemsKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue(2))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("maxItems", Json.createValue(2)).build())
+                )
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add(1).add(2).add(3).build()),
             is(false)

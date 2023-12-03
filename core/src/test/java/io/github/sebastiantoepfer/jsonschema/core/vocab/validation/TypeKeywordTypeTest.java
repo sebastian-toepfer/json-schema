@@ -27,7 +27,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.validation.TypeKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
@@ -39,7 +38,10 @@ class TypeKeywordTypeTest {
     void should_know_his_name() {
         assertThat(
             new TypeKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue("string"))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("type", Json.createValue("string")).build())
+                )
                 .hasName("type"),
             is(true)
         );
@@ -49,7 +51,10 @@ class TypeKeywordTypeTest {
     void should_know_other_names() {
         assertThat(
             new TypeKeywordType()
-                .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue("string"))
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("type", Json.createValue("string")).build())
+                )
                 .hasName("id"),
             is(false)
         );
@@ -58,7 +63,10 @@ class TypeKeywordTypeTest {
     @Test
     void should_use_stringvalue_to_validate_type() {
         final Assertion typeAssertion = new TypeKeywordType()
-            .createKeyword(new DefaultJsonSchemaFactory().create(JsonValue.TRUE), Json.createValue("string"))
+            .createKeyword(
+                new DefaultJsonSchemaFactory()
+                    .create(Json.createObjectBuilder().add("type", Json.createValue("string")).build())
+            )
             .asAssertion();
 
         assertThat(typeAssertion.isValidFor(Json.createValue("value")), is(true));
@@ -71,8 +79,19 @@ class TypeKeywordTypeTest {
     void should_use_arrayvalue_to_validate_type() {
         final Assertion typeAssertion = new TypeKeywordType()
             .createKeyword(
-                new DefaultJsonSchemaFactory().create(JsonValue.TRUE),
-                Json.createArrayBuilder().add(Json.createValue("string")).add(Json.createValue("object")).build()
+                new DefaultJsonSchemaFactory()
+                    .create(
+                        Json
+                            .createObjectBuilder()
+                            .add(
+                                "type",
+                                Json
+                                    .createArrayBuilder()
+                                    .add(Json.createValue("string"))
+                                    .add(Json.createValue("object"))
+                            )
+                            .build()
+                    )
             )
             .asAssertion();
 
