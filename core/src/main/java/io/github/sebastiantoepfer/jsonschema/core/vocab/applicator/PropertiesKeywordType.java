@@ -27,7 +27,9 @@ import static jakarta.json.stream.JsonCollectors.toJsonArray;
 
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
+import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
+import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Annotation;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
@@ -39,6 +41,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 final class PropertiesKeywordType implements KeywordType {
 
@@ -49,14 +52,16 @@ final class PropertiesKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        return new PropertiesKeyword(schema.asJsonObject().getJsonObject(name()));
+        return new PropertiesKeyword(schema, schema.asJsonObject().getJsonObject(name()));
     }
 
     private class PropertiesKeyword implements Applicator, Annotation {
 
+        private final JsonSchema schema;
         private final JsonObject schemas;
 
-        public PropertiesKeyword(final JsonObject schemas) {
+        public PropertiesKeyword(final JsonSchema schema, final JsonObject schemas) {
+            this.schema = schema;
             this.schemas = schemas;
         }
 
@@ -80,10 +85,18 @@ final class PropertiesKeywordType implements KeywordType {
         }
 
         private boolean propertyMatches(final Map.Entry<String, JsonValue> property) {
-            return (
-                !schemas.containsKey(property.getKey()) ||
-                JsonSchemas.load(schemas.get(property.getKey())).validator().isValid(property.getValue())
-            );
+            return Optional
+                .ofNullable(schemas.get(property.getKey()))
+                .flatMap(this::toSubSchema)
+                .map(JsonSchema::validator)
+                .map(validator -> validator.isValid(property.getValue()))
+                .orElse(true);
+        }
+
+        private Optional<JsonSubSchema> toSubSchema(final JsonValue value) {
+            return new DefaultJsonSchemaFactory()
+                .tryToCreateSchemaFrom(value)
+                .map(subSchema -> new DefaultJsonSubSchema(schema, subSchema));
         }
 
         @Override
@@ -92,7 +105,7 @@ final class PropertiesKeywordType implements KeywordType {
                 .asJsonObject()
                 .keySet()
                 .stream()
-                .filter(schemas::containsKey)
+                .filter(schemas.asJsonObject()::containsKey)
                 .map(Json::createValue)
                 .collect(toJsonArray());
         }

@@ -114,6 +114,10 @@
                                         <inculde>**/tests/draft2020-12/enum.json</inculde>
                                         <inculde>**/tests/draft2020-12/exclusiveMaximum.json</inculde>
                                         <inculde>**/tests/draft2020-12/exclusiveMinimum.json</inculde>
+                                        <inculde>**/tests/draft2020-12/format.json</inculde>
+                                        <!-- how to validate?
+                                        <inculde>**/tests/draft2020-12/id.json</inculde>
+                                        -->
                                         <!-- more than items keyword needed :(
                                         <inculde>**/tests/draft2020-12/items.json</inculde>
                                         -->
@@ -128,7 +132,10 @@
                                         <inculde>**/tests/draft2020-12/patternProperties.json</inculde>
                                         <inculde>**/tests/draft2020-12/prefixItems.json</inculde>
                                         <inculde>**/tests/draft2020-12/properties.json</inculde>
-                                        <!--inculde>**/tests/draft2020-12/ref.json</inculde-->
+                                        <!--
+                                        needs allOf, $anchor and dynamicAnchor and some other stuff :(
+                                        <inculde>**/tests/draft2020-12/ref.json</inculde>
+                                        -->
                                         <inculde>**/tests/draft2020-12/required.json</inculde>
                                         <inculde>**/tests/draft2020-12/type.json</inculde>
                                         <inculde>**/tests/draft2020-12/uniqueItems.json</inculde>

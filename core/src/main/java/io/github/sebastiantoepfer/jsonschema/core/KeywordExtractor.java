@@ -24,30 +24,34 @@
 package io.github.sebastiantoepfer.jsonschema.core;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.core.VocabularyKeywordType;
 import jakarta.json.JsonValue;
-import java.util.Optional;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-public final class DefaultJsonSchemaFactory implements JsonSchemaFactory {
+class KeywordExtractor {
 
-    @Override
-    public JsonSchema create(final JsonValue schema) {
-        return tryToCreateSchemaFrom(schema).orElseThrow(IllegalArgumentException::new);
+    private final JsonSchema schema;
+
+    public KeywordExtractor(final JsonSchema schema) {
+        this.schema = Objects.requireNonNull(schema);
     }
 
-    public Optional<JsonSchema> tryToCreateSchemaFrom(final JsonValue schema) {
-        final JsonSchema result;
-        if (schema == JsonValue.TRUE) {
-            result = new TrueJsonSchema();
-        } else if (schema == JsonValue.FALSE) {
-            result = new FalseJsonSchema();
-        } else if (schema.equals(JsonValue.EMPTY_JSON_OBJECT)) {
-            result = new EmptyJsonSchema();
-        } else if (schema.getValueType() == JsonValue.ValueType.OBJECT) {
-            result = new DefaultJsonObjectSchema(schema.asJsonObject());
+    public Keywords createKeywords() {
+        final Keywords result;
+        final VocabularyKeywordType keywordType = new VocabularyKeywordType();
+        if (
+            schema.getValueType() == JsonValue.ValueType.OBJECT && schema.asJsonObject().containsKey(keywordType.name())
+        ) {
+            result =
+                keywordType
+                    .createKeyword(schema)
+                    .definitions()
+                    .collect(Collectors.collectingAndThen(Collectors.toList(), Keywords::new));
         } else {
-            result = null;
+            result = new Keywords(List.of());
         }
-        return Optional.ofNullable(result);
+        return result;
     }
 }

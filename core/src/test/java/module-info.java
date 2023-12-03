@@ -31,4 +31,5 @@ open module io.github.sebastiantoepfer.jsonschema.core {
     requires org.junit.jupiter.params;
     requires org.junit.jupiter.engine;
     requires org.hamcrest;
+    requires hamcrest.optional;
 }

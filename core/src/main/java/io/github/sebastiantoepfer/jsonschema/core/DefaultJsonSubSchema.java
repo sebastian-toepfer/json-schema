@@ -23,15 +23,20 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
+
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-final class DefaultJsonSubSchema implements JsonSubSchema {
+public final class DefaultJsonSubSchema implements JsonSubSchema {
 
     private final JsonSchema owner;
     private final JsonSchema schema;
@@ -48,17 +53,42 @@ final class DefaultJsonSubSchema implements JsonSubSchema {
 
     @Override
     public Validator validator() {
-        return schema.validator();
+        final Validator result;
+        if (isJsonObject()) {
+            result = keywords().collect(collectingAndThen(toList(), KeywordBasedValidator::new));
+        } else {
+            result = schema.validator();
+        }
+        return result;
     }
 
     @Override
     public Optional<Keyword> keywordByName(final String name) {
-        return schema.keywordByName(name);
+        return keywords().filter(keyword -> keyword.hasName(name)).findAny();
+    }
+
+    private Stream<Keyword> keywords() {
+        final Stream<Keyword> result;
+        if (isJsonObject()) {
+            final Keywords keywords = new KeywordExtractor(schema).createKeywords();
+            result =
+                asJsonObject().keySet().stream().map(propertyName -> keywords.createKeywordFor(this, propertyName));
+        } else {
+            result = Stream.empty();
+        }
+        return result;
+    }
+
+    private boolean isJsonObject() {
+        return getValueType() == JsonValue.ValueType.OBJECT;
     }
 
     @Override
     public Optional<JsonSubSchema> asSubSchema(final String name) {
-        return schema.asSubSchema(name);
+        return Optional
+            .ofNullable(asJsonObject().get(name))
+            .flatMap(new DefaultJsonSchemaFactory()::tryToCreateSchemaFrom)
+            .map(subSchema -> new DefaultJsonSubSchema(this, subSchema));
     }
 
     @Override
