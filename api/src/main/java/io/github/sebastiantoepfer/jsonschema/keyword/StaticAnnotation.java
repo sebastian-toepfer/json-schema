@@ -23,6 +23,9 @@
  */
 package io.github.sebastiantoepfer.jsonschema.keyword;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
+import jakarta.json.JsonNumber;
+import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import java.util.Objects;
 
@@ -50,5 +53,22 @@ public final class StaticAnnotation implements Annotation {
     @Override
     public JsonValue valueFor(final JsonValue instance) {
         return value;
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        final T result;
+        if (value instanceof JsonString str) {
+            result = media.withValue(name, str.getString());
+        } else if (value instanceof JsonNumber nr) {
+            result = media.withValue(name, nr.bigDecimalValue());
+        } else if (value == JsonValue.TRUE) {
+            result = media.withValue(name, true);
+        } else if (value == JsonValue.FALSE) {
+            result = media.withValue(name, false);
+        } else {
+            result = media;
+        }
+        return result;
     }
 }

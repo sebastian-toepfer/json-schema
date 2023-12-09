@@ -47,6 +47,7 @@
         <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
         <maven.compiler.release>${maven.compiler.target}</maven.compiler.release>
 
+        <ddd.version>0.5.0</ddd.version>
         <prettierJavaVersion>2.4.0</prettierJavaVersion>
     </properties>
 
@@ -59,6 +60,17 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.github.sebastian-toepfer.ddd</groupId>
+                <artifactId>common</artifactId>
+                <version>${ddd.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.sebastian-toepfer.ddd</groupId>
+                <artifactId>media-core</artifactId>
+                <version>${ddd.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-annotations</artifactId>

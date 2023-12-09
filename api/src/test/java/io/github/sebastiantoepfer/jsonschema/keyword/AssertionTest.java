@@ -26,6 +26,7 @@ package io.github.sebastiantoepfer.jsonschema.keyword;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import jakarta.json.JsonValue;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -52,12 +53,17 @@ class AssertionTest {
     private static class TestAssertion implements Assertion {
 
         @Override
-        public boolean isValidFor(JsonValue instance) {
+        public boolean isValidFor(final JsonValue instance) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
-        public boolean hasName(String name) {
+        public boolean hasName(final String name) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
     }
