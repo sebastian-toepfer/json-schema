@@ -23,8 +23,10 @@
  */
 
 open module io.github.sebastiantoepfer.jsonschema {
+    requires io.github.sebastiantoepfer.ddd.common;
     requires jakarta.json;
 
+    requires io.github.sebastiantoepfer.ddd.media.core;
     requires org.junit.jupiter.api;
     requires org.junit.jupiter.params;
     requires org.hamcrest;
