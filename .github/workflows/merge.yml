@@ -1,0 +1,16 @@
+---
+name: merge dependabot
+
+on:
+  workflow_run:
+    types:
+    - completed
+    workflows:
+    - 'build'
+    - 'benchmark'
+
+jobs:
+  merge:
+    uses: sebastian-toepfer/gh-common/.github/workflows/merge.yml@v1
+    secrets: inherit
+
