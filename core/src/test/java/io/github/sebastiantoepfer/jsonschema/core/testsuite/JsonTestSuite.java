@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
-class JsonTestSuiteIT {
+class JsonTestSuite {
 
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(JsonTestSuiteTestCaseProvider.class)

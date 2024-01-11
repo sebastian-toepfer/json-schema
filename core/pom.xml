@@ -158,7 +158,7 @@
                         </goals>
                         <configuration>
                             <includes>
-                                <include>**/JsonTestSuiteIT.java</include>
+                                <include>**/JsonTestSuite.java</include>
                             </includes>
                         </configuration>
                     </execution>
