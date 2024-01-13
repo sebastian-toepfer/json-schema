@@ -23,13 +23,14 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.JsonNumber;
 import jakarta.json.JsonValue;
+import java.math.BigInteger;
 import java.util.Objects;
 
 final class MaxItemsKeywordType implements KeywordType {
@@ -41,20 +42,25 @@ final class MaxItemsKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        return new MaxItemsKeyword(schema.asJsonObject().getJsonNumber(name()));
+        return new MaxItemsKeyword(schema.asJsonObject().getJsonNumber(name()).bigIntegerValueExact());
     }
 
     private class MaxItemsKeyword implements Assertion {
 
-        private final int maxItems;
+        private final BigInteger maxItems;
 
-        public MaxItemsKeyword(final JsonNumber maxItems) {
-            this.maxItems = maxItems.intValue();
+        public MaxItemsKeyword(final BigInteger maxItems) {
+            this.maxItems = maxItems;
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            return media.withValue(name(), maxItems);
         }
 
         @Override
         public boolean isValidFor(final JsonValue instance) {
-            return !InstanceType.ARRAY.isInstance(instance) || instance.asJsonArray().size() <= maxItems;
+            return !InstanceType.ARRAY.isInstance(instance) || instance.asJsonArray().size() <= maxItems.intValue();
         }
 
         @Override

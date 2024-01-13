@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory;
 import jakarta.json.JsonValue;
@@ -54,6 +55,11 @@ public final class FakeJsonSchemaFactory implements JsonSchemaFactory {
 
         @Override
         public Optional<JsonSubSchema> asSubSchema(String name) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
     }

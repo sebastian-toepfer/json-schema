@@ -24,8 +24,11 @@
 package io.github.sebastiantoepfer.jsonschema.keyword;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import org.junit.jupiter.api.Test;
@@ -47,6 +50,48 @@ class StaticAnnotationTest {
         assertThat(
             new StaticAnnotation("myname", Json.createValue("string")).valueFor(JsonValue.FALSE),
             is(Json.createValue("string"))
+        );
+    }
+
+    @Test
+    void should_be_printable_with_null_as_value() {
+        assertThat(new StaticAnnotation("value", null).printOn(new HashMapMedia()).entrySet(), is(empty()));
+    }
+
+    @Test
+    void should_be_printable_with_decimalnumber_as_value() {
+        assertThat(
+            new StaticAnnotation("default", Json.createValue(32)).printOn(new HashMapMedia()),
+            hasEntry("default", 32L)
+        );
+    }
+
+    @Test
+    void should_be_printable_with_decimal_as_value() {
+        assertThat(
+            new StaticAnnotation("default", Json.createValue(32.1)).printOn(new HashMapMedia()),
+            hasEntry("default", 32.1)
+        );
+    }
+
+    @Test
+    void should_be_printable_with_string_as_value() {
+        assertThat(
+            new StaticAnnotation("format", Json.createValue("datetime")).printOn(new HashMapMedia()),
+            hasEntry("format", "datetime")
+        );
+    }
+
+    @Test
+    void should_be_printable_with_true_as_value() {
+        assertThat(new StaticAnnotation("value", JsonValue.TRUE).printOn(new HashMapMedia()), hasEntry("value", true));
+    }
+
+    @Test
+    void should_be_printable_with_false_as_value() {
+        assertThat(
+            new StaticAnnotation("value", JsonValue.FALSE).printOn(new HashMapMedia()),
+            hasEntry("value", false)
         );
     }
 }

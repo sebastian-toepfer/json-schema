@@ -24,16 +24,21 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anEmptyMap;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
 class PrefixItemsKeywordTypeTest {
@@ -169,6 +174,24 @@ class PrefixItemsKeywordTypeTest {
                 )
                 .categories(),
             containsInAnyOrder(Keyword.KeywordCategory.APPLICATOR, Keyword.KeywordCategory.ANNOTATION)
+        );
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            new PrefixItemsKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("prefixItems", Json.createArrayBuilder().add(JsonValue.TRUE))
+                                .build()
+                        )
+                )
+                .printOn(new HashMapMedia()),
+            (Matcher) hasEntry(is("prefixItems"), contains(anEmptyMap()))
         );
     }
 }

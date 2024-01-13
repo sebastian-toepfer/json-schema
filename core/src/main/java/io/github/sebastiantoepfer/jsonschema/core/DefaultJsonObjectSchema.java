@@ -26,6 +26,7 @@ package io.github.sebastiantoepfer.jsonschema.core;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
@@ -37,6 +38,11 @@ public final class DefaultJsonObjectSchema extends AbstractJsonValueSchema {
 
     public DefaultJsonObjectSchema(final JsonObject value) {
         super(value);
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        return keywords().reduce(media, (m, k) -> k.printOn(m), (l, r) -> null);
     }
 
     @Override

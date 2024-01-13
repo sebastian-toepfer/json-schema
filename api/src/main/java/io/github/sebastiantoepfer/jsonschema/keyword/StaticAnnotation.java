@@ -23,6 +23,9 @@
  */
 package io.github.sebastiantoepfer.jsonschema.keyword;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
+import io.github.sebastiantoepfer.ddd.media.json.JsonObjectPrintable;
+import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import java.util.Objects;
 
@@ -50,5 +53,10 @@ public final class StaticAnnotation implements Annotation {
     @Override
     public JsonValue valueFor(final JsonValue instance) {
         return value;
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        return new JsonObjectPrintable(Json.createObjectBuilder().add(name, value).build()).printOn(media);
     }
 }

@@ -23,13 +23,14 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.JsonNumber;
 import jakarta.json.JsonValue;
+import java.math.BigInteger;
 import java.util.Objects;
 
 final class MinItemsKeywordType implements KeywordType {
@@ -41,20 +42,25 @@ final class MinItemsKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        return new MinItemsKeyword(schema.asJsonObject().getJsonNumber(name()));
+        return new MinItemsKeyword(schema.asJsonObject().getJsonNumber(name()).bigIntegerValueExact());
     }
 
     private class MinItemsKeyword implements Assertion {
 
-        private final int minItems;
+        private final BigInteger minItems;
 
-        public MinItemsKeyword(final JsonNumber minItems) {
-            this.minItems = minItems.intValue();
+        public MinItemsKeyword(final BigInteger minItems) {
+            this.minItems = minItems;
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            return media.withValue(name(), minItems);
         }
 
         @Override
         public boolean isValidFor(final JsonValue instance) {
-            return !InstanceType.ARRAY.isInstance(instance) || instance.asJsonArray().size() >= minItems;
+            return !InstanceType.ARRAY.isInstance(instance) || instance.asJsonArray().size() >= minItems.intValue();
         }
 
         @Override

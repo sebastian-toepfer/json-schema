@@ -25,8 +25,10 @@ package io.github.sebastiantoepfer.jsonschema.core;
 
 import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
@@ -73,6 +75,18 @@ class DefaultJsonSubSchemaTest {
             )
                 .asJsonObject(),
             is(Json.createObjectBuilder().add("sub", JsonValue.TRUE).build())
+        );
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            new DefaultJsonSubSchema(
+                new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("test", JsonValue.TRUE).build()),
+                new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("type", "array").build())
+            )
+                .printOn(new HashMapMedia()),
+            hasEntry("type", "array")
         );
     }
 }

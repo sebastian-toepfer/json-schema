@@ -26,6 +26,7 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 import static jakarta.json.stream.JsonCollectors.toJsonArray;
 import static java.util.function.Predicate.not;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
@@ -53,17 +54,25 @@ class AdditionalPropertiesKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        return new AdditionalPropertiesKeyword(schema, schema.asJsonObject().get(name()));
+        return new AdditionalPropertiesKeyword(
+            schema,
+            new DefaultJsonSchemaFactory().create(schema.asJsonObject().get(name()))
+        );
     }
 
     private class AdditionalPropertiesKeyword implements Applicator, Annotation {
 
         private final JsonSchema schema;
-        private final JsonValue additionalProperties;
+        private final JsonSchema additionalPropertiesSchema;
 
-        public AdditionalPropertiesKeyword(final JsonSchema schema, final JsonValue additionalPropertiesSchema) {
+        public AdditionalPropertiesKeyword(final JsonSchema schema, final JsonSchema additionalPropertiesSchema) {
             this.schema = schema;
-            this.additionalProperties = additionalPropertiesSchema;
+            this.additionalPropertiesSchema = additionalPropertiesSchema;
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            return media.withValue(name(), additionalPropertiesSchema);
         }
 
         @Override
@@ -72,7 +81,6 @@ class AdditionalPropertiesKeywordType implements KeywordType {
         }
 
         private boolean additionalPropertiesMatches(final JsonObject instance) {
-            final JsonSchema additionalPropertiesSchema = new DefaultJsonSchemaFactory().create(additionalProperties);
             return findPropertiesForValidation(instance)
                 .map(Map.Entry::getValue)
                 .allMatch(value -> additionalPropertiesSchema.validator().isValid(value));

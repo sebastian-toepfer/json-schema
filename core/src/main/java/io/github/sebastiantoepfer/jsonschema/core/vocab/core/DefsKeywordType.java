@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
@@ -51,6 +52,11 @@ final class DefsKeywordType implements KeywordType {
     }
 
     private class DefsKeyword implements ReservedLocation {
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            return media.withValue(name(), new Empty());
+        }
 
         @Override
         public boolean hasName(final String name) {

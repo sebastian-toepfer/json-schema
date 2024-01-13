@@ -26,10 +26,14 @@ package io.github.sebastiantoepfer.jsonschema.core;
 import static com.github.npathai.hamcrestopt.OptionalMatchers.isEmpty;
 import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import org.junit.jupiter.api.Test;
@@ -138,5 +142,10 @@ class DefaultJsonObjectSchemaTest {
                 .asSubSchema("test"),
             isEmpty()
         );
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(schema.printOn(new HashMapMedia()), allOf(hasEntry("type", "array"), hasKey("items")));
     }
 }

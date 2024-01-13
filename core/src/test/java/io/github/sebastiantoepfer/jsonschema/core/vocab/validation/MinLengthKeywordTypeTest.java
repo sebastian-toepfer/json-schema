@@ -24,14 +24,18 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
+import java.math.BigInteger;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
 class MinLengthKeywordTypeTest {
@@ -109,6 +113,19 @@ class MinLengthKeywordTypeTest {
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_ARRAY),
             is(true)
+        );
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            new MinLengthKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build())
+                )
+                .printOn(new HashMapMedia()),
+            (Matcher) hasEntry(is("minLength"), is(BigInteger.valueOf(2L)))
         );
     }
 }

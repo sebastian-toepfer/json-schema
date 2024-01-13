@@ -23,6 +23,10 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
+
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
@@ -33,6 +37,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 class RequiredKeywordType implements KeywordType {
 
@@ -55,16 +60,21 @@ class RequiredKeywordType implements KeywordType {
         }
 
         @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            return asStrings().collect(collectingAndThen(toList(), values -> media.withValue(name(), values)));
+        }
+
+        @Override
         public boolean isValidFor(final JsonValue instance) {
             return !InstanceType.OBJECT.isInstance(instance) || hasAllRequiredProperties(instance.asJsonObject());
         }
 
         private boolean hasAllRequiredProperties(final JsonObject instance) {
-            return required
-                .stream()
-                .map(JsonString.class::cast)
-                .map(JsonString::getString)
-                .allMatch(instance.keySet()::contains);
+            return asStrings().allMatch(instance.keySet()::contains);
+        }
+
+        private Stream<String> asStrings() {
+            return required.stream().map(JsonString.class::cast).map(JsonString::getString);
         }
 
         @Override

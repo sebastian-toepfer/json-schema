@@ -24,12 +24,16 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 class DynamicRefKeywordTypeTest {
@@ -59,5 +63,18 @@ class DynamicRefKeywordTypeTest {
         assertThat(keyword.hasName("$id"), is(false));
 
         assertThat(keyword.asApplicator().applyTo(JsonValue.TRUE), is(true));
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            new DynamicRefKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("$dynamicRef", JsonValue.EMPTY_JSON_OBJECT).build())
+                )
+                .printOn(new HashMapMedia()),
+            (Matcher) hasEntry(is("$dynamicRef"), Matchers.anEmptyMap())
+        );
     }
 }

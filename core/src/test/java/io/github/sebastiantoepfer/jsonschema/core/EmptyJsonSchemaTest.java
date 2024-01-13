@@ -24,9 +24,12 @@
 package io.github.sebastiantoepfer.jsonschema.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import jakarta.json.JsonValue;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
@@ -36,5 +39,10 @@ class EmptyJsonSchemaTest {
     @ArgumentsSource(JsonValuesArguments.class)
     void should_be_valid_for_everything(final JsonValue value) {
         assertThat(new EmptyJsonSchema().validator().isValid(value), is(true));
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(new EmptyJsonSchema().printOn(new HashMapMedia()), anEmptyMap());
     }
 }

@@ -23,6 +23,8 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
+import io.github.sebastiantoepfer.ddd.common.Printable;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
@@ -44,6 +46,11 @@ final class DynamicRefKeywordType implements KeywordType {
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
         return new Applicator() {
+            @Override
+            public <T extends Media<T>> T printOn(final T media) {
+                return media.withValue(name(), new Printable.Empty());
+            }
+
             @Override
             public boolean applyTo(final JsonValue instance) {
                 //something is wrong here

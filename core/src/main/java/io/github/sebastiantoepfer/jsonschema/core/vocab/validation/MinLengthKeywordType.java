@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
@@ -56,6 +57,11 @@ class MinLengthKeywordType implements KeywordType {
 
         public MinLengthKeyword(final JsonNumber value) {
             this.value = Objects.requireNonNull(value);
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            return media.withValue(name(), value.bigIntegerValueExact());
         }
 
         @Override

@@ -24,6 +24,9 @@
 open module io.github.sebastiantoepfer.jsonschema.core {
     requires io.github.sebastiantoepfer.jsonschema;
     requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
+    requires io.github.sebastiantoepfer.ddd.common;
+    requires io.github.sebastiantoepfer.ddd.media.json;
+    requires io.github.sebastiantoepfer.ddd.media.core;
     requires jakarta.json;
 
     requires com.google.errorprone.annotations;

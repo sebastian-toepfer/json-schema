@@ -23,20 +23,16 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
-
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.codition.AnyOfCondition;
-import io.github.sebastiantoepfer.jsonschema.core.codition.Condition;
-import io.github.sebastiantoepfer.jsonschema.core.codition.OfTypeCondition;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
-import java.util.Locale;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -52,32 +48,38 @@ final class TypeKeywordType implements KeywordType {
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
         final JsonValue typeDefinition = schema.asJsonObject().get(name());
-        final Condition<JsonValue> typeContraint =
+        final Collection<String> allowedTypes =
             switch (typeDefinition.getValueType()) {
-                case STRING -> new OfTypeCondition(
-                    InstanceType.valueOf(((JsonString) typeDefinition).getString().toUpperCase(Locale.US))
-                );
+                case STRING -> List.of(((JsonString) typeDefinition).getString());
                 case ARRAY -> typeDefinition
                     .asJsonArray()
                     .stream()
                     .map(JsonString.class::cast)
                     .map(JsonString::getString)
-                    .map(String::toUpperCase)
-                    .map(InstanceType::valueOf)
-                    .map(OfTypeCondition::new)
-                    .collect(collectingAndThen(toList(), AnyOfCondition::new));
+                    .toList();
                 default -> throw new IllegalArgumentException();
             };
 
-        return new TypeKeyword(typeContraint);
+        return new TypeKeyword(allowedTypes);
     }
 
     private final class TypeKeyword implements Assertion {
 
-        private final Condition<JsonValue> definition;
+        private final Collection<String> allowedTypes;
 
-        public TypeKeyword(final Condition<JsonValue> definition) {
-            this.definition = Objects.requireNonNull(definition);
+        public TypeKeyword(final Collection<String> allowedTypes) {
+            this.allowedTypes = Objects.requireNonNull(allowedTypes);
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            final T result;
+            if (allowedTypes.size() == 1) {
+                result = media.withValue(name(), allowedTypes.iterator().next());
+            } else {
+                result = media.withValue(name(), allowedTypes);
+            }
+            return result;
         }
 
         @Override
@@ -87,7 +89,11 @@ final class TypeKeywordType implements KeywordType {
 
         @Override
         public boolean isValidFor(final JsonValue instance) {
-            return definition.isFulfilledBy(instance);
+            return allowedTypes
+                .stream()
+                .map(String::toLowerCase)
+                .map(InstanceType::fromString)
+                .anyMatch(instanceType -> instanceType.isInstance(instance));
         }
     }
 }

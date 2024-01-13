@@ -24,13 +24,17 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
+import java.math.BigDecimal;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -109,6 +113,19 @@ class ExclusiveMaximumKeywordTypeTest {
                 .asAssertion()
                 .isValidFor(Json.createValue(9)),
             is(true)
+        );
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            new ExclusiveMaximumKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("exclusiveMaximum", Json.createValue(10)).build())
+                )
+                .printOn(new HashMapMedia()),
+            (Matcher) hasEntry(is("exclusiveMaximum"), is(BigDecimal.valueOf(10)))
         );
     }
 }
