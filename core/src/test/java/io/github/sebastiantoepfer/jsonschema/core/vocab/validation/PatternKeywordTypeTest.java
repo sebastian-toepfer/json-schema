@@ -24,14 +24,17 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
 class PatternKeywordTypeTest {
@@ -105,6 +108,24 @@ class PatternKeywordTypeTest {
                 .asAssertion()
                 .isValidFor(Json.createValue("(888)555-1212")),
             is(true)
+        );
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            new PatternKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("pattern", Json.createValue("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"))
+                                .build()
+                        )
+                )
+                .printOn(new HashMapMedia()),
+            (Matcher) hasEntry(is("pattern"), is("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"))
         );
     }
 }

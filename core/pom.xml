@@ -23,6 +23,20 @@
             <artifactId>json-schema-vocabulary-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.sebastian-toepfer.ddd</groupId>
+            <artifactId>common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.sebastian-toepfer.ddd</groupId>
+            <artifactId>media-json-api</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-annotations</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -65,6 +79,11 @@
         <dependency>
             <groupId>org.eclipse.parsson</groupId>
             <artifactId>parsson</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.sebastian-toepfer.ddd</groupId>
+            <artifactId>media-core</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

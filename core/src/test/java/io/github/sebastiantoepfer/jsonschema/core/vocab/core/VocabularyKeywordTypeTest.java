@@ -24,9 +24,12 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
@@ -34,6 +37,7 @@ import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import java.net.URI;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
 class VocabularyKeywordTypeTest {
@@ -73,6 +77,36 @@ class VocabularyKeywordTypeTest {
             containsInAnyOrder(
                 new VocabularyDefinition(URI.create("https://json-schema.org/draft/2020-12/vocab/core"), true),
                 new VocabularyDefinition(URI.create("http://openapi.org/test"), false)
+            )
+        );
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            new VocabularyKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add(
+                                    "$vocabulary",
+                                    Json
+                                        .createObjectBuilder()
+                                        .add("https://json-schema.org/draft/2020-12/vocab/core", true)
+                                        .add("http://openapi.org/test", false)
+                                )
+                                .build()
+                        )
+                )
+                .printOn(new HashMapMedia()),
+            (Matcher) hasEntry(
+                is("$vocabulary"),
+                allOf(
+                    hasEntry("https://json-schema.org/draft/2020-12/vocab/core", true),
+                    hasEntry("http://openapi.org/test", false)
+                )
             )
         );
     }

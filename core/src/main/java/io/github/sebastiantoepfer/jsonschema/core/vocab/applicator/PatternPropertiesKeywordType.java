@@ -25,6 +25,8 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
 import static jakarta.json.stream.JsonCollectors.toJsonArray;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
+import io.github.sebastiantoepfer.ddd.media.json.JsonObjectPrintable;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
@@ -40,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 final class PatternPropertiesKeywordType implements KeywordType {
 
@@ -56,15 +57,15 @@ final class PatternPropertiesKeywordType implements KeywordType {
 
     private class PatternPropertiesKeyword implements Applicator, Annotation {
 
-        private final Map<Pattern, JsonValue> properties;
+        private final JsonObject properties;
 
-        public PatternPropertiesKeyword(final JsonObject schema) {
-            this.properties =
-                schema
-                    .entrySet()
-                    .stream()
-                    .map(e -> Map.entry(Pattern.compile(e.getKey()), e.getValue()))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        public PatternPropertiesKeyword(final JsonObject properties) {
+            this.properties = properties;
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            return media.withValue(name(), new JsonObjectPrintable(properties));
         }
 
         @Override
@@ -90,6 +91,7 @@ final class PatternPropertiesKeywordType implements KeywordType {
             return properties
                 .entrySet()
                 .stream()
+                .map(e -> Map.entry(Pattern.compile(e.getKey()), e.getValue()))
                 .filter(e -> e.getKey().matcher(property.getKey()).find())
                 .map(Map.Entry::getValue)
                 .map(JsonSchemas::load)
@@ -102,9 +104,13 @@ final class PatternPropertiesKeywordType implements KeywordType {
                 .asJsonObject()
                 .keySet()
                 .stream()
-                .filter(name -> properties.keySet().stream().anyMatch(p -> p.matcher(name).find()))
+                .filter(this::isValidName)
                 .map(Json::createValue)
                 .collect(toJsonArray());
+        }
+
+        private boolean isValidName(final String name) {
+            return properties.keySet().stream().map(Pattern::compile).anyMatch(p -> p.matcher(name).find());
         }
     }
 }

@@ -23,12 +23,13 @@
  */
 package io.github.sebastiantoepfer.jsonschema.keyword;
 
+import io.github.sebastiantoepfer.ddd.common.Printable;
 import java.util.Collection;
 
 /**
  * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-json-schema-objects-and-key
  **/
-public interface Keyword {
+public interface Keyword extends Printable {
     default Identifier asIdentifier() {
         return (Identifier) this;
     }

@@ -24,9 +24,11 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
@@ -35,6 +37,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
 class UniqueItemsKeywordTypeTest {
@@ -146,5 +149,18 @@ class UniqueItemsKeywordTypeTest {
         assertThat(number1.equals(number2), is(true));
 
         assertThat(obj.equals(number1), is(false));
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            new UniqueItemsKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build())
+                )
+                .printOn(new HashMapMedia()),
+            (Matcher) hasEntry(is("uniqueItems"), is(true))
+        );
     }
 }

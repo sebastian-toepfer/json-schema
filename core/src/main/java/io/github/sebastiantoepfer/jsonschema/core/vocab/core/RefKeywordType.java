@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
@@ -68,6 +69,11 @@ final class RefKeywordType implements KeywordType {
         private RefKeyword(final JsonSchema schema, final JsonString uri) {
             this.schema = schema;
             this.uri = URI.create(uri.getString());
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            return media.withValue(name(), uri.toString());
         }
 
         @Override

@@ -25,11 +25,14 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
 import static java.util.function.Predicate.isEqual;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
+import io.github.sebastiantoepfer.ddd.media.json.JsonObjectPrintable;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonValue;
@@ -54,6 +57,12 @@ final class EnumKeywordType implements KeywordType {
 
         public EnumKeyword(final JsonArray allowedValues) {
             this.allowedValues = allowedValues;
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            return new JsonObjectPrintable(Json.createObjectBuilder().add(name(), allowedValues).build())
+                .printOn(media);
         }
 
         @Override

@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
@@ -64,6 +65,11 @@ final class PrefixItemsKeywordType implements KeywordType {
 
         public PrefixItemsKeyword(final JsonArray schemas) {
             this.schemas = schemas.stream().map(JsonSchemas::load).toList();
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            return media.withValue(name(), schemas);
         }
 
         @Override

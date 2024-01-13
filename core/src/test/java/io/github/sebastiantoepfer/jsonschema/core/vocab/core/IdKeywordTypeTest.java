@@ -24,15 +24,18 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import java.net.URI;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
 class IdKeywordTypeTest {
@@ -74,6 +77,24 @@ class IdKeywordTypeTest {
                 .asIdentifier()
                 .asUri(),
             is(URI.create("https://json-schema.org/draft/2020-12/schema"))
+        );
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            new IdKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json
+                                .createObjectBuilder()
+                                .add("$id", Json.createValue("https://json-schema.org/draft/2020-12/schema"))
+                                .build()
+                        )
+                )
+                .printOn(new HashMapMedia()),
+            (Matcher) hasEntry(is("$id"), is("https://json-schema.org/draft/2020-12/schema"))
         );
     }
 }

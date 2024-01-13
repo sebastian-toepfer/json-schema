@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.core.codition.NoCondition;
@@ -49,5 +50,10 @@ final class EmptyJsonSchema extends AbstractJsonValueSchema {
     @Override
     public Optional<JsonSubSchema> asSubSchema(final String name) {
         return Optional.empty();
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        return media;
     }
 }

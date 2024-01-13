@@ -27,6 +27,8 @@ import static jakarta.json.stream.JsonCollectors.toJsonArray;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toMap;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
+import io.github.sebastiantoepfer.ddd.common.Printable;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
@@ -78,6 +80,11 @@ final class PropertiesKeywordType implements KeywordType {
         }
 
         @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            return media.withValue(name(), new SchemaMapPrintableAdapter());
+        }
+
+        @Override
         public boolean hasName(final String name) {
             return Objects.equals(name(), name);
         }
@@ -113,6 +120,17 @@ final class PropertiesKeywordType implements KeywordType {
                 .filter(schemas::containsKey)
                 .map(Json::createValue)
                 .collect(toJsonArray());
+        }
+
+        private class SchemaMapPrintableAdapter implements Printable {
+
+            @Override
+            public <T extends Media<T>> T printOn(final T media) {
+                return schemas
+                    .entrySet()
+                    .stream()
+                    .reduce(media, (m, e) -> m.withValue(e.getKey(), e.getValue()), (l, r) -> null);
+            }
         }
     }
 }

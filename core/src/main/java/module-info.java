@@ -24,6 +24,8 @@
 module io.github.sebastiantoepfer.jsonschema.core {
     requires io.github.sebastiantoepfer.jsonschema;
     requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
+    requires io.github.sebastiantoepfer.ddd.common;
+    requires io.github.sebastiantoepfer.ddd.media.json;
     requires jakarta.json;
 
     provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory

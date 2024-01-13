@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
@@ -31,6 +32,7 @@ import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
+import java.math.BigInteger;
 import java.util.Objects;
 
 class MaxLengthKeywordType implements KeywordType {
@@ -44,7 +46,7 @@ class MaxLengthKeywordType implements KeywordType {
     public Keyword createKeyword(final JsonSchema schema) {
         final JsonValue value = schema.asJsonObject().get(name());
         if (InstanceType.INTEGER.isInstance(value)) {
-            return new MaxLengthKeyword((JsonNumber) value);
+            return new MaxLengthKeyword(((JsonNumber) value).bigIntegerValueExact());
         } else {
             throw new IllegalArgumentException("value must be a positiv integer!");
         }
@@ -52,10 +54,15 @@ class MaxLengthKeywordType implements KeywordType {
 
     private class MaxLengthKeyword implements Assertion {
 
-        private final JsonNumber value;
+        private final BigInteger value;
 
-        public MaxLengthKeyword(final JsonNumber value) {
+        public MaxLengthKeyword(final BigInteger value) {
             this.value = value;
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            return media.withValue(name(), value);
         }
 
         @Override

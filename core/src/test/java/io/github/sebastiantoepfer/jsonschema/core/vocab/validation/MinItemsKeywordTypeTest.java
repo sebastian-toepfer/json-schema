@@ -24,12 +24,16 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
+import java.math.BigInteger;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
 class MinItemsKeywordTypeTest {
@@ -99,6 +103,19 @@ class MinItemsKeywordTypeTest {
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().build()),
             is(false)
+        );
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            new MinItemsKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
+                )
+                .printOn(new HashMapMedia()),
+            (Matcher) hasEntry(is("minItems"), is(BigInteger.valueOf(1)))
         );
     }
 }

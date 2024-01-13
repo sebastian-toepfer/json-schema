@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
@@ -56,6 +57,11 @@ final class MinimumKeywordType implements KeywordType {
 
         public MinimumKeyword(final JsonNumber min) {
             this.min = min.bigDecimalValue();
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            return media.withValue(name(), min);
         }
 
         @Override

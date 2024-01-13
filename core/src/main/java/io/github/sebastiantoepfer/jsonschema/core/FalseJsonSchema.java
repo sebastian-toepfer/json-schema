@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.core.codition.UnfulfillableCondition;
@@ -34,6 +35,11 @@ final class FalseJsonSchema extends AbstractJsonValueSchema {
 
     public FalseJsonSchema() {
         super(JsonValue.FALSE);
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        throw new UnsupportedOperationException("false schema not supported yet!");
     }
 
     @Override

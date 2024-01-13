@@ -23,6 +23,8 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
+import io.github.sebastiantoepfer.ddd.media.json.JsonObjectPrintable;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
@@ -73,6 +75,11 @@ public final class VocabularyKeywordType implements KeywordType {
 
         VocabularyKeyword(final JsonObject vocabularies) {
             this.vocabularies = Objects.requireNonNull(vocabularies);
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            return media.withValue(name(), new JsonObjectPrintable(vocabularies));
         }
 
         @Override

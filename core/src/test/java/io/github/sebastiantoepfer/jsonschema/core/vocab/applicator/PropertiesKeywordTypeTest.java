@@ -24,16 +24,20 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
+import java.util.Map;
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
@@ -205,6 +209,25 @@ class PropertiesKeywordTypeTest {
                 .stream()
                 .toList(),
             contains(Json.createValue("foo"))
+        );
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            ((Map) new PropertiesKeywordType()
+                    .createKeyword(
+                        new DefaultJsonSchemaFactory()
+                            .create(
+                                Json
+                                    .createObjectBuilder()
+                                    .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
+                                    .build()
+                            )
+                    )
+                    .printOn(new HashMapMedia())
+                    .get("properties")).get("test"),
+            (Matcher) anEmptyMap()
         );
     }
 }

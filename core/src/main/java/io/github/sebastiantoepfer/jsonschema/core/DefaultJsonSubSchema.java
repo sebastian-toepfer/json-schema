@@ -26,6 +26,7 @@ package io.github.sebastiantoepfer.jsonschema.core;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.Validator;
@@ -44,6 +45,11 @@ public final class DefaultJsonSubSchema implements JsonSubSchema {
     public DefaultJsonSubSchema(final JsonSchema owner, final JsonSchema schema) {
         this.owner = Objects.requireNonNull(owner);
         this.schema = Objects.requireNonNull(schema);
+    }
+
+    @Override
+    public <T extends Media<T>> T printOn(final T media) {
+        return schema.printOn(media);
     }
 
     @Override

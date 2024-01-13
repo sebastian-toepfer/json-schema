@@ -28,6 +28,7 @@ import jakarta.json.JsonValue;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 
 /**
  * see: http://json-schema.org/draft/2020-12/json-schema-core.html#name-instance-data-model
@@ -41,13 +42,7 @@ public enum InstanceType {
     INTEGER() {
         @Override
         public boolean isInstance(final JsonValue value) {
-            final boolean result;
-            if (value instanceof JsonNumber nr) {
-                result = isIntegral(nr.bigDecimalValue());
-            } else {
-                result = false;
-            }
-            return result;
+            return value instanceof JsonNumber nr && isIntegral(nr.bigDecimalValue());
         }
 
         @SuppressWarnings("BigDecimalEquals")
@@ -62,6 +57,10 @@ public enum InstanceType {
     },
     STRING(JsonValue.ValueType.STRING);
 
+    public static InstanceType fromString(final String name) {
+        return valueOf(name.toUpperCase(Locale.US));
+    }
+
     @SuppressWarnings("ImmutableEnumChecker")
     private final Collection<JsonValue.ValueType> validTypes;
 
@@ -71,5 +70,10 @@ public enum InstanceType {
 
     public boolean isInstance(final JsonValue value) {
         return validTypes.contains(value.getValueType());
+    }
+
+    @Override
+    public String toString() {
+        return name().toLowerCase(Locale.US);
     }
 }

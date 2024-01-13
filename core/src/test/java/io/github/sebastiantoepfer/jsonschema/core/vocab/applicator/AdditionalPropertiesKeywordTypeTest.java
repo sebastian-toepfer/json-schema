@@ -24,13 +24,17 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
 class AdditionalPropertiesKeywordTypeTest {
@@ -158,6 +162,21 @@ class AdditionalPropertiesKeywordTypeTest {
                 .valueFor(Json.createObjectBuilder().add("test", 1).add("foo", 1).build())
                 .asJsonArray(),
             containsInAnyOrder(Json.createValue("foo"))
+        );
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            new AdditionalPropertiesKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(
+                            Json.createObjectBuilder().add("additionalProperties", JsonValue.EMPTY_JSON_OBJECT).build()
+                        )
+                )
+                .printOn(new HashMapMedia()),
+            (Matcher) hasEntry(is("additionalProperties"), anEmptyMap())
         );
     }
 }

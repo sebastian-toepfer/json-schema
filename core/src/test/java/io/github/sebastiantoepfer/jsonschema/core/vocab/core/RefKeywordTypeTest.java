@@ -24,14 +24,17 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
 class RefKeywordTypeTest {
@@ -99,5 +102,18 @@ class RefKeywordTypeTest {
             );
 
         assertThat(keyword.asApplicator().applyTo(Json.createValue(1L)), is(true));
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            new RefKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("$ref", Json.createValue("#")).build())
+                )
+                .printOn(new HashMapMedia()),
+            (Matcher) hasEntry(is("$ref"), is("#"))
+        );
     }
 }

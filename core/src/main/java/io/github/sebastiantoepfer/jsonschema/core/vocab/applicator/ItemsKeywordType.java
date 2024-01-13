@@ -23,6 +23,7 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
@@ -57,6 +58,11 @@ final class ItemsKeywordType implements KeywordType {
 
         public ItemsKeyword(final JsonSubSchema schema) {
             this.schema = Objects.requireNonNull(schema);
+        }
+
+        @Override
+        public <T extends Media<T>> T printOn(final T media) {
+            return media.withValue(name(), schema);
         }
 
         @Override

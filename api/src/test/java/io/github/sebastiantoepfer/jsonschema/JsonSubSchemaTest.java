@@ -27,6 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 
+import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonValue;
 import java.util.Optional;
@@ -50,7 +51,7 @@ class JsonSubSchemaTest {
                 }
 
                 @Override
-                public Optional<Keyword> keywordByName(String name) {
+                public Optional<Keyword> keywordByName(final String name) {
                     throw new UnsupportedOperationException("Not supported yet.");
                 }
 
@@ -60,7 +61,12 @@ class JsonSubSchemaTest {
                 }
 
                 @Override
-                public Optional<JsonSubSchema> asSubSchema(String name) {
+                public Optional<JsonSubSchema> asSubSchema(final String name) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+
+                @Override
+                public <T extends Media<T>> T printOn(final T media) {
                     throw new UnsupportedOperationException("Not supported yet.");
                 }
             }

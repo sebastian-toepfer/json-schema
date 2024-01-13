@@ -25,10 +25,13 @@ package io.github.sebastiantoepfer.jsonschema;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import java.util.stream.Stream;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -43,15 +46,15 @@ class InstanceTypeTest {
 
     static Stream<? extends Arguments> provideWithValidCombinations() {
         return Stream.of(
-            Arguments.of(InstanceType.NULL, JsonValue.NULL),
-            Arguments.of(InstanceType.BOOLEAN, JsonValue.FALSE),
-            Arguments.of(InstanceType.BOOLEAN, JsonValue.TRUE),
-            Arguments.of(InstanceType.OBJECT, JsonValue.EMPTY_JSON_OBJECT),
-            Arguments.of(InstanceType.ARRAY, JsonValue.EMPTY_JSON_ARRAY),
-            Arguments.of(InstanceType.NUMBER, Json.createValue(23L)),
-            Arguments.of(InstanceType.INTEGER, Json.createValue(23L)),
-            Arguments.of(InstanceType.INTEGER, Json.createValue(10L)),
-            Arguments.of(InstanceType.INTEGER, Json.createValue(0.0))
+            arguments(InstanceType.NULL, JsonValue.NULL),
+            arguments(InstanceType.BOOLEAN, JsonValue.FALSE),
+            arguments(InstanceType.BOOLEAN, JsonValue.TRUE),
+            arguments(InstanceType.OBJECT, JsonValue.EMPTY_JSON_OBJECT),
+            arguments(InstanceType.ARRAY, JsonValue.EMPTY_JSON_ARRAY),
+            arguments(InstanceType.NUMBER, Json.createValue(23L)),
+            arguments(InstanceType.INTEGER, Json.createValue(23L)),
+            arguments(InstanceType.INTEGER, Json.createValue(10L)),
+            arguments(InstanceType.INTEGER, Json.createValue(0.0))
         );
     }
 
@@ -63,14 +66,46 @@ class InstanceTypeTest {
 
     static Stream<? extends Arguments> provideWithInvalidCombinations() {
         return Stream.of(
-            Arguments.of(InstanceType.NULL, JsonValue.TRUE),
-            Arguments.of(InstanceType.BOOLEAN, JsonValue.EMPTY_JSON_OBJECT),
-            Arguments.of(InstanceType.BOOLEAN, JsonValue.EMPTY_JSON_ARRAY),
-            Arguments.of(InstanceType.OBJECT, JsonValue.EMPTY_JSON_ARRAY),
-            Arguments.of(InstanceType.ARRAY, JsonValue.TRUE),
-            Arguments.of(InstanceType.NUMBER, Json.createValue("string")),
-            Arguments.of(InstanceType.INTEGER, Json.createValue(23.2)),
-            Arguments.of(InstanceType.INTEGER, Json.createValue("test"))
+            arguments(InstanceType.NULL, JsonValue.TRUE),
+            arguments(InstanceType.BOOLEAN, JsonValue.EMPTY_JSON_OBJECT),
+            arguments(InstanceType.BOOLEAN, JsonValue.EMPTY_JSON_ARRAY),
+            arguments(InstanceType.OBJECT, JsonValue.EMPTY_JSON_ARRAY),
+            arguments(InstanceType.ARRAY, JsonValue.TRUE),
+            arguments(InstanceType.NUMBER, Json.createValue("string")),
+            arguments(InstanceType.INTEGER, Json.createValue(23.2)),
+            arguments(InstanceType.INTEGER, Json.createValue("test"))
         );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideWithName")
+    void should_return_his_name(final InstanceType instanceType, final String value) {
+        assertThat(instanceType, Matchers.hasToString(value));
+    }
+
+    static Stream<? extends Arguments> provideWithName() {
+        return Stream.of(
+            arguments(InstanceType.NULL, "null"),
+            arguments(InstanceType.BOOLEAN, "boolean"),
+            arguments(InstanceType.OBJECT, "object"),
+            arguments(InstanceType.ARRAY, "array"),
+            arguments(InstanceType.NUMBER, "number"),
+            arguments(InstanceType.INTEGER, "integer")
+        );
+    }
+
+    @Test
+    void should_be_createable_from_lowercase_value() {
+        assertThat(InstanceType.fromString("object"), is(InstanceType.OBJECT));
+    }
+
+    @Test
+    void should_be_createable_from_uppercase_value() {
+        assertThat(InstanceType.fromString("NUMBER"), is(InstanceType.NUMBER));
+    }
+
+    @Test
+    void should_be_createable_from_mixcase_value() {
+        assertThat(InstanceType.fromString("Null"), is(InstanceType.NULL));
     }
 }

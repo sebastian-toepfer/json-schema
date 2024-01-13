@@ -24,15 +24,19 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 class DefsKeywordTypeTest {
@@ -56,5 +60,18 @@ class DefsKeywordTypeTest {
 
         assertThat(defs.hasName("$defs"), is(true));
         assertThat(defs.hasName("test"), is(false));
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            new DefsKeywordType()
+                .createKeyword(
+                    new DefaultJsonSchemaFactory()
+                        .create(Json.createObjectBuilder().add("$defs", JsonValue.EMPTY_JSON_OBJECT).build())
+                )
+                .printOn(new HashMapMedia()),
+            (Matcher) hasEntry(is("$defs"), Matchers.anEmptyMap())
+        );
     }
 }
