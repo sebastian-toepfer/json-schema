@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,33 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.keywordtype;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory;
-import jakarta.json.JsonValue;
-import java.util.Optional;
+import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import java.util.Objects;
+import java.util.function.Function;
 
-public final class DefaultJsonSchemaFactory implements JsonSchemaFactory {
+public final class SubSchemaKeywordType implements KeywordType {
 
-    @Override
-    public JsonSchema create(final JsonValue schema) {
-        return tryToCreateSchemaFrom(schema).orElseThrow(IllegalArgumentException::new);
+    private final String name;
+    private final Function<JsonSubSchema, Keyword> keywordCreator;
+
+    public SubSchemaKeywordType(final String name, final Function<JsonSubSchema, Keyword> keywordCreator) {
+        this.name = Objects.requireNonNull(name);
+        this.keywordCreator = Objects.requireNonNull(keywordCreator);
     }
 
-    Optional<JsonSchema> tryToCreateSchemaFrom(final JsonValue schema) {
-        final JsonSchema result;
-        if (schema == JsonValue.TRUE) {
-            result = new TrueJsonSchema();
-        } else if (schema == JsonValue.FALSE) {
-            result = new FalseJsonSchema();
-        } else if (schema.equals(JsonValue.EMPTY_JSON_OBJECT)) {
-            result = new EmptyJsonSchema();
-        } else if (schema.getValueType() == JsonValue.ValueType.OBJECT) {
-            result = new DefaultJsonObjectSchema(schema.asJsonObject());
-        } else {
-            result = null;
-        }
-        return Optional.ofNullable(result);
+    @Override
+    public String name() {
+        return name;
+    }
+
+    @Override
+    public Keyword createKeyword(final JsonSchema schema) {
+        return schema.asSubSchema(name).map(keywordCreator::apply).orElseThrow(IllegalArgumentException::new);
     }
 }

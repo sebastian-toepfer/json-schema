@@ -31,22 +31,21 @@ import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.keywordtype.SubSchemaKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
-class AdditionalPropertiesKeywordTypeTest {
+class AdditionalPropertiesKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword keyword = new AdditionalPropertiesKeywordType()
-            .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(Json.createObjectBuilder().add("additionalProperties", JsonValue.EMPTY_JSON_OBJECT).build())
-            );
-
+        final Keyword keyword = createKeywordFrom(
+            Json.createObjectBuilder().add("additionalProperties", JsonValue.EMPTY_JSON_OBJECT).build()
+        );
         assertThat(keyword.hasName("additionalProperties"), is(true));
         assertThat(keyword.hasName("test"), is(false));
     }
@@ -54,17 +53,13 @@ class AdditionalPropertiesKeywordTypeTest {
     @Test
     void should_be_valid_for_non_objects() {
         assertThat(
-            new AdditionalPropertiesKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(
-                            Json
-                                .createObjectBuilder()
-                                .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
-                                .add("additionalProperties", JsonValue.FALSE)
-                                .build()
-                        )
-                )
+            createKeywordFrom(
+                Json
+                    .createObjectBuilder()
+                    .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
+                    .add("additionalProperties", JsonValue.FALSE)
+                    .build()
+            )
                 .asApplicator()
                 .applyTo(JsonValue.EMPTY_JSON_ARRAY),
             is(true)
@@ -74,17 +69,13 @@ class AdditionalPropertiesKeywordTypeTest {
     @Test
     void should_not_valid_if_no_additionals_are_allow() {
         assertThat(
-            new AdditionalPropertiesKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(
-                            Json
-                                .createObjectBuilder()
-                                .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
-                                .add("additionalProperties", JsonValue.FALSE)
-                                .build()
-                        )
-                )
+            createKeywordFrom(
+                Json
+                    .createObjectBuilder()
+                    .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
+                    .add("additionalProperties", JsonValue.FALSE)
+                    .build()
+            )
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("test", 1).add("foo", 1).build()),
             is(false)
@@ -94,17 +85,13 @@ class AdditionalPropertiesKeywordTypeTest {
     @Test
     void should_valid_if_additionals_are_allow() {
         assertThat(
-            new AdditionalPropertiesKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(
-                            Json
-                                .createObjectBuilder()
-                                .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
-                                .add("additionalProperties", JsonValue.TRUE)
-                                .build()
-                        )
-                )
+            createKeywordFrom(
+                Json
+                    .createObjectBuilder()
+                    .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
+                    .add("additionalProperties", JsonValue.TRUE)
+                    .build()
+            )
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("test", 1).add("foo", 1).build()),
             is(true)
@@ -114,17 +101,13 @@ class AdditionalPropertiesKeywordTypeTest {
     @Test
     void should_valid_if_no_additionals_are_allow_and_no_additionals_their() {
         assertThat(
-            new AdditionalPropertiesKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(
-                            Json
-                                .createObjectBuilder()
-                                .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
-                                .add("additionalProperties", JsonValue.FALSE)
-                                .build()
-                        )
-                )
+            createKeywordFrom(
+                Json
+                    .createObjectBuilder()
+                    .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
+                    .add("additionalProperties", JsonValue.FALSE)
+                    .build()
+            )
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("test", 1).build()),
             is(true)
@@ -134,11 +117,7 @@ class AdditionalPropertiesKeywordTypeTest {
     @Test
     void should_be_an_applicator_and_an_annotation() {
         assertThat(
-            new AdditionalPropertiesKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("additionalProperties", JsonValue.TRUE).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("additionalProperties", JsonValue.TRUE).build())
                 .categories(),
             containsInAnyOrder(Keyword.KeywordCategory.APPLICATOR, Keyword.KeywordCategory.ANNOTATION)
         );
@@ -147,17 +126,13 @@ class AdditionalPropertiesKeywordTypeTest {
     @Test
     void should_return_propertynames_which_will_be_validated() {
         assertThat(
-            new AdditionalPropertiesKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(
-                            Json
-                                .createObjectBuilder()
-                                .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
-                                .add("additionalProperties", JsonValue.TRUE)
-                                .build()
-                        )
-                )
+            createKeywordFrom(
+                Json
+                    .createObjectBuilder()
+                    .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
+                    .add("additionalProperties", JsonValue.TRUE)
+                    .build()
+            )
                 .asAnnotation()
                 .valueFor(Json.createObjectBuilder().add("test", 1).add("foo", 1).build())
                 .asJsonArray(),
@@ -168,15 +143,16 @@ class AdditionalPropertiesKeywordTypeTest {
     @Test
     void should_be_printable() {
         assertThat(
-            new AdditionalPropertiesKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(
-                            Json.createObjectBuilder().add("additionalProperties", JsonValue.EMPTY_JSON_OBJECT).build()
-                        )
-                )
+            createKeywordFrom(
+                Json.createObjectBuilder().add("additionalProperties", JsonValue.EMPTY_JSON_OBJECT).build()
+            )
                 .printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("additionalProperties"), anEmptyMap())
         );
+    }
+
+    private static Keyword createKeywordFrom(final JsonObject json) {
+        return new SubSchemaKeywordType("additionalProperties", AdditionalPropertiesKeyword::new)
+            .createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }
