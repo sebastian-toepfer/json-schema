@@ -47,7 +47,7 @@
 
         <maven.compiler.source>17</maven.compiler.source>
 
-        <ddd.version>0.5.0</ddd.version>
+        <ddd.version>0.6.0</ddd.version>
     </properties>
 
     <modules>
