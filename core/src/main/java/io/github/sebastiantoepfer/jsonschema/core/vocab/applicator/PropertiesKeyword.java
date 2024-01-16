@@ -26,7 +26,7 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
+import io.github.sebastiantoepfer.jsonschema.core.keywordtype.NamedJsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.keyword.Annotation;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import jakarta.json.Json;
@@ -37,7 +37,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * <b>properties</b> : <i>Object<String, Schema></i><br/>
@@ -58,15 +57,15 @@ import java.util.Optional;
 final class PropertiesKeyword implements Applicator, Annotation {
 
     static final String NAME = "properties";
-    private final Map<String, JsonSubSchema> properties;
+    private final NamedJsonSchemas properties;
 
-    public PropertiesKeyword(final Map<String, JsonSubSchema> properties) {
-        this.properties = Map.copyOf(properties);
+    public PropertiesKeyword(final NamedJsonSchemas properties) {
+        this.properties = Objects.requireNonNull(properties);
     }
 
     @Override
     public <T extends Media<T>> T printOn(final T media) {
-        return media.withValue(NAME, new ObjectSchemaPrintableAdapter(properties));
+        return media.withValue(NAME, properties);
     }
 
     @Override
@@ -89,8 +88,8 @@ final class PropertiesKeyword implements Applicator, Annotation {
     }
 
     private boolean propertyMatches(final Map.Entry<String, JsonValue> property) {
-        return Optional
-            .ofNullable(properties.get(property.getKey()))
+        return properties
+            .schemaWithName(property.getKey())
             .map(JsonSchema::validator)
             .map(validator -> validator.isValid(property.getValue()))
             .orElse(true);
@@ -102,7 +101,7 @@ final class PropertiesKeyword implements Applicator, Annotation {
             .asJsonObject()
             .keySet()
             .stream()
-            .filter(properties::containsKey)
+            .filter(properties::hasSchemaWithName)
             .map(Json::createValue)
             .collect(JsonCollectors.toJsonArray());
     }

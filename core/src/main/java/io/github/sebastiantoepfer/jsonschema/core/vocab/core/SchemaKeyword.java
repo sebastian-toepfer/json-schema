@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,43 +24,43 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
-import io.github.sebastiantoepfer.jsonschema.InstanceType;
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import io.github.sebastiantoepfer.jsonschema.keyword.ReservedLocation;
+import io.github.sebastiantoepfer.jsonschema.keyword.Identifier;
+import java.net.URI;
 import java.util.Objects;
 
 /**
+ * <b>$schema</b> : <i>URI</i><br/>
+ * This keyword is both used as a JSON Schema dialect identifier and as a reference to a JSON Schema which<br/>
+ * describes the set of valid schemas written for this particular dialect.<br/>
+ * <br/>
+ * <ul>
+ * <li>idenfifier</li>
+ * </ul>
  *
- * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-schema-re-use-with-defs
+ * source: https://www.learnjsonschema.com/2020-12/core/schema/
+ * spec: https://json-schema.org/draft/2020-12/json-schema-core.html#section-8.1.1
  */
-final class DefsKeywordType implements KeywordType {
+final class SchemaKeyword implements Identifier {
 
-    @Override
-    public String name() {
-        return "$defs";
+    static final String NAME = "$schema";
+    private final URI uri;
+
+    public SchemaKeyword(final URI uri) {
+        this.uri = Objects.requireNonNull(uri);
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema) {
-        if (InstanceType.OBJECT.isInstance(schema.asJsonObject().get(name()))) {
-            return new DefsKeyword();
-        } else {
-            throw new IllegalArgumentException("must be an object!");
-        }
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue(NAME, uri.toString());
     }
 
-    private class DefsKeyword implements ReservedLocation {
+    @Override
+    public URI asUri() {
+        return uri;
+    }
 
-        @Override
-        public <T extends Media<T>> T printOn(final T media) {
-            return media.withValue(name(), new Empty());
-        }
-
-        @Override
-        public boolean hasName(final String name) {
-            return Objects.equals(name(), name);
-        }
+    @Override
+    public boolean hasName(final String name) {
+        return Objects.equals(NAME, name);
     }
 }

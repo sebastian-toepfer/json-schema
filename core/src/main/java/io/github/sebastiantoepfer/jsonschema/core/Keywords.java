@@ -33,6 +33,7 @@ import io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreVocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.validation.ValidationVocabulary;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
+import jakarta.json.spi.JsonProvider;
 import java.net.URI;
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -51,7 +52,7 @@ final class Keywords {
     static {
         MANDANTORY_VOCABS =
             List
-                .of(new BasicVocabulary(), new CoreVocabulary())
+                .of(new BasicVocabulary(), new CoreVocabulary(JsonProvider.provider()))
                 .stream()
                 .collect(toMap(Vocabulary::id, Function.identity()));
 

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,32 +21,57 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
+package io.github.sebastiantoepfer.jsonschema.core.keywordtype;
 
+import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.keywordtype.StringKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.codition.JsonPropertyCondition;
+import io.github.sebastiantoepfer.jsonschema.core.codition.OfTypeCondition;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonPointer;
 import jakarta.json.spi.JsonProvider;
-import java.net.URI;
 import java.util.Objects;
+import java.util.function.Function;
 
-final class RefKeywordType implements KeywordType {
+public final class StringKeywordType implements KeywordType {
 
     private final JsonProvider jsonContext;
+    private final String name;
+    private final Function<String, Keyword> keywordCreator;
 
-    public RefKeywordType(final JsonProvider jsonContext) {
+    public StringKeywordType(
+        final JsonProvider jsonContext,
+        final String name,
+        final Function<String, Keyword> keywordCreator
+    ) {
         this.jsonContext = Objects.requireNonNull(jsonContext);
+        this.name = Objects.requireNonNull(name);
+        this.keywordCreator = Objects.requireNonNull(keywordCreator);
     }
 
     @Override
     public String name() {
-        return RefKeyword.NAME;
+        return name;
     }
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        return new StringKeywordType(jsonContext, RefKeyword.NAME, s -> new RefKeyword(schema, URI.create(s)))
-            .createKeyword(schema);
+        return createKeyword(schema.asJsonObject());
+    }
+
+    private Keyword createKeyword(final JsonObject obj) {
+        if (
+            new JsonPropertyCondition(createJsonPointer(), new OfTypeCondition(InstanceType.STRING)).isFulfilledBy(obj)
+        ) {
+            return keywordCreator.apply(obj.getString(name()));
+        } else {
+            throw new IllegalArgumentException(String.format("value for keyword '%s' must be a string!", name));
+        }
+    }
+
+    private JsonPointer createJsonPointer() {
+        return jsonContext.createPointer(String.format("/%s", name));
     }
 }

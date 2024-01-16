@@ -32,7 +32,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keywordtype.ObjectSubSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keywordtype.NamedJsonSchemaKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -193,7 +193,7 @@ class PatternPropertiesKeywordTest {
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new ObjectSubSchemaKeywordType("patternProperties", PatternPropertiesKeyword::new)
+        return new NamedJsonSchemaKeywordType("patternProperties", PatternPropertiesKeyword::new)
             .createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

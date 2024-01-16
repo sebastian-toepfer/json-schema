@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,32 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
+package io.github.sebastiantoepfer.jsonschema.core.codition;
 
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.keywordtype.StringKeywordType;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.spi.JsonProvider;
-import java.net.URI;
-import java.util.Objects;
+import io.github.sebastiantoepfer.jsonschema.InstanceType;
+import jakarta.json.JsonValue;
 
-final class RefKeywordType implements KeywordType {
+public final class OfTypeCondition implements Condition<JsonValue> {
 
-    private final JsonProvider jsonContext;
+    private final InstanceType type;
 
-    public RefKeywordType(final JsonProvider jsonContext) {
-        this.jsonContext = Objects.requireNonNull(jsonContext);
+    public OfTypeCondition(final InstanceType type) {
+        this.type = type;
     }
 
     @Override
-    public String name() {
-        return RefKeyword.NAME;
-    }
-
-    @Override
-    public Keyword createKeyword(final JsonSchema schema) {
-        return new StringKeywordType(jsonContext, RefKeyword.NAME, s -> new RefKeyword(schema, URI.create(s)))
-            .createKeyword(schema);
+    public boolean isFulfilledBy(final JsonValue value) {
+        return type.isInstance(value);
     }
 }

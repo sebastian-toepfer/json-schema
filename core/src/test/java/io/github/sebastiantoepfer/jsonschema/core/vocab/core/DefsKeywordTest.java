@@ -24,25 +24,43 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anEmptyMap;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.keywordtype.NamedJsonSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
-class CommentKeywordTypeTest {
+class DefsKeywordTest {
 
     @Test
-    void should_create_keyword_with_name() {
-        assertThat(
-            new CommentKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("$comment", JsonValue.EMPTY_JSON_OBJECT).build())
-                )
-                .hasName("$comment"),
-            is(true)
+    void should_know_his_name() {
+        final Keyword defs = createKeywordFrom(
+            Json.createObjectBuilder().add("$defs", JsonValue.EMPTY_JSON_OBJECT).build()
         );
+
+        assertThat(defs.hasName("$defs"), is(true));
+        assertThat(defs.hasName("test"), is(false));
+    }
+
+    @Test
+    void should_be_printable() {
+        assertThat(
+            createKeywordFrom(Json.createObjectBuilder().add("$defs", JsonValue.EMPTY_JSON_OBJECT).build())
+                .printOn(new HashMapMedia()),
+            (Matcher) hasEntry(is("$defs"), anEmptyMap())
+        );
+    }
+
+    private static Keyword createKeywordFrom(final JsonObject json) {
+        return new NamedJsonSchemaKeywordType(DefsKeyword.NAME, DefsKeyword::new)
+            .createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

@@ -25,7 +25,7 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.keywordtype.ArraySubSchemaKeywordType;
-import io.github.sebastiantoepfer.jsonschema.core.keywordtype.ObjectSubSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keywordtype.NamedJsonSchemaKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keywordtype.SubSchemaKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
@@ -47,9 +47,9 @@ public final class ApplicatorVocabulary implements Vocabulary {
         this.vocab =
             new DefaultVocabulary(
                 URI.create("https://json-schema.org/draft/2020-12/vocab/applicator"),
-                new ObjectSubSchemaKeywordType(PropertiesKeyword.NAME, PropertiesKeyword::new),
+                new NamedJsonSchemaKeywordType(PropertiesKeyword.NAME, PropertiesKeyword::new),
                 new SubSchemaKeywordType(AdditionalPropertiesKeyword.NAME, AdditionalPropertiesKeyword::new),
-                new ObjectSubSchemaKeywordType(PatternPropertiesKeyword.NAME, PatternPropertiesKeyword::new),
+                new NamedJsonSchemaKeywordType(PatternPropertiesKeyword.NAME, PatternPropertiesKeyword::new),
                 new SubSchemaKeywordType(ItemsKeyword.NAME, ItemsKeyword::new),
                 new ArraySubSchemaKeywordType(PrefixItemsKeyword.NAME, PrefixItemsKeyword::new)
             );

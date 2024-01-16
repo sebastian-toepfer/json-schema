@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,24 +23,39 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import io.github.sebastiantoepfer.jsonschema.keyword.StaticAnnotation;
+import io.github.sebastiantoepfer.ddd.common.Media;
+import io.github.sebastiantoepfer.jsonschema.core.keywordtype.NamedJsonSchemas;
+import io.github.sebastiantoepfer.jsonschema.keyword.ReservedLocation;
+import java.util.Objects;
 
 /**
+ * <b>$defs</b> : <i>Object<String, Schema></i><br/>
+ * This keyword is used in meta-schemas to identify the required and optional vocabularies available for use in<br/>
+ * schemas described by that meta-schema.<br/>
+ * <br/>
+ * <ul>
+ * <li>Reserved Location</li>
+ * </ul>
  *
- * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-comments-with-comment
+ * source: https://www.learnjsonschema.com/2020-12/core/defs/
+ * spec: https://json-schema.org/draft/2020-12/json-schema-core.html#section-8.2.4
  */
-final class CommentKeywordType implements KeywordType {
+final class DefsKeyword implements ReservedLocation {
 
-    @Override
-    public String name() {
-        return "$comment";
+    static final String NAME = "$defs";
+    private final NamedJsonSchemas schemas;
+
+    public DefsKeyword(final NamedJsonSchemas schemas) {
+        this.schemas = Objects.requireNonNull(schemas);
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema) {
-        return new StaticAnnotation(name(), schema.asJsonObject().get(name()));
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue(NAME, schemas);
+    }
+
+    @Override
+    public boolean hasName(final String name) {
+        return Objects.equals(NAME, name);
     }
 }

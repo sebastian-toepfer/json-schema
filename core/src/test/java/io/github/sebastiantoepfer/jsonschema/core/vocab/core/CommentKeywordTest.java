@@ -21,45 +21,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreVocabulary;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
+import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
+import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.keywordtype.StringKeywordType;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import jakarta.json.spi.JsonProvider;
-import java.net.URI;
-import java.util.Collection;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class KeywordsTest {
+class CommentKeywordTest {
 
     @Test
-    void should_not_be_createbale_without_mandantory_core_vocabulary() {
-        final Collection<VocabularyDefinition> vocabDefs = List.of(
-            new VocabularyDefinition(new CoreVocabulary(JsonProvider.provider()).id(), false)
+    void should_know_her_name() {
+        final Keyword keyword = createKeywordFrom(
+            Json.createObjectBuilder().add("$comment", Json.createValue("comment")).build()
         );
-        assertThrows(IllegalArgumentException.class, () -> new Keywords(vocabDefs));
+
+        assertThat(keyword.hasName("$comment"), is(true));
+        assertThat(keyword.hasName("test"), is(false));
     }
 
     @Test
-    void should_not_be_createbale_without_mandantory_base_vocabulary() {
-        final Collection<VocabularyDefinition> vocabDefs = List.of(
-            new VocabularyDefinition(new BasicVocabulary().id(), false)
-        );
-        assertThrows(IllegalArgumentException.class, () -> new Keywords(vocabDefs));
-    }
-
-    @Test
-    void should_be_createbale_with_optional_vocabularies() {
+    void should_be_printable() {
         assertThat(
-            new Keywords(List.of(new VocabularyDefinition(URI.create("http://optinal"), false))),
-            is(not(nullValue()))
+            createKeywordFrom(Json.createObjectBuilder().add("$comment", Json.createValue("comment")).build())
+                .printOn(new HashMapMedia()),
+            hasEntry("$comment", "comment")
         );
+    }
+
+    private static Keyword createKeywordFrom(final JsonObject json) {
+        return new StringKeywordType(JsonProvider.provider(), "$comment", CommentKeyword::new)
+            .createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

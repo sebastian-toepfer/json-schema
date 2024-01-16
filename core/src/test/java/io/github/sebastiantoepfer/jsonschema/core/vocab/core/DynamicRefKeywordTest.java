@@ -29,35 +29,29 @@ import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.keywordtype.StringKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import jakarta.json.spi.JsonProvider;
+import java.net.URI;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
-class DynamicRefKeywordTypeTest {
+class DynamicRefKeywordTest {
 
     @Test
     void should_create_keyword_with_name() {
         assertThat(
-            new DynamicRefKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("$dynamicRef", JsonValue.EMPTY_JSON_OBJECT).build())
-                )
-                .hasName("$dynamicRef"),
+            createKeywordFrom(Json.createObjectBuilder().add("$dynamicRef", "test").build()).hasName("$dynamicRef"),
             is(true)
         );
     }
 
     @Test
     void notFinischedYet() {
-        final Keyword keyword = new DynamicRefKeywordType()
-            .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(Json.createObjectBuilder().add("$dynamicRef", JsonValue.FALSE).build())
-            );
+        final Keyword keyword = createKeywordFrom(Json.createObjectBuilder().add("$dynamicRef", "test").build());
 
         assertThat(keyword.hasName("$dynamicRef"), is(true));
         assertThat(keyword.hasName("$id"), is(false));
@@ -68,13 +62,18 @@ class DynamicRefKeywordTypeTest {
     @Test
     void should_be_printable() {
         assertThat(
-            new DynamicRefKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("$dynamicRef", JsonValue.EMPTY_JSON_OBJECT).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("$dynamicRef", "test").build())
                 .printOn(new HashMapMedia()),
-            (Matcher) hasEntry(is("$dynamicRef"), Matchers.anEmptyMap())
+            (Matcher) hasEntry(is("$dynamicRef"), is("test"))
         );
+    }
+
+    private static Keyword createKeywordFrom(final JsonObject json) {
+        return new StringKeywordType(
+            JsonProvider.provider(),
+            DynamicRefKeyword.NAME,
+            s -> new DynamicRefKeyword(URI.create(s))
+        )
+            .createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

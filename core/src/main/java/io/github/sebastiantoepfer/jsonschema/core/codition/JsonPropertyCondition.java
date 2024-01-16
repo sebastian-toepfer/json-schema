@@ -21,26 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
+package io.github.sebastiantoepfer.jsonschema.core.codition;
 
-import io.github.sebastiantoepfer.ddd.common.Media;
-import io.github.sebastiantoepfer.ddd.common.Printable;
-import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
-import java.util.Map;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonPointer;
+import jakarta.json.JsonValue;
+import java.util.Objects;
 
-final class ObjectSchemaPrintableAdapter implements Printable {
+public final class JsonPropertyCondition implements Condition<JsonObject> {
 
-    private final Map<String, JsonSubSchema> properties;
+    private final JsonPointer pointer;
+    private final Condition<JsonValue> condition;
 
-    public ObjectSchemaPrintableAdapter(final Map<String, JsonSubSchema> properties) {
-        this.properties = Map.copyOf(properties);
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
+    public JsonPropertyCondition(final JsonPointer pointer, final Condition<JsonValue> condition) {
+        this.pointer = Objects.requireNonNull(pointer);
+        this.condition = Objects.requireNonNull(condition);
     }
 
     @Override
-    public <T extends Media<T>> T printOn(final T media) {
-        return properties
-            .entrySet()
-            .stream()
-            .reduce(media, (m, e) -> m.withValue(e.getKey(), e.getValue()), (l, r) -> null);
+    public boolean isFulfilledBy(final JsonObject value) {
+        final boolean result;
+        if (pointer.containsValue(value)) {
+            result = condition.isFulfilledBy(pointer.getValue(value));
+        } else {
+            result = condition.isFulfilledBy(JsonValue.NULL);
+        }
+        return result;
     }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,43 +24,42 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
-import io.github.sebastiantoepfer.ddd.common.Printable;
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.JsonValue;
+import io.github.sebastiantoepfer.jsonschema.keyword.Identifier;
+import java.net.URI;
 import java.util.Objects;
 
 /**
+ * <b>$id</b> : <i>URI Reference</i><br/>
+ * This keyword declares an identifier for the schema resource.<br/>
+ * <br/>
+ * <ul>
+ * <li>identifier</li>
+ * </ul>
  *
- * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-dynamic-references-with-dyn
+ * source: https://www.learnjsonschema.com/2020-12/core/id/
+ * spec: https://json-schema.org/draft/2020-12/json-schema-core.html#section-8.2.1
  */
-final class DynamicRefKeywordType implements KeywordType {
+final class IdKeyword implements Identifier {
 
-    @Override
-    public String name() {
-        return "$dynamicRef";
+    static final String NAME = "$id";
+    private final URI uri;
+
+    public IdKeyword(final URI uri) {
+        this.uri = Objects.requireNonNull(uri);
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema) {
-        return new Applicator() {
-            @Override
-            public <T extends Media<T>> T printOn(final T media) {
-                return media.withValue(name(), new Printable.Empty());
-            }
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue(NAME, uri.toString());
+    }
 
-            @Override
-            public boolean applyTo(final JsonValue instance) {
-                //something is wrong here
-                return true;
-            }
+    @Override
+    public URI asUri() {
+        return uri;
+    }
 
-            @Override
-            public boolean hasName(final String name) {
-                return Objects.equals(name(), name);
-            }
-        };
+    @Override
+    public boolean hasName(final String name) {
+        return Objects.equals(NAME, name);
     }
 }

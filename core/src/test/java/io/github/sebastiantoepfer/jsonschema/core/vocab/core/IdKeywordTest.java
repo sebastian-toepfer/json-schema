@@ -26,52 +26,59 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.keywordtype.StringKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.Json;
-import jakarta.json.JsonValue;
+import jakarta.json.JsonObject;
+import jakarta.json.spi.JsonProvider;
+import java.net.URI;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
-class DefsKeywordTypeTest {
-
-    @Test
-    void should_not_be_creatable_from_non_objects() {
-        final KeywordType defs = new DefsKeywordType();
-        final JsonSchema schema = new DefaultJsonSchemaFactory()
-            .create(Json.createObjectBuilder().add("$defs", JsonValue.FALSE).build());
-
-        assertThrows(IllegalArgumentException.class, () -> defs.createKeyword(schema));
-    }
+class IdKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword defs = new DefsKeywordType()
-            .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(Json.createObjectBuilder().add("$defs", JsonValue.EMPTY_JSON_OBJECT).build())
-            );
+        final Keyword id = createKeywordFrom(Json.createObjectBuilder().add("$id", Json.createValue("/test")).build());
 
-        assertThat(defs.hasName("$defs"), is(true));
-        assertThat(defs.hasName("test"), is(false));
+        assertThat(id.hasName("$id"), is(true));
+        assertThat(id.hasName("test"), is(false));
+    }
+
+    @Test
+    void should_retun_his_uri() {
+        assertThat(
+            createKeywordFrom(
+                Json
+                    .createObjectBuilder()
+                    .add("$id", Json.createValue("https://json-schema.org/draft/2020-12/schema"))
+                    .build()
+            )
+                .asIdentifier()
+                .asUri(),
+            is(URI.create("https://json-schema.org/draft/2020-12/schema"))
+        );
     }
 
     @Test
     void should_be_printable() {
         assertThat(
-            new DefsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("$defs", JsonValue.EMPTY_JSON_OBJECT).build())
-                )
+            createKeywordFrom(
+                Json
+                    .createObjectBuilder()
+                    .add("$id", Json.createValue("https://json-schema.org/draft/2020-12/schema"))
+                    .build()
+            )
                 .printOn(new HashMapMedia()),
-            (Matcher) hasEntry(is("$defs"), Matchers.anEmptyMap())
+            (Matcher) hasEntry(is("$id"), is("https://json-schema.org/draft/2020-12/schema"))
         );
+    }
+
+    private static Keyword createKeywordFrom(final JsonObject json) {
+        return new StringKeywordType(JsonProvider.provider(), "$id", s -> new IdKeyword(URI.create(s)))
+            .createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

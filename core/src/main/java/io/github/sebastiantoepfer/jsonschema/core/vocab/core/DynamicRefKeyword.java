@@ -23,30 +23,45 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.keywordtype.StringKeywordType;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.spi.JsonProvider;
+import io.github.sebastiantoepfer.ddd.common.Media;
+import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
+import jakarta.json.JsonValue;
 import java.net.URI;
 import java.util.Objects;
 
-final class RefKeywordType implements KeywordType {
+/**
+ * <b>$dynamicRef</b> : <i>URI Reference</i><br/>
+ * This keyword is used to reference an identified schema, deferring the full resolution until runtime, at which<br/>
+ * point it is resolved each time it is encountered while evaluating an instance.<br/>
+ * <br/>
+ * <ul>
+ * <li>applicator</li>
+ * </ul>
+ *
+ * source: https://www.learnjsonschema.com/2020-12/core/dynamicref/
+ * spec: https://json-schema.org/draft/2020-12/json-schema-core.html#section-8.2.3.1
+ */
+final class DynamicRefKeyword implements Applicator {
 
-    private final JsonProvider jsonContext;
+    static final String NAME = "$dynamicRef";
+    private final URI uri;
 
-    public RefKeywordType(final JsonProvider jsonContext) {
-        this.jsonContext = Objects.requireNonNull(jsonContext);
+    public DynamicRefKeyword(final URI uri) {
+        this.uri = Objects.requireNonNull(uri);
     }
 
     @Override
-    public String name() {
-        return RefKeyword.NAME;
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue(NAME, uri.toString());
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema) {
-        return new StringKeywordType(jsonContext, RefKeyword.NAME, s -> new RefKeyword(schema, URI.create(s)))
-            .createKeyword(schema);
+    public boolean applyTo(final JsonValue instance) {
+        return true;
+    }
+
+    @Override
+    public boolean hasName(final String name) {
+        return Objects.equals(NAME, name);
     }
 }

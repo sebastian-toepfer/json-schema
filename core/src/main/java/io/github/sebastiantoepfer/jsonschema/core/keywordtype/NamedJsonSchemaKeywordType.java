@@ -34,15 +34,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-public final class ObjectSubSchemaKeywordType implements KeywordType {
+public final class NamedJsonSchemaKeywordType implements KeywordType {
 
     private final String name;
-    private final Function<Map<String, JsonSubSchema>, Keyword> keywordCreator;
+    private final Function<NamedJsonSchemas, Keyword> keywordCreator;
 
-    public ObjectSubSchemaKeywordType(
-        final String name,
-        final Function<Map<String, JsonSubSchema>, Keyword> keywordCreator
-    ) {
+    public NamedJsonSchemaKeywordType(final String name, final Function<NamedJsonSchemas, Keyword> keywordCreator) {
         this.name = Objects.requireNonNull(name);
         this.keywordCreator = Objects.requireNonNull(keywordCreator);
     }
@@ -60,6 +57,11 @@ public final class ObjectSubSchemaKeywordType implements KeywordType {
             .keySet()
             .stream()
             .map(n -> Map.entry(n, pseudoSchema.asSubSchema(n).orElseThrow(IllegalArgumentException::new)))
-            .collect(collectingAndThen(toMap(Map.Entry::getKey, Map.Entry::getValue), keywordCreator::apply));
+            .collect(
+                collectingAndThen(
+                    toMap(Map.Entry::getKey, Map.Entry::getValue),
+                    map -> keywordCreator.apply(new NamedJsonSchemas(map))
+                )
+            );
     }
 }

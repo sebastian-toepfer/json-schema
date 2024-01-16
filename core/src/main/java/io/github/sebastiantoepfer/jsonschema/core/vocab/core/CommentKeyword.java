@@ -23,30 +23,38 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.keywordtype.StringKeywordType;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.spi.JsonProvider;
-import java.net.URI;
+import io.github.sebastiantoepfer.ddd.common.Media;
+import io.github.sebastiantoepfer.jsonschema.keyword.ReservedLocation;
 import java.util.Objects;
 
-final class RefKeywordType implements KeywordType {
+/**
+ * <b>$comment</b> : <i>String</i><br/>
+ * This keyword reserves a location for comments from schema authors to readers or maintainers of the schema.<br/>
+ * <br/>
+ * <b>kind</b>
+ * <ul>
+ * <li>Reserved Location</li>
+ * <ul>
+ *
+ * source: https://www.learnjsonschema.com/2020-12/core/comment/
+ * spec: https://json-schema.org/draft/2020-12/json-schema-core.html#section-8.3
+ */
+final class CommentKeyword implements ReservedLocation {
 
-    private final JsonProvider jsonContext;
+    static final String NAME = "$comment";
+    private final String value;
 
-    public RefKeywordType(final JsonProvider jsonContext) {
-        this.jsonContext = Objects.requireNonNull(jsonContext);
+    public CommentKeyword(final String value) {
+        this.value = Objects.requireNonNull(value);
     }
 
     @Override
-    public String name() {
-        return RefKeyword.NAME;
+    public boolean hasName(final String name) {
+        return Objects.equals(NAME, name);
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema) {
-        return new StringKeywordType(jsonContext, RefKeyword.NAME, s -> new RefKeyword(schema, URI.create(s)))
-            .createKeyword(schema);
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue(NAME, value);
     }
 }

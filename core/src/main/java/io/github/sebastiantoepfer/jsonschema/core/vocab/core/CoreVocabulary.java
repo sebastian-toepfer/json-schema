@@ -24,8 +24,11 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.keywordtype.NamedJsonSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keywordtype.StringKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
+import jakarta.json.spi.JsonProvider;
 import java.net.URI;
 import java.util.Optional;
 
@@ -33,17 +36,21 @@ public final class CoreVocabulary implements Vocabulary {
 
     private final Vocabulary vocab;
 
-    public CoreVocabulary() {
+    public CoreVocabulary(final JsonProvider jsonContext) {
         this.vocab =
             new DefaultVocabulary(
                 URI.create("https://json-schema.org/draft/2020-12/vocab/core"),
-                new SchemaKeywordType(),
+                new StringKeywordType(jsonContext, SchemaKeyword.NAME, value -> new SchemaKeyword(URI.create(value))),
+                new StringKeywordType(jsonContext, IdKeyword.NAME, value -> new IdKeyword(URI.create(value))),
+                new RefKeywordType(jsonContext),
+                new NamedJsonSchemaKeywordType(DefsKeyword.NAME, DefsKeyword::new),
+                new StringKeywordType(jsonContext, CommentKeyword.NAME, CommentKeyword::new),
                 new VocabularyKeywordType(),
-                new IdKeywordType(),
-                new RefKeywordType(),
-                new DynamicRefKeywordType(),
-                new DefsKeywordType(),
-                new CommentKeywordType()
+                new StringKeywordType(
+                    jsonContext,
+                    DynamicRefKeyword.NAME,
+                    value -> new DynamicRefKeyword(URI.create(value))
+                )
             );
     }
 

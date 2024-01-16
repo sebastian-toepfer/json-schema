@@ -26,35 +26,25 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.keywordtype.StringKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonValue;
+import jakarta.json.JsonObject;
+import jakarta.json.spi.JsonProvider;
 import java.net.URI;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
-class SchemaKeywordTypeTest {
-
-    @Test
-    void should_not_be_creatable_from_non_string() {
-        final SchemaKeywordType keywordType = new SchemaKeywordType();
-        final JsonSchema schema = new DefaultJsonSchemaFactory()
-            .create(Json.createObjectBuilder().add("$schema", JsonValue.FALSE).build());
-        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
-    }
+class SchemaKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword schema = new SchemaKeywordType()
-            .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(Json.createObjectBuilder().add("$schema", Json.createValue("/test")).build())
-            );
+        final Keyword schema = createKeywordFrom(
+            Json.createObjectBuilder().add("$schema", Json.createValue("/test")).build()
+        );
 
         assertThat(schema.hasName("$schema"), is(true));
         assertThat(schema.hasName("test"), is(false));
@@ -63,16 +53,12 @@ class SchemaKeywordTypeTest {
     @Test
     void should_retun_his_uri() {
         assertThat(
-            new SchemaKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(
-                            Json
-                                .createObjectBuilder()
-                                .add("$schema", Json.createValue("https://json-schema.org/draft/2020-12/schema"))
-                                .build()
-                        )
-                )
+            createKeywordFrom(
+                Json
+                    .createObjectBuilder()
+                    .add("$schema", Json.createValue("https://json-schema.org/draft/2020-12/schema"))
+                    .build()
+            )
                 .asIdentifier()
                 .asUri(),
             is(URI.create("https://json-schema.org/draft/2020-12/schema"))
@@ -82,18 +68,19 @@ class SchemaKeywordTypeTest {
     @Test
     void should_be_printable() {
         assertThat(
-            new SchemaKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(
-                            Json
-                                .createObjectBuilder()
-                                .add("$schema", Json.createValue("https://json-schema.org/draft/2020-12/schema"))
-                                .build()
-                        )
-                )
+            createKeywordFrom(
+                Json
+                    .createObjectBuilder()
+                    .add("$schema", Json.createValue("https://json-schema.org/draft/2020-12/schema"))
+                    .build()
+            )
                 .printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("$schema"), is("https://json-schema.org/draft/2020-12/schema"))
         );
+    }
+
+    private static Keyword createKeywordFrom(final JsonObject json) {
+        return new StringKeywordType(JsonProvider.provider(), "$schema", s -> new SchemaKeyword(URI.create(s)))
+            .createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

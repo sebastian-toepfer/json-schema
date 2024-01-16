@@ -28,7 +28,8 @@ import static java.util.stream.Collectors.toMap;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
-import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.core.keywordtype.NamedJsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.keyword.Annotation;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
@@ -62,12 +63,12 @@ import java.util.regex.Pattern;
 class PatternPropertiesKeyword implements Applicator, Annotation {
 
     static final String NAME = "patternProperties";
-    private final Map<Pattern, JsonSubSchema> properties;
+    private final Map<Pattern, JsonSchema> properties;
 
-    public PatternPropertiesKeyword(final Map<String, JsonSubSchema> properties) {
+    public PatternPropertiesKeyword(final NamedJsonSchemas properties) {
         this.properties =
             properties
-                .entrySet()
+                .schemas()
                 .stream()
                 .map(e -> Map.entry(Pattern.compile(e.getKey()), e.getValue()))
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -81,9 +82,7 @@ class PatternPropertiesKeyword implements Applicator, Annotation {
                 .entrySet()
                 .stream()
                 .map(e -> Map.entry(e.getKey().pattern(), e.getValue()))
-                .collect(
-                    collectingAndThen(toMap(Map.Entry::getKey, Map.Entry::getValue), ObjectSchemaPrintableAdapter::new)
-                )
+                .collect(collectingAndThen(toMap(Map.Entry::getKey, Map.Entry::getValue), NamedJsonSchemas::new))
         );
     }
 
