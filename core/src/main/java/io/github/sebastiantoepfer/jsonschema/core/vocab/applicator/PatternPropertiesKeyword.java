@@ -29,7 +29,7 @@ import static java.util.stream.Collectors.toMap;
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.keywordtype.NamedJsonSchemas;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NamedJsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.keyword.Annotation;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;

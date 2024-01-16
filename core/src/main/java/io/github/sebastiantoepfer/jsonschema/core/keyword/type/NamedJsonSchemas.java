@@ -21,41 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.keywordtype;
+package io.github.sebastiantoepfer.jsonschema.core.keyword.type;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
-
+import io.github.sebastiantoepfer.ddd.common.Media;
+import io.github.sebastiantoepfer.ddd.common.Printable;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
-public final class ArraySubSchemaKeywordType implements KeywordType {
+public final class NamedJsonSchemas implements Printable {
 
-    private final String name;
-    private final Function<List<JsonSchema>, Keyword> keywordCreator;
+    private final Map<String, JsonSchema> schemas;
 
-    public ArraySubSchemaKeywordType(final String name, final Function<List<JsonSchema>, Keyword> keywordCreator) {
-        this.name = Objects.requireNonNull(name);
-        this.keywordCreator = Objects.requireNonNull(keywordCreator);
+    public NamedJsonSchemas(final Map<String, ? extends JsonSchema> schemas) {
+        this.schemas = Map.copyOf(schemas);
     }
 
     @Override
-    public String name() {
-        return name;
-    }
-
-    @Override
-    public Keyword createKeyword(final JsonSchema schema) {
-        return schema
-            .asJsonObject()
-            .getJsonArray(name)
+    public <T extends Media<T>> T printOn(final T media) {
+        return schemas
+            .entrySet()
             .stream()
-            .map(new DefaultJsonSchemaFactory()::create)
-            .collect(collectingAndThen(toList(), keywordCreator::apply));
+            .reduce(media, (m, e) -> m.withValue(e.getKey(), e.getValue()), (l, r) -> null);
+    }
+
+    public Optional<JsonSchema> schemaWithName(final String name) {
+        return Optional.ofNullable(schemas.get(name));
+    }
+
+    public boolean hasSchemaWithName(final String name) {
+        return schemas.containsKey(name);
+    }
+
+    public Set<Map.Entry<String, JsonSchema>> schemas() {
+        return schemas.entrySet();
     }
 }

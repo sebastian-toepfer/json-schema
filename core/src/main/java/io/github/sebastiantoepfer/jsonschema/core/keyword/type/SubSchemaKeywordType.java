@@ -21,40 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.keywordtype;
+package io.github.sebastiantoepfer.jsonschema.core.keyword.type;
 
-import io.github.sebastiantoepfer.ddd.common.Media;
-import io.github.sebastiantoepfer.ddd.common.Printable;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import java.util.Objects;
+import java.util.function.Function;
 
-public final class NamedJsonSchemas implements Printable {
+public final class SubSchemaKeywordType implements KeywordType {
 
-    private final Map<String, JsonSchema> schemas;
+    private final String name;
+    private final Function<JsonSubSchema, Keyword> keywordCreator;
 
-    public NamedJsonSchemas(final Map<String, ? extends JsonSchema> schemas) {
-        this.schemas = Map.copyOf(schemas);
+    public SubSchemaKeywordType(final String name, final Function<JsonSubSchema, Keyword> keywordCreator) {
+        this.name = Objects.requireNonNull(name);
+        this.keywordCreator = Objects.requireNonNull(keywordCreator);
     }
 
     @Override
-    public <T extends Media<T>> T printOn(final T media) {
-        return schemas
-            .entrySet()
-            .stream()
-            .reduce(media, (m, e) -> m.withValue(e.getKey(), e.getValue()), (l, r) -> null);
+    public String name() {
+        return name;
     }
 
-    public Optional<JsonSchema> schemaWithName(final String name) {
-        return Optional.ofNullable(schemas.get(name));
-    }
-
-    public boolean hasSchemaWithName(final String name) {
-        return schemas.containsKey(name);
-    }
-
-    public Set<Map.Entry<String, JsonSchema>> schemas() {
-        return schemas.entrySet();
+    @Override
+    public Keyword createKeyword(final JsonSchema schema) {
+        return schema.asSubSchema(name).map(keywordCreator::apply).orElseThrow(IllegalArgumentException::new);
     }
 }

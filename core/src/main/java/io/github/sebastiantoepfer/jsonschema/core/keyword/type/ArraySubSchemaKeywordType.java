@@ -21,32 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.keywordtype;
+package io.github.sebastiantoepfer.jsonschema.core.keyword.type;
 
-import io.github.sebastiantoepfer.jsonschema.InstanceType;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
+
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.codition.JsonPropertyCondition;
-import io.github.sebastiantoepfer.jsonschema.core.codition.OfTypeCondition;
+import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonPointer;
-import jakarta.json.spi.JsonProvider;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-public final class StringKeywordType implements KeywordType {
+public final class ArraySubSchemaKeywordType implements KeywordType {
 
-    private final JsonProvider jsonContext;
     private final String name;
-    private final Function<String, Keyword> keywordCreator;
+    private final Function<List<JsonSchema>, Keyword> keywordCreator;
 
-    public StringKeywordType(
-        final JsonProvider jsonContext,
-        final String name,
-        final Function<String, Keyword> keywordCreator
-    ) {
-        this.jsonContext = Objects.requireNonNull(jsonContext);
+    public ArraySubSchemaKeywordType(final String name, final Function<List<JsonSchema>, Keyword> keywordCreator) {
         this.name = Objects.requireNonNull(name);
         this.keywordCreator = Objects.requireNonNull(keywordCreator);
     }
@@ -58,20 +51,11 @@ public final class StringKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        return createKeyword(schema.asJsonObject());
-    }
-
-    private Keyword createKeyword(final JsonObject obj) {
-        if (
-            new JsonPropertyCondition(createJsonPointer(), new OfTypeCondition(InstanceType.STRING)).isFulfilledBy(obj)
-        ) {
-            return keywordCreator.apply(obj.getString(name()));
-        } else {
-            throw new IllegalArgumentException(String.format("value for keyword '%s' must be a string!", name));
-        }
-    }
-
-    private JsonPointer createJsonPointer() {
-        return jsonContext.createPointer(String.format("/%s", name));
+        return schema
+            .asJsonObject()
+            .getJsonArray(name)
+            .stream()
+            .map(new DefaultJsonSchemaFactory()::create)
+            .collect(collectingAndThen(toList(), keywordCreator::apply));
     }
 }

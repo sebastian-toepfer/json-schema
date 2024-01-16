@@ -24,8 +24,8 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
-import io.github.sebastiantoepfer.jsonschema.core.keywordtype.NamedJsonSchemaKeywordType;
-import io.github.sebastiantoepfer.jsonschema.core.keywordtype.StringKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NamedJsonSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.StringKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
 import jakarta.json.spi.JsonProvider;

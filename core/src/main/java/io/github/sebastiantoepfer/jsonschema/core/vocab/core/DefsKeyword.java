@@ -24,7 +24,7 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
-import io.github.sebastiantoepfer.jsonschema.core.keywordtype.NamedJsonSchemas;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NamedJsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.keyword.ReservedLocation;
 import java.util.Objects;
 

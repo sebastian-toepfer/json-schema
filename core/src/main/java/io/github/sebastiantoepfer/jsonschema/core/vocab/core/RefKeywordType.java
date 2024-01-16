@@ -24,7 +24,7 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.keywordtype.StringKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.StringKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.spi.JsonProvider;

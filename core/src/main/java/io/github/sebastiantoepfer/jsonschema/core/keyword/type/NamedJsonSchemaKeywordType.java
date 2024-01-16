@@ -21,21 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.keywordtype;
+package io.github.sebastiantoepfer.jsonschema.core.keyword.type;
+
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toMap;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-public final class SubSchemaKeywordType implements KeywordType {
+public final class NamedJsonSchemaKeywordType implements KeywordType {
 
     private final String name;
-    private final Function<JsonSubSchema, Keyword> keywordCreator;
+    private final Function<NamedJsonSchemas, Keyword> keywordCreator;
 
-    public SubSchemaKeywordType(final String name, final Function<JsonSubSchema, Keyword> keywordCreator) {
+    public NamedJsonSchemaKeywordType(final String name, final Function<NamedJsonSchemas, Keyword> keywordCreator) {
         this.name = Objects.requireNonNull(name);
         this.keywordCreator = Objects.requireNonNull(keywordCreator);
     }
@@ -47,6 +51,17 @@ public final class SubSchemaKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        return schema.asSubSchema(name).map(keywordCreator::apply).orElseThrow(IllegalArgumentException::new);
+        final JsonSubSchema pseudoSchema = schema.asSubSchema(name).orElseThrow(IllegalArgumentException::new);
+        return pseudoSchema
+            .asJsonObject()
+            .keySet()
+            .stream()
+            .map(n -> Map.entry(n, pseudoSchema.asSubSchema(n).orElseThrow(IllegalArgumentException::new)))
+            .collect(
+                collectingAndThen(
+                    toMap(Map.Entry::getKey, Map.Entry::getValue),
+                    map -> keywordCreator.apply(new NamedJsonSchemas(map))
+                )
+            );
     }
 }
