@@ -23,26 +23,55 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresentAnd;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 
 import com.github.npathai.hamcrestopt.OptionalMatchers;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.Json;
+import jakarta.json.spi.JsonProvider;
 import java.net.URI;
 import org.junit.jupiter.api.Test;
 
 class CoreVocabularyTest {
 
+    private final CoreVocabulary coreVocabulary = new CoreVocabulary(JsonProvider.provider());
+
     @Test
     void should_return_core_vocabulary_for_core_id() {
-        assertThat(new CoreVocabulary().id(), is(URI.create("https://json-schema.org/draft/2020-12/vocab/core")));
+        assertThat(coreVocabulary.id(), is(URI.create("https://json-schema.org/draft/2020-12/vocab/core")));
     }
 
     @Test
     void should_load_schema_keyword() {
         assertThat(
-            new CoreVocabulary().findKeywordTypeByName("$schema").map(KeywordType::name),
+            coreVocabulary.findKeywordTypeByName("$schema").map(KeywordType::name),
             OptionalMatchers.isPresentAndIs("$schema")
+        );
+    }
+
+    @Test
+    void should_create_id_keyword_because_pitest_means_we_need_to_checkit() {
+        assertThat(
+            coreVocabulary
+                .findKeywordTypeByName("$id")
+                .map(kt -> kt.createKeyword(JsonSchemas.load(Json.createObjectBuilder().add("$id", "test").build()))),
+            isPresentAnd(isA(IdKeyword.class))
+        );
+    }
+
+    @Test
+    void should_create_dynamicRef_keyword_because_pitest_means_we_need_to_checkit() {
+        assertThat(
+            coreVocabulary
+                .findKeywordTypeByName("$dynamicRef")
+                .map(kt ->
+                    kt.createKeyword(JsonSchemas.load(Json.createObjectBuilder().add("$dynamicRef", "test").build()))
+                ),
+            isPresentAnd(isA(DynamicRefKeyword.class))
         );
     }
 }

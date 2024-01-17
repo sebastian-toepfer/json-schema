@@ -29,6 +29,13 @@ import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
 import java.net.URI;
 import java.util.Optional;
 
+/**
+ * <b>Unevaluated</b>
+ * Dialect: 2020-12
+ * uri: https://json-schema.org/draft/2020-12/vocab/unevaluated
+ * source: https://www.learnjsonschema.com/2020-12/unevaluated/
+ * spec: https://json-schema.org/draft/2020-12/json-schema-core.html#section-11
+ */
 public final class UnevaluatedVocabulary implements Vocabulary {
 
     private final Vocabulary vocab;

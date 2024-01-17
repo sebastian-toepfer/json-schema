@@ -65,6 +65,18 @@ public final class VocabularyKeywordType implements KeywordType {
         return result;
     }
 
+    /**
+     * <b>$vocabulary</b> : <i>Object<URI, Boolean></i><br/>
+     * This keyword is used in meta-schemas to identify the required and optional vocabularies available for use in<br/>
+     * schemas described by that meta-schema.<br/>
+     * <br/>
+     * <ul>
+     * <li>identifier</li>
+     * </ul>
+     *
+     * source: https://www.learnjsonschema.com/2020-12/core/vocabulary/
+     * spec: https://json-schema.org/draft/2020-12/json-schema-core.html#section-8.1.2
+     */
     public final class VocabularyKeyword implements Keyword, VocabularyDefinitions {
 
         private final JsonObject vocabularies;

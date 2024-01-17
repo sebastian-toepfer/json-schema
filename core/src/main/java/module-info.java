@@ -28,6 +28,8 @@ module io.github.sebastiantoepfer.jsonschema.core {
     requires io.github.sebastiantoepfer.ddd.media.json;
     requires jakarta.json;
 
+    requires com.github.spotbugs.annotations;
+
     provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
         with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 

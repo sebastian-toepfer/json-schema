@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreVocabulary;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
+import jakarta.json.spi.JsonProvider;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
@@ -41,7 +42,7 @@ class KeywordsTest {
     @Test
     void should_not_be_createbale_without_mandantory_core_vocabulary() {
         final Collection<VocabularyDefinition> vocabDefs = List.of(
-            new VocabularyDefinition(new CoreVocabulary().id(), false)
+            new VocabularyDefinition(new CoreVocabulary(JsonProvider.provider()).id(), false)
         );
         assertThrows(IllegalArgumentException.class, () -> new Keywords(vocabDefs));
     }

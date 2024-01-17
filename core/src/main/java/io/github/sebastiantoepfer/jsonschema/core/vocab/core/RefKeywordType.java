@@ -23,115 +23,30 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
-import io.github.sebastiantoepfer.ddd.common.Media;
-import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
-import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.StringKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.Json;
-import jakarta.json.JsonPointer;
-import jakarta.json.JsonReader;
-import jakarta.json.JsonString;
-import jakarta.json.JsonStructure;
-import jakarta.json.JsonValue;
-import java.io.IOException;
+import jakarta.json.spi.JsonProvider;
 import java.net.URI;
 import java.util.Objects;
 
-/**
- *
- * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-direct-references-with-ref
- */
 final class RefKeywordType implements KeywordType {
+
+    private final JsonProvider jsonContext;
+
+    public RefKeywordType(final JsonProvider jsonContext) {
+        this.jsonContext = Objects.requireNonNull(jsonContext);
+    }
 
     @Override
     public String name() {
-        return "$ref";
+        return RefKeyword.NAME;
     }
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        final JsonValue value = schema.asJsonObject().get(name());
-        if (InstanceType.STRING.isInstance(value)) {
-            return new RefKeyword(schema, (JsonString) value);
-        } else {
-            throw new IllegalArgumentException("must be a string");
-        }
-    }
-
-    private class RefKeyword implements Applicator {
-
-        private final JsonSchema schema;
-        private final URI uri;
-
-        private RefKeyword(final JsonSchema schema, final JsonString uri) {
-            this.schema = schema;
-            this.uri = URI.create(uri.getString());
-        }
-
-        @Override
-        public <T extends Media<T>> T printOn(final T media) {
-            return media.withValue(name(), uri.toString());
-        }
-
-        @Override
-        public boolean applyTo(final JsonValue instance) {
-            return retrieveJsonSchema().validator().isValid(instance);
-        }
-
-        @Override
-        public boolean hasName(final String name) {
-            return Objects.equals(name(), name);
-        }
-
-        private JsonSchema retrieveJsonSchema() {
-            final JsonValue json;
-            try {
-                if (isRemote()) {
-                    json = retrieveValueFromRemoteLocation();
-                } else {
-                    json = retrieveValueFromLocalSchema();
-                }
-                return JsonSchemas.load(json);
-            } catch (IOException ex) {
-                throw new IllegalStateException("can not load schema!", ex);
-            }
-        }
-
-        private JsonValue retrieveValueFromLocalSchema() throws IOException {
-            final JsonPointer pointer = createPointer();
-            if (pointer.containsValue(searchAnchor())) {
-                return pointer.getValue(searchAnchor());
-            } else {
-                throw new IOException("can not find referenced value.");
-            }
-        }
-
-        private JsonStructure searchAnchor() {
-            return schema.rootSchema().asJsonObject();
-        }
-
-        private JsonPointer createPointer() {
-            final String fragment = uri.getFragment();
-            final JsonPointer pointer;
-            if (fragment.startsWith("/")) {
-                pointer = Json.createPointer(fragment);
-            } else {
-                pointer = Json.createPointer("/".concat(fragment));
-            }
-            return pointer;
-        }
-
-        private JsonValue retrieveValueFromRemoteLocation() throws IOException {
-            try (final JsonReader reader = Json.createReader(uri.toURL().openStream())) {
-                return reader.readValue();
-            }
-        }
-
-        private boolean isRemote() {
-            return uri.getScheme() != null;
-        }
+        return new StringKeywordType(jsonContext, RefKeyword.NAME, s -> new RefKeyword(schema, URI.create(s)))
+            .createKeyword(schema);
     }
 }

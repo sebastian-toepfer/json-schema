@@ -35,7 +35,7 @@ public final class DefaultJsonSchemaFactory implements JsonSchemaFactory {
         return tryToCreateSchemaFrom(schema).orElseThrow(IllegalArgumentException::new);
     }
 
-    public Optional<JsonSchema> tryToCreateSchemaFrom(final JsonValue schema) {
+    Optional<JsonSchema> tryToCreateSchemaFrom(final JsonValue schema) {
         final JsonSchema result;
         if (schema == JsonValue.TRUE) {
             result = new TrueJsonSchema();

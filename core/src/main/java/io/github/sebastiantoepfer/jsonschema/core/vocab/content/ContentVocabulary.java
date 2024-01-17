@@ -29,6 +29,13 @@ import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
 import java.net.URI;
 import java.util.Optional;
 
+/**
+ * <b>Content</b>
+ * Dialect: 2020-12
+ * uri: https://json-schema.org/draft/2020-12/vocab/content
+ * source: https://www.learnjsonschema.com/2020-12/content/
+ * spec: https://json-schema.org/draft/2020-12/json-schema-validation.html#section-8
+ */
 public final class ContentVocabulary implements Vocabulary {
 
     private final Vocabulary vocab;

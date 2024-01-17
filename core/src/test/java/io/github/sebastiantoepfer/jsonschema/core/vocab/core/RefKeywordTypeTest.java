@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,96 +24,20 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import jakarta.json.Json;
-import jakarta.json.JsonValue;
-import org.hamcrest.Matcher;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.spi.JsonProvider;
 import org.junit.jupiter.api.Test;
 
 class RefKeywordTypeTest {
 
     @Test
-    void should_be_not_createbale_from_non_string() {
-        final RefKeywordType keywordType = new RefKeywordType();
-        final JsonSchema schema = new DefaultJsonSchemaFactory()
-            .create(Json.createObjectBuilder().add("$ref", JsonValue.TRUE).build());
-        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
-    }
+    void should_know_the_keywords_name() {
+        final KeywordType refKeywordType = new RefKeywordType(JsonProvider.provider());
 
-    @Test
-    void should_know_his_name() {
-        final Keyword ref = new RefKeywordType()
-            .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(Json.createObjectBuilder().add("$ref", Json.createValue("#")).build())
-            );
-
-        assertThat(ref.hasName("$ref"), is(true));
-        assertThat(ref.hasName("test"), is(false));
-    }
-
-    @Test
-    void should_use_local_referenced_schema_for_validation() {
-        final Keyword keyword = new RefKeywordType()
-            .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(
-                        Json
-                            .createObjectBuilder()
-                            .add(
-                                "$defs",
-                                Json
-                                    .createObjectBuilder()
-                                    .add("positiveInteger", Json.createObjectBuilder().add("type", "integer"))
-                            )
-                            .add("$ref", Json.createValue("#/$defs/positiveInteger"))
-                            .build()
-                    )
-            );
-
-        assertThat(keyword.asApplicator().applyTo(Json.createValue(1L)), is(true));
-        assertThat(keyword.asApplicator().applyTo(Json.createValue("invalid")), is(false));
-    }
-
-    @Test
-    void should_use_remote_referenced_schema_for_validation() {
-        final Keyword keyword = new RefKeywordType()
-            .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(
-                        Json
-                            .createObjectBuilder()
-                            .add(
-                                "$defs",
-                                Json
-                                    .createObjectBuilder()
-                                    .add("positiveInteger", Json.createObjectBuilder().add("type", "integer"))
-                            )
-                            .add("$ref", Json.createValue("#/$defs/positiveInteger"))
-                            .build()
-                    )
-            );
-
-        assertThat(keyword.asApplicator().applyTo(Json.createValue(1L)), is(true));
-    }
-
-    @Test
-    void should_be_printable() {
-        assertThat(
-            new RefKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("$ref", Json.createValue("#")).build())
-                )
-                .printOn(new HashMapMedia()),
-            (Matcher) hasEntry(is("$ref"), is("#"))
-        );
+        assertThat(refKeywordType.hasName("$ref"), is(true));
+        assertThat(refKeywordType.hasName("ref"), is(false));
+        assertThat(refKeywordType.hasName("test"), is(false));
     }
 }

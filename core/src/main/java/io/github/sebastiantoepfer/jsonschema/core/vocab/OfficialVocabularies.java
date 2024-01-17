@@ -32,6 +32,7 @@ import io.github.sebastiantoepfer.jsonschema.core.vocab.meta.MetaDataVocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.unevaluated.UnevaluatedVocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.validation.ValidationVocabulary;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies;
+import jakarta.json.spi.JsonProvider;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
@@ -39,14 +40,15 @@ import java.util.Optional;
 
 public final class OfficialVocabularies implements LazyVocabularies {
 
+    private static final JsonProvider JSONP = JsonProvider.provider();
     private static final Collection<Vocabulary> OFFICEAL_VOCABS;
 
     static {
         OFFICEAL_VOCABS =
             List.of(
-                new CoreVocabulary(),
+                new CoreVocabulary(JSONP),
                 new ApplicatorVocabulary(),
-                new ValidationVocabulary(),
+                new ValidationVocabulary(JSONP),
                 new MetaDataVocabulary(),
                 new FormatVocabulary(),
                 new UnevaluatedVocabulary(),

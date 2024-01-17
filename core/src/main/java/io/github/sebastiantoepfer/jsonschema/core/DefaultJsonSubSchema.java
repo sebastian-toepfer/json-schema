@@ -37,12 +37,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public final class DefaultJsonSubSchema implements JsonSubSchema {
+final class DefaultJsonSubSchema implements JsonSubSchema {
 
     private final JsonSchema owner;
     private final JsonSchema schema;
 
-    public DefaultJsonSubSchema(final JsonSchema owner, final JsonSchema schema) {
+    DefaultJsonSubSchema(final JsonSchema owner, final JsonSchema schema) {
         this.owner = Objects.requireNonNull(owner);
         this.schema = Objects.requireNonNull(schema);
     }

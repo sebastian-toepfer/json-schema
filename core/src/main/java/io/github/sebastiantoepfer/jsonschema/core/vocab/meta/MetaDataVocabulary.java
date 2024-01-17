@@ -29,6 +29,13 @@ import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
 import java.net.URI;
 import java.util.Optional;
 
+/**
+ * <b>Meta Data</b>
+ * Dialect: 2020-12
+ * uri: https://json-schema.org/draft/2020-12/vocab/meta-data
+ * source: https://www.learnjsonschema.com/2020-12/meta-data/
+ * spec: https://json-schema.org/draft/2020-12/json-schema-validation.html#section-9
+ */
 public final class MetaDataVocabulary implements Vocabulary {
 
     private final Vocabulary vocab;

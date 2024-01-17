@@ -63,6 +63,18 @@ final class TypeKeywordType implements KeywordType {
         return new TypeKeyword(allowedTypes);
     }
 
+    /**
+     * <b>type</b> : <i>String | Array<String></i>
+     * Validation succeeds if the type of the instance matches the type represented by the given type, or matches<br/>
+     * at least one of the given types.<br/>
+     * <br/>
+     * <ul>
+     * <li>assertion</li>
+     * </ul>
+     *
+     * source: https://www.learnjsonschema.com/2020-12/validation/type/
+     * spec: https://json-schema.org/draft/2020-12/json-schema-validation.html#section-6.1.1
+     */
     private final class TypeKeyword implements Assertion {
 
         private final Collection<String> allowedTypes;
