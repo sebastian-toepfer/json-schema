@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,56 +25,48 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonValue;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-final class ExclusiveMinimumKeywordType implements KeywordType {
+/**
+ * <b>multipleOf</b> : <i>Number</i>
+ * A numeric instance is valid only if division by this keyword’s value results in an integer.<br/>
+ * <br/>
+ * <ul>
+ * <li>assertion</li>
+ * </ul>
+ *
+ * source: https://www.learnjsonschema.com/2020-12/validation/multipleof/
+ * spec: https://json-schema.org/draft/2020-12/json-schema-validation.html#section-6.2.1
+ */
+final class MultipleOfKeyword implements Assertion {
 
-    @Override
-    public String name() {
-        return "exclusiveMinimum";
+    static final String NAME = "multipleOf";
+    private final BigDecimal multipleOf;
+
+    public MultipleOfKeyword(final BigDecimal multipleOf) {
+        this.multipleOf = Objects.requireNonNull(multipleOf);
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema) {
-        final JsonValue value = schema.asJsonObject().get(name());
-        if (InstanceType.NUMBER.isInstance(value)) {
-            return new ExclusiveMinimumKeyword((JsonNumber) value);
-        } else {
-            throw new IllegalArgumentException("must be a number!");
-        }
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue(NAME, multipleOf);
     }
 
-    private class ExclusiveMinimumKeyword implements Assertion {
+    @Override
+    public boolean hasName(final String name) {
+        return Objects.equals(NAME, name);
+    }
 
-        private final BigDecimal min;
-
-        public ExclusiveMinimumKeyword(final JsonNumber min) {
-            this.min = min.bigDecimalValue();
-        }
-
-        @Override
-        public <T extends Media<T>> T printOn(final T media) {
-            return media.withValue(name(), min);
-        }
-
-        @Override
-        public boolean hasName(final String name) {
-            return Objects.equals(name(), name);
-        }
-
-        @Override
-        public boolean isValidFor(final JsonValue instance) {
-            return (
-                !InstanceType.NUMBER.isInstance(instance) ||
-                min.compareTo(((JsonNumber) instance).bigDecimalValue()) < 0
-            );
-        }
+    @Override
+    @SuppressWarnings(value = "BigDecimalEquals")
+    public boolean isValidFor(final JsonValue instance) {
+        return (
+            !InstanceType.NUMBER.isInstance(instance) ||
+            BigDecimal.ZERO.equals(((JsonNumber) instance).bigDecimalValue().remainder(multipleOf).stripTrailingZeros())
+        );
     }
 }

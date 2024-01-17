@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,55 +25,48 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
+import java.math.BigInteger;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
-final class PatternKeywordType implements KeywordType {
+/**
+ * <b>maxLength</b> : <i>Integer</i>
+ * A string instance is valid against this keyword if its length is less than, or equal to, the value of this<br/>
+ * keyword.<br/>
+ * <br/>
+ * <ul>
+ * <li>assertion</li>
+ * </ul>
+ *
+ * source: https://www.learnjsonschema.com/2020-12/validation/maxlength/
+ * spec: https://json-schema.org/draft/2020-12/json-schema-validation.html#section-6.3.1
+ */
+final class MaxLengthKeyword implements Assertion {
 
-    @Override
-    public String name() {
-        return "pattern";
+    static final String NAME = "maxLength";
+    private final BigInteger value;
+
+    public MaxLengthKeyword(final BigInteger value) {
+        this.value = value;
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema) {
-        final JsonValue value = schema.asJsonObject().get(name());
-        if (InstanceType.STRING.isInstance(value)) {
-            return new PatternKeyword((JsonString) value);
-        } else {
-            throw new IllegalArgumentException();
-        }
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue(NAME, value);
     }
 
-    private class PatternKeyword implements Assertion {
+    @Override
+    public boolean hasName(final String name) {
+        return Objects.equals(NAME, name);
+    }
 
-        private final Pattern pattern;
-
-        public PatternKeyword(final JsonString value) {
-            this.pattern = Pattern.compile(value.getString());
-        }
-
-        @Override
-        public <T extends Media<T>> T printOn(final T media) {
-            return media.withValue(name(), pattern.pattern());
-        }
-
-        @Override
-        public boolean hasName(final String name) {
-            return Objects.equals(name(), name);
-        }
-
-        @Override
-        public boolean isValidFor(final JsonValue instance) {
-            return (
-                !InstanceType.STRING.isInstance(instance) || pattern.matcher(((JsonString) instance).getString()).find()
-            );
-        }
+    @Override
+    public boolean isValidFor(final JsonValue instance) {
+        return (
+            !InstanceType.STRING.isInstance(instance) ||
+            ((JsonString) instance).getChars().codePoints().count() <= value.longValue()
+        );
     }
 }

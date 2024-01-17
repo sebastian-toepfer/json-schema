@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,60 +21,57 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
+package io.github.sebastiantoepfer.jsonschema.core.keyword.type;
 
-import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
+import io.github.sebastiantoepfer.jsonschema.core.codition.JsonPropertyCondition;
+import io.github.sebastiantoepfer.jsonschema.core.codition.OfTypeCondition;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.JsonNumber;
-import jakarta.json.JsonValue;
+import jakarta.json.JsonObject;
+import jakarta.json.spi.JsonProvider;
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.function.Function;
 
-final class MinimumKeywordType implements KeywordType {
+public final class NumberKeywordType implements KeywordType {
+
+    private final JsonProvider jsonContext;
+    private final String name;
+    private final Function<BigDecimal, Keyword> keywordCreator;
+
+    public NumberKeywordType(
+        final JsonProvider jsonContext,
+        final String name,
+        final Function<BigDecimal, Keyword> keywordCreator
+    ) {
+        this.jsonContext = Objects.requireNonNull(jsonContext);
+        this.name = Objects.requireNonNull(name);
+        this.keywordCreator = Objects.requireNonNull(keywordCreator);
+    }
 
     @Override
     public String name() {
-        return "minimum";
+        return name;
     }
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        final JsonValue value = schema.asJsonObject().get(name());
-        if (InstanceType.NUMBER.isInstance(value)) {
-            return new MinimumKeyword((JsonNumber) value);
-        } else {
-            throw new IllegalArgumentException("must be a number");
-        }
+        return createKeyword(schema.asJsonObject());
     }
 
-    private class MinimumKeyword implements Assertion {
-
-        private final BigDecimal min;
-
-        public MinimumKeyword(final JsonNumber min) {
-            this.min = min.bigDecimalValue();
-        }
-
-        @Override
-        public <T extends Media<T>> T printOn(final T media) {
-            return media.withValue(name(), min);
-        }
-
-        @Override
-        public boolean hasName(final String name) {
-            return Objects.equals(name(), name);
-        }
-
-        @Override
-        public boolean isValidFor(final JsonValue instance) {
-            return (
-                !InstanceType.NUMBER.isInstance(instance) ||
-                min.compareTo(((JsonNumber) instance).bigDecimalValue()) <= 0
-            );
+    private Keyword createKeyword(final JsonObject schema) {
+        if (
+            new JsonPropertyCondition(
+                jsonContext.createPointer(String.format("/%s", name)),
+                new OfTypeCondition(InstanceType.NUMBER)
+            )
+                .isFulfilledBy(schema)
+        ) {
+            return keywordCreator.apply(schema.getJsonNumber(name).bigDecimalValue());
+        } else {
+            throw new IllegalArgumentException(String.format("value for keyword '%s' must be a number!", name));
         }
     }
 }

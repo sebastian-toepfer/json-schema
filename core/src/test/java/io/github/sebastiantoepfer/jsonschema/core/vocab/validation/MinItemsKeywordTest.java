@@ -29,22 +29,23 @@ import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.IntegerKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import jakarta.json.spi.JsonProvider;
 import java.math.BigInteger;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
-class MinItemsKeywordTypeTest {
+class MinItemsKeywordTest {
 
     @Test
     void should_be_know_his_name() {
-        final Keyword minItems = new MinItemsKeywordType()
-            .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
-            );
+        final Keyword minItems = createKeywordFrom(
+            Json.createObjectBuilder().add("minItems", Json.createValue(1)).build()
+        );
 
         assertThat(minItems.hasName("minItems"), is(true));
         assertThat(minItems.hasName("test"), is(false));
@@ -53,11 +54,7 @@ class MinItemsKeywordTypeTest {
     @Test
     void should_be_valid_for_non_arrays() {
         assertThat(
-            new MinItemsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
@@ -67,11 +64,7 @@ class MinItemsKeywordTypeTest {
     @Test
     void should_be_valid_for_arrays_with_equals_size() {
         assertThat(
-            new MinItemsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add(1).build()),
             is(true)
@@ -81,11 +74,7 @@ class MinItemsKeywordTypeTest {
     @Test
     void should_be_valid_for_arrays_with_greater_size() {
         assertThat(
-            new MinItemsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add(1).add(2).build()),
             is(true)
@@ -95,11 +84,7 @@ class MinItemsKeywordTypeTest {
     @Test
     void should_be_invalid_for_arrays_with_smaller_size() {
         assertThat(
-            new MinItemsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().build()),
             is(false)
@@ -109,13 +94,14 @@ class MinItemsKeywordTypeTest {
     @Test
     void should_be_printable() {
         assertThat(
-            new MinItemsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
                 .printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("minItems"), is(BigInteger.valueOf(1)))
         );
+    }
+
+    private static Keyword createKeywordFrom(final JsonObject json) {
+        return new IntegerKeywordType(JsonProvider.provider(), "minItems", MinItemsKeyword::new)
+            .createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

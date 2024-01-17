@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,47 +25,46 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.JsonNumber;
 import jakarta.json.JsonValue;
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.util.Objects;
 
-final class MinItemsKeywordType implements KeywordType {
+/**
+ * <b>exclusiveMaximum</b> : <i>Number</i>
+ * Validation succeeds if the numeric instance is less than the given number.<br/>
+ * <br/>
+ * <ul>
+ * <li>assertion</li>
+ * </ul>
+ *
+ * source: https://www.learnjsonschema.com/2020-12/validation/exclusivemaximum/
+ * spec: https://json-schema.org/draft/2020-12/json-schema-validation.html#section-6.2.3
+ */
+final class ExclusiveMaximumKeyword implements Assertion {
 
-    @Override
-    public String name() {
-        return "minItems";
+    static final String NAME = "exclusiveMaximum";
+    private final BigDecimal max;
+
+    public ExclusiveMaximumKeyword(final BigDecimal max) {
+        this.max = max;
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema) {
-        return new MinItemsKeyword(schema.asJsonObject().getJsonNumber(name()).bigIntegerValueExact());
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue(NAME, max);
     }
 
-    private class MinItemsKeyword implements Assertion {
+    @Override
+    public boolean hasName(final String name) {
+        return Objects.equals(NAME, name);
+    }
 
-        private final BigInteger minItems;
-
-        public MinItemsKeyword(final BigInteger minItems) {
-            this.minItems = minItems;
-        }
-
-        @Override
-        public <T extends Media<T>> T printOn(final T media) {
-            return media.withValue(name(), minItems);
-        }
-
-        @Override
-        public boolean isValidFor(final JsonValue instance) {
-            return !InstanceType.ARRAY.isInstance(instance) || instance.asJsonArray().size() >= minItems.intValue();
-        }
-
-        @Override
-        public boolean hasName(final String name) {
-            return Objects.equals(name(), name);
-        }
+    @Override
+    public boolean isValidFor(final JsonValue instance) {
+        return (
+            !InstanceType.NUMBER.isInstance(instance) || max.compareTo(((JsonNumber) instance).bigDecimalValue()) > 0
+        );
     }
 }

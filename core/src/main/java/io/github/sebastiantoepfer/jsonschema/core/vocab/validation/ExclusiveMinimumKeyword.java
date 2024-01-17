@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,56 +25,46 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonValue;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-final class ExclusiveMaximumKeywordType implements KeywordType {
+/**
+ * <b>exclusiveMinimum</b> : <i>Number</i>
+ * Validation succeeds if the numeric instance is greater than the given number.<br/>
+ * <br/>
+ * <ul>
+ * <li>assetion</li>
+ * </ul>
+ *
+ * source: https://www.learnjsonschema.com/2020-12/validation/exclusiveminimum/
+ * spec: https://json-schema.org/draft/2020-12/json-schema-validation.html#section-6.2.5
+ */
+final class ExclusiveMinimumKeyword implements Assertion {
 
-    @Override
-    public String name() {
-        return "exclusiveMaximum";
+    static final String NAME = "exclusiveMinimum";
+    private final BigDecimal min;
+
+    public ExclusiveMinimumKeyword(final BigDecimal min) {
+        this.min = Objects.requireNonNull(min);
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema) {
-        final JsonValue value = schema.asJsonObject().get(name());
-        if (InstanceType.NUMBER.isInstance(value)) {
-            return new ExclusiveMaximumKeyword((JsonNumber) value);
-        } else {
-            throw new IllegalArgumentException("must be a number!");
-        }
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue(NAME, min);
     }
 
-    private class ExclusiveMaximumKeyword implements Assertion {
+    @Override
+    public boolean hasName(final String name) {
+        return Objects.equals(NAME, name);
+    }
 
-        private final BigDecimal max;
-
-        private ExclusiveMaximumKeyword(final JsonNumber max) {
-            this.max = max.bigDecimalValue();
-        }
-
-        @Override
-        public <T extends Media<T>> T printOn(final T media) {
-            return media.withValue(name(), max);
-        }
-
-        @Override
-        public boolean hasName(final String name) {
-            return Objects.equals(name(), name);
-        }
-
-        @Override
-        public boolean isValidFor(final JsonValue instance) {
-            return (
-                !InstanceType.NUMBER.isInstance(instance) ||
-                max.compareTo(((JsonNumber) instance).bigDecimalValue()) > 0
-            );
-        }
+    @Override
+    public boolean isValidFor(final JsonValue instance) {
+        return (
+            !InstanceType.NUMBER.isInstance(instance) || min.compareTo(((JsonNumber) instance).bigDecimalValue()) < 0
+        );
     }
 }

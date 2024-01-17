@@ -56,7 +56,7 @@ final class Keywords {
                 .stream()
                 .collect(toMap(Vocabulary::id, Function.identity()));
 
-        DEFAULT_VOCABS = List.of(new ValidationVocabulary(), new ApplicatorVocabulary());
+        DEFAULT_VOCABS = List.of(new ValidationVocabulary(JsonProvider.provider()), new ApplicatorVocabulary());
     }
 
     private final Collection<Vocabulary> vocabularies;

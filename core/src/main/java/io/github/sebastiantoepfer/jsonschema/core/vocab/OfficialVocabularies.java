@@ -48,7 +48,7 @@ public final class OfficialVocabularies implements LazyVocabularies {
             List.of(
                 new CoreVocabulary(JSONP),
                 new ApplicatorVocabulary(),
-                new ValidationVocabulary(),
+                new ValidationVocabulary(JSONP),
                 new MetaDataVocabulary(),
                 new FormatVocabulary(),
                 new UnevaluatedVocabulary(),

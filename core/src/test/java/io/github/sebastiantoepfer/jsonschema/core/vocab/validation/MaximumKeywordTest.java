@@ -29,44 +29,32 @@ import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NumberKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import jakarta.json.spi.JsonProvider;
 import java.math.BigDecimal;
 import org.hamcrest.Matcher;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class MinimumKeywordTypeTest {
+class MaximumKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword minimum = new MinimumKeywordType()
-            .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(Json.createObjectBuilder().add("minimum", Json.createValue(1)).build())
-            );
+        final Keyword maximum = createKeywordFrom(
+            Json.createObjectBuilder().add("maximum", Json.createValue(1)).build()
+        );
 
-        assertThat(minimum.hasName("minimum"), is(true));
-        assertThat(minimum.hasName("test"), is(false));
-    }
-
-    @Test
-    void should_not_becreatable_with_non_number() {
-        final MinimumKeywordType keywordType = new MinimumKeywordType();
-        final var schema = new DefaultJsonSchemaFactory()
-            .create(Json.createObjectBuilder().add("minimum", JsonValue.FALSE).build());
-        Assertions.assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
+        assertThat(maximum.hasName("maximum"), is(true));
+        assertThat(maximum.hasName("test"), is(false));
     }
 
     @Test
     void should_be_valid_for_non_number_values() {
         assertThat(
-            new MinimumKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("minimum", Json.createValue(1)).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("maximum", Json.createValue(1)).build())
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
@@ -74,15 +62,11 @@ class MinimumKeywordTypeTest {
     }
 
     @Test
-    void should_be_invalid_for_smaller_numbers() {
+    void should_be_invalid_for_greater_numbers() {
         assertThat(
-            new MinimumKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("minimum", Json.createValue(0)).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("maximum", Json.createValue(10)).build())
                 .asAssertion()
-                .isValidFor(Json.createValue(-1)),
+                .isValidFor(Json.createValue(11)),
             is(false)
         );
     }
@@ -90,27 +74,19 @@ class MinimumKeywordTypeTest {
     @Test
     void should_be_valid_for_equals_numbers() {
         assertThat(
-            new MinimumKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("minimum", Json.createValue(0)).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("maximum", Json.createValue(10)).build())
                 .asAssertion()
-                .isValidFor(Json.createValue(0)),
+                .isValidFor(Json.createValue(10)),
             is(true)
         );
     }
 
     @Test
-    void shhould_be_valid_for_greater_numbers() {
+    void shhould_be_valid_for_smaller_numbers() {
         assertThat(
-            new MinimumKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("minimum", Json.createValue(0)).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("maximum", Json.createValue(10)).build())
                 .asAssertion()
-                .isValidFor(Json.createValue(1)),
+                .isValidFor(Json.createValue(9)),
             is(true)
         );
     }
@@ -118,13 +94,14 @@ class MinimumKeywordTypeTest {
     @Test
     void should_be_printable() {
         assertThat(
-            new MinimumKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("minimum", Json.createValue(0)).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("maximum", Json.createValue(10)).build())
                 .printOn(new HashMapMedia()),
-            (Matcher) hasEntry(is("minimum"), is(BigDecimal.valueOf(0)))
+            (Matcher) hasEntry(is("maximum"), is(BigDecimal.valueOf(10)))
         );
+    }
+
+    private static Keyword createKeywordFrom(final JsonObject json) {
+        return new NumberKeywordType(JsonProvider.provider(), "maximum", MaximumKeyword::new)
+            .createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

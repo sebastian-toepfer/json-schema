@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,61 +21,56 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
+package io.github.sebastiantoepfer.jsonschema.core.keyword.type;
 
-import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
+import io.github.sebastiantoepfer.jsonschema.core.codition.JsonPropertyCondition;
+import io.github.sebastiantoepfer.jsonschema.core.codition.OfTypeCondition;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.JsonNumber;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
-import java.math.BigInteger;
+import jakarta.json.JsonObject;
+import jakarta.json.spi.JsonProvider;
 import java.util.Objects;
+import java.util.function.Function;
 
-class MaxLengthKeywordType implements KeywordType {
+public final class BooleanKeywordType implements KeywordType {
+
+    private final JsonProvider jsonContext;
+    private final String name;
+    private final Function<Boolean, Keyword> keywordCreator;
+
+    public BooleanKeywordType(
+        final JsonProvider jsonContext,
+        final String name,
+        final Function<Boolean, Keyword> keywordCreator
+    ) {
+        this.jsonContext = Objects.requireNonNull(jsonContext);
+        this.name = Objects.requireNonNull(name);
+        this.keywordCreator = Objects.requireNonNull(keywordCreator);
+    }
 
     @Override
     public String name() {
-        return "maxLength";
+        return name;
     }
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        final JsonValue value = schema.asJsonObject().get(name());
-        if (InstanceType.INTEGER.isInstance(value)) {
-            return new MaxLengthKeyword(((JsonNumber) value).bigIntegerValueExact());
-        } else {
-            throw new IllegalArgumentException("value must be a positiv integer!");
-        }
+        return createKeyword(schema.asJsonObject());
     }
 
-    private class MaxLengthKeyword implements Assertion {
-
-        private final BigInteger value;
-
-        public MaxLengthKeyword(final BigInteger value) {
-            this.value = value;
-        }
-
-        @Override
-        public <T extends Media<T>> T printOn(final T media) {
-            return media.withValue(name(), value);
-        }
-
-        @Override
-        public boolean hasName(final String name) {
-            return Objects.equals(name(), name);
-        }
-
-        @Override
-        public boolean isValidFor(final JsonValue instance) {
-            return (
-                !InstanceType.STRING.isInstance(instance) ||
-                ((JsonString) instance).getChars().codePoints().count() <= value.longValue()
-            );
+    private Keyword createKeyword(final JsonObject schema) {
+        if (
+            new JsonPropertyCondition(
+                jsonContext.createPointer(String.format("/%s", name)),
+                new OfTypeCondition(InstanceType.BOOLEAN)
+            )
+                .isFulfilledBy(schema)
+        ) {
+            return keywordCreator.apply(schema.getBoolean(name));
+        } else {
+            throw new IllegalArgumentException(String.format("value for keyword '%s' must be a boolean!", name));
         }
     }
 }

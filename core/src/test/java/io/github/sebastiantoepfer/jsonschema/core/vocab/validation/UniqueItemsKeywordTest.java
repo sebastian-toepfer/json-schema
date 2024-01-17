@@ -26,50 +26,36 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.BooleanKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import jakarta.json.spi.JsonProvider;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
-class UniqueItemsKeywordTypeTest {
+class UniqueItemsKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword keyword = new UniqueItemsKeywordType()
-            .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(Json.createObjectBuilder().add("uniqueItems", JsonValue.FALSE).build())
-            );
+        final Keyword keyword = createKeywordFrom(
+            Json.createObjectBuilder().add("uniqueItems", JsonValue.FALSE).build()
+        );
 
         assertThat(keyword.hasName("uniqueItems"), is(true));
         assertThat(keyword.hasName("test"), is(false));
     }
 
     @Test
-    void should_not_be_createbale_from_non_boolean() {
-        final JsonSchema schema = new DefaultJsonSchemaFactory()
-            .create(Json.createObjectBuilder().add("uniqueItems", JsonValue.EMPTY_JSON_OBJECT).build());
-        final KeywordType keywordType = new UniqueItemsKeywordType();
-        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
-    }
-
-    @Test
     void should_be_valid_for_uniqueItems() {
         assertThat(
-            new UniqueItemsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build())
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("1").add("2").build()),
             is(true)
@@ -79,11 +65,7 @@ class UniqueItemsKeywordTypeTest {
     @Test
     void should_be_valid_for_non_uniqueItems_if_false() {
         assertThat(
-            new UniqueItemsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("uniqueItems", JsonValue.FALSE).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("uniqueItems", JsonValue.FALSE).build())
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("1").add("1").build()),
             is(true)
@@ -93,11 +75,7 @@ class UniqueItemsKeywordTypeTest {
     @Test
     void should_be_invalid_for_non_uniqueItems() {
         assertThat(
-            new UniqueItemsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build())
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("1").add("1").build()),
             is(false)
@@ -107,11 +85,7 @@ class UniqueItemsKeywordTypeTest {
     @Test
     void should_be_valid_for_non_arrays() {
         assertThat(
-            new UniqueItemsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("uniqueItems", JsonValue.FALSE).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("uniqueItems", JsonValue.FALSE).build())
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
@@ -121,11 +95,7 @@ class UniqueItemsKeywordTypeTest {
     @Test
     void should_be_invalid_if_numbers_mathematically_unequal() {
         assertThat(
-            new UniqueItemsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build())
                 .asAssertion()
                 .isValidFor(Json.createReader(new StringReader("[1.0,1.00,1]")).readArray()),
             is(false)
@@ -136,13 +106,15 @@ class UniqueItemsKeywordTypeTest {
     void pitests_say_i_must_write_this_tests() {
         //hashset uses hashCode to determine if equals needs to be used, so we don't really need equals.
         //but to have a valid java class we should override both
-        final UniqueItemsKeywordType.JsonValueNumberEqualsFix obj = new UniqueItemsKeywordType.JsonValueNumberEqualsFix(
+        final UniqueItemsKeyword.JsonValueNumberEqualsFix obj = new UniqueItemsKeyword.JsonValueNumberEqualsFix(
             JsonValue.EMPTY_JSON_OBJECT
         );
-        final UniqueItemsKeywordType.JsonValueNumberEqualsFix number1 =
-            new UniqueItemsKeywordType.JsonValueNumberEqualsFix(Json.createValue(new BigDecimal("1.0")));
-        final UniqueItemsKeywordType.JsonValueNumberEqualsFix number2 =
-            new UniqueItemsKeywordType.JsonValueNumberEqualsFix(Json.createValue(new BigDecimal("1.00")));
+        final UniqueItemsKeyword.JsonValueNumberEqualsFix number1 = new UniqueItemsKeyword.JsonValueNumberEqualsFix(
+            Json.createValue(new BigDecimal("1.0"))
+        );
+        final UniqueItemsKeyword.JsonValueNumberEqualsFix number2 = new UniqueItemsKeyword.JsonValueNumberEqualsFix(
+            Json.createValue(new BigDecimal("1.00"))
+        );
 
         assertThat(obj.equals(obj), is(true));
         assertThat(number1.equals(number1), is(true));
@@ -154,13 +126,14 @@ class UniqueItemsKeywordTypeTest {
     @Test
     void should_be_printable() {
         assertThat(
-            new UniqueItemsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build())
                 .printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("uniqueItems"), is(true))
         );
+    }
+
+    private static Keyword createKeywordFrom(final JsonObject json) {
+        return new BooleanKeywordType(JsonProvider.provider(), "uniqueItems", UniqueItemsKeyword::new)
+            .createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

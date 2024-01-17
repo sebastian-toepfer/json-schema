@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,10 +25,7 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonValue;
@@ -38,62 +35,57 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-final class UniqueItemsKeywordType implements KeywordType {
+/**
+ * <b>uniqueItems</b> : <i>Boolean</i><br/>
+ * If this keyword is set to the boolean value true, the instance validates successfully if all of its elements are<br/>
+ * unique.<br/>
+ * <br/>
+ * <ul>
+ * <li>assertion</li>
+ * </ul>
+ *
+ * source: https://www.learnjsonschema.com/2020-12/validation/uniqueitems/
+ * spec: https://json-schema.org/draft/2020-12/json-schema-validation.html#section-6.4.3
+ */
+final class UniqueItemsKeyword implements Assertion {
 
-    @Override
-    public String name() {
-        return "uniqueItems";
+    static final String NAME = "uniqueItems";
+    private final boolean unique;
+
+    public UniqueItemsKeyword(final boolean unique) {
+        this.unique = unique;
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema) {
-        final JsonValue value = schema.asJsonObject().get(name());
-        if (InstanceType.BOOLEAN.isInstance(value)) {
-            return new UniqueItemsKeyword(value.getValueType() == JsonValue.ValueType.TRUE);
-        } else {
-            throw new IllegalArgumentException("Value must be a boolean!");
-        }
+    public <T extends Media<T>> T printOn(final T media) {
+        return media.withValue(NAME, unique);
     }
 
-    private class UniqueItemsKeyword implements Assertion {
+    @Override
+    public boolean isValidFor(final JsonValue instance) {
+        return (
+            !InstanceType.ARRAY.isInstance(instance) ||
+            !unique ||
+            new JsonArrayChecks(instance.asJsonArray()).areAllElementsUnique()
+        );
+    }
 
-        private final boolean unique;
+    @Override
+    public boolean hasName(final String name) {
+        return Objects.equals(NAME, name);
+    }
 
-        private UniqueItemsKeyword(final boolean unique) {
-            this.unique = unique;
+    private static class JsonArrayChecks {
+
+        private final JsonArray values;
+
+        public JsonArrayChecks(final JsonArray values) {
+            this.values = Objects.requireNonNull(values);
         }
 
-        @Override
-        public <T extends Media<T>> T printOn(final T media) {
-            return media.withValue(name(), unique);
-        }
-
-        @Override
-        public boolean isValidFor(final JsonValue instance) {
-            return (
-                !InstanceType.ARRAY.isInstance(instance) ||
-                !unique ||
-                new JsonArrayChecks(instance.asJsonArray()).areAllElementsUnique()
-            );
-        }
-
-        @Override
-        public boolean hasName(final String name) {
-            return Objects.equals(name(), name);
-        }
-
-        private static class JsonArrayChecks {
-
-            private final JsonArray values;
-
-            public JsonArrayChecks(final JsonArray values) {
-                this.values = Objects.requireNonNull(values);
-            }
-
-            public boolean areAllElementsUnique() {
-                final Set<JsonValueNumberEqualsFix> uniqueValues = new HashSet<>();
-                return values.stream().map(JsonValueNumberEqualsFix::new).allMatch(uniqueValues::add);
-            }
+        public boolean areAllElementsUnique() {
+            final Set<JsonValueNumberEqualsFix> uniqueValues = new HashSet<>();
+            return values.stream().map(JsonValueNumberEqualsFix::new).allMatch(uniqueValues::add);
         }
     }
 

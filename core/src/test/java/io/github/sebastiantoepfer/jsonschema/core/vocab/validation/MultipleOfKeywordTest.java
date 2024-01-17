@@ -26,48 +26,35 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NumberKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import jakarta.json.spi.JsonProvider;
 import java.math.BigDecimal;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
-class MultipleOfKeywordTypeTest {
+class MultipleOfKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword multipleOf = new MultipleOfKeywordType()
-            .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(Json.createObjectBuilder().add("multipleOf", Json.createValue(10)).build())
-            );
+        final Keyword multipleOf = createKeywordFrom(
+            Json.createObjectBuilder().add("multipleOf", Json.createValue(10)).build()
+        );
 
         assertThat(multipleOf.hasName("multipleOf"), is(true));
         assertThat(multipleOf.hasName("test"), is(false));
     }
 
     @Test
-    void should_not_be_creatable_with_non_integer_value() {
-        final MultipleOfKeywordType keywordType = new MultipleOfKeywordType();
-        final JsonSchema schema = new DefaultJsonSchemaFactory()
-            .create(Json.createObjectBuilder().add("multipleOf", JsonValue.FALSE).build());
-        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
-    }
-
-    @Test
     void should_be_valid_for_non_number_values() {
         assertThat(
-            new MultipleOfKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("multipleOf", Json.createValue(10)).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("multipleOf", Json.createValue(10)).build())
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
@@ -77,11 +64,7 @@ class MultipleOfKeywordTypeTest {
     @Test
     void should_be_valid_for_a_multipleOf() {
         assertThat(
-            new MultipleOfKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("multipleOf", Json.createValue(1.5)).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("multipleOf", Json.createValue(1.5)).build())
                 .asAssertion()
                 .isValidFor(Json.createValue(4.5)),
             is(true)
@@ -91,11 +74,7 @@ class MultipleOfKeywordTypeTest {
     @Test
     void should_be_invalid_for_non_multipleOf() {
         assertThat(
-            new MultipleOfKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("multipleOf", Json.createValue(2)).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("multipleOf", Json.createValue(2)).build())
                 .asAssertion()
                 .isValidFor(Json.createValue(7)),
             is(false)
@@ -105,16 +84,9 @@ class MultipleOfKeywordTypeTest {
     @Test
     void should_be_valid_for_any_int_if_multipleOf_is_1en8() {
         assertThat(
-            new MultipleOfKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(
-                            Json
-                                .createObjectBuilder()
-                                .add("multipleOf", Json.createValue(new BigDecimal("1e-8")))
-                                .build()
-                        )
-                )
+            createKeywordFrom(
+                Json.createObjectBuilder().add("multipleOf", Json.createValue(new BigDecimal("1e-8"))).build()
+            )
                 .asAssertion()
                 .isValidFor(Json.createValue(12391239123L)),
             is(true)
@@ -124,13 +96,14 @@ class MultipleOfKeywordTypeTest {
     @Test
     void should_be_printable() {
         assertThat(
-            new MultipleOfKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("multipleOf", Json.createValue(2)).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("multipleOf", Json.createValue(2)).build())
                 .printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("multipleOf"), is(new BigDecimal(2)))
         );
+    }
+
+    private static Keyword createKeywordFrom(final JsonObject json) {
+        return new NumberKeywordType(JsonProvider.provider(), "multipleOf", MultipleOfKeyword::new)
+            .createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

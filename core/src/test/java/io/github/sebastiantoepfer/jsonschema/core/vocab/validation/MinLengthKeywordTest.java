@@ -29,93 +29,79 @@ import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.IntegerKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import jakarta.json.spi.JsonProvider;
 import java.math.BigInteger;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
-class MaxItemsKeywordTypeTest {
+class MinLengthKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword keyword = new MaxItemsKeywordType()
-            .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(Json.createObjectBuilder().add("maxItems", Json.createValue(1)).build())
-            );
+        final Keyword keyword = createKeywordFrom(
+            Json.createObjectBuilder().add("minLength", Json.createValue(1)).build()
+        );
 
-        assertThat(keyword.hasName("maxItems"), is(true));
         assertThat(keyword.hasName("test"), is(false));
+        assertThat(keyword.hasName("minLength"), is(true));
     }
 
     @Test
-    void should_be_valid_for_non_arrays() {
+    void should_be_invalid_with_shorter_string() {
         assertThat(
-            new MaxItemsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("maxItems", Json.createValue(2)).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build())
                 .asAssertion()
-                .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
-            is(true)
-        );
-    }
-
-    @Test
-    void should_be_valid_for_array_with_same_size() {
-        assertThat(
-            new MaxItemsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("maxItems", Json.createValue(2)).build())
-                )
-                .asAssertion()
-                .isValidFor(Json.createArrayBuilder().add(1).add(2).build()),
-            is(true)
-        );
-    }
-
-    @Test
-    void should_be_valid_for_array_with_smaller_size() {
-        assertThat(
-            new MaxItemsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("maxItems", Json.createValue(2)).build())
-                )
-                .asAssertion()
-                .isValidFor(Json.createArrayBuilder().add(1).build()),
-            is(true)
-        );
-    }
-
-    @Test
-    void should_be_invalid_for_array_with_greather_size() {
-        assertThat(
-            new MaxItemsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("maxItems", Json.createValue(2)).build())
-                )
-                .asAssertion()
-                .isValidFor(Json.createArrayBuilder().add(1).add(2).add(3).build()),
+                .isValidFor(Json.createValue("A")),
             is(false)
+        );
+    }
+
+    @Test
+    void should_be_valid_with_string_with_equal_length() {
+        assertThat(
+            createKeywordFrom(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build())
+                .asAssertion()
+                .isValidFor(Json.createValue("AB")),
+            is(true)
+        );
+    }
+
+    @Test
+    void should_be_valid_with_string_that_is_longer() {
+        assertThat(
+            createKeywordFrom(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build())
+                .asAssertion()
+                .isValidFor(Json.createValue("ABC")),
+            is(true)
+        );
+    }
+
+    @Test
+    void should_be_valid_for_non_string_values() {
+        assertThat(
+            createKeywordFrom(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build())
+                .asAssertion()
+                .isValidFor(JsonValue.EMPTY_JSON_ARRAY),
+            is(true)
         );
     }
 
     @Test
     void should_be_printable() {
         assertThat(
-            new MaxItemsKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("maxItems", Json.createValue(2)).build())
-                )
+            createKeywordFrom(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build())
                 .printOn(new HashMapMedia()),
-            (Matcher) hasEntry(is("maxItems"), is(BigInteger.valueOf(2)))
+            (Matcher) hasEntry(is("minLength"), is(BigInteger.valueOf(2L)))
         );
+    }
+
+    private static Keyword createKeywordFrom(final JsonObject json) {
+        return new IntegerKeywordType(JsonProvider.provider(), "minLength", MinLengthKeyword::new)
+            .createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }
