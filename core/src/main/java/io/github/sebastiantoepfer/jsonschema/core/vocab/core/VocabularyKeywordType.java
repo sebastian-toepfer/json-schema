@@ -66,7 +66,7 @@ public final class VocabularyKeywordType implements KeywordType {
     }
 
     /**
-     * <b>$vocabulary</b> : <i>Object<URI, Boolean></i><br/>
+     * <b>$vocabulary</b> : <i>Object&lt;URI, Boolean&gt;</i><br/>
      * This keyword is used in meta-schemas to identify the required and optional vocabularies available for use in<br/>
      * schemas described by that meta-schema.<br/>
      * <br/>
