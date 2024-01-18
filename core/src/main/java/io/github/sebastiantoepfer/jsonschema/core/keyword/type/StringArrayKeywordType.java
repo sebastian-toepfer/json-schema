@@ -31,6 +31,7 @@ import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.codition.AllOfCondition;
 import io.github.sebastiantoepfer.jsonschema.core.codition.CollectionElementsCondtion;
 import io.github.sebastiantoepfer.jsonschema.core.codition.JsonPropertyCondition;
+import io.github.sebastiantoepfer.jsonschema.core.codition.MappingConditionAdapter;
 import io.github.sebastiantoepfer.jsonschema.core.codition.OfTypeCondition;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
@@ -74,9 +75,10 @@ public final class StringArrayKeywordType implements KeywordType {
                 jsonContext.createPointer(String.format("/%s", name)),
                 new AllOfCondition<>(
                     new OfTypeCondition(InstanceType.ARRAY),
-                    json ->
-                        new CollectionElementsCondtion<JsonValue>(new OfTypeCondition(InstanceType.STRING))
-                            .isFulfilledBy(json.asJsonArray())
+                    new MappingConditionAdapter<>(
+                        new CollectionElementsCondtion<>(new OfTypeCondition(InstanceType.STRING)),
+                        JsonValue::asJsonArray
+                    )
                 )
             )
                 .isFulfilledBy(schema)
