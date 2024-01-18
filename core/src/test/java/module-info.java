@@ -29,6 +29,14 @@ open module io.github.sebastiantoepfer.jsonschema.core {
     requires io.github.sebastiantoepfer.ddd.media.core;
     requires jakarta.json;
 
+    uses io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies;
+
+    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
+        with io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+
+    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
+        with io.github.sebastiantoepfer.jsonschema.core.vocab.OfficialVocabularies;
+
     requires com.google.errorprone.annotations;
     requires org.junit.jupiter.api;
     requires org.junit.jupiter.params;

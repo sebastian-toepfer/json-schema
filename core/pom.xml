@@ -96,6 +96,47 @@
     </dependencies>
 
     <build>
+        <testResources>
+            <testResource>
+                <directory>${project.build.directory}/jsonschematests</directory>
+                <includes>
+                    <!-- no longer part ...
+                        <include>**/tests/draft2019-09/additionalItems.json</include>
+                    -->
+                    <include>**/tests/draft2020-12/additionalProperties.json</include>
+                    <include>**/tests/draft2020-12/boolean_schema.json</include>
+                    <include>**/tests/draft2020-12/enum.json</include>
+                    <include>**/tests/draft2020-12/exclusiveMaximum.json</include>
+                    <include>**/tests/draft2020-12/exclusiveMinimum.json</include>
+                    <include>**/tests/draft2020-12/format.json</include>
+                    <!-- how to validate?
+                    <include>**/tests/draft2020-12/id.json</include>
+                    -->
+                    <!-- more than items keyword needed :(
+                    <include>**/tests/draft2020-12/items.json</include>
+                    -->
+                    <include>**/tests/draft2020-12/maxItems.json</include>
+                    <include>**/tests/draft2020-12/maxLength.json</include>
+                    <include>**/tests/draft2020-12/maximum.json</include>
+                    <include>**/tests/draft2020-12/minItems.json</include>
+                    <include>**/tests/draft2020-12/minLength.json</include>
+                    <include>**/tests/draft2020-12/minimum.json</include>
+                    <include>**/tests/draft2020-12/multipleOf.json</include>
+                    <include>**/tests/draft2020-12/pattern.json</include>
+                    <include>**/tests/draft2020-12/patternProperties.json</include>
+                    <include>**/tests/draft2020-12/prefixItems.json</include>
+                    <include>**/tests/draft2020-12/properties.json</include>
+                    <!--
+                    needs allOf, $anchor and dynamicAnchor and some other stuff :(
+                    <include>**/tests/draft2020-12/ref.json</include>
+                    -->
+                    <include>**/tests/draft2020-12/required.json</include>
+                    <include>**/tests/draft2020-12/type.json</include>
+                    <include>**/tests/draft2020-12/uniqueItems.json</include>
+                </includes>
+            </testResource>
+        </testResources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -113,61 +154,6 @@
                             <scmVersion>23.1.0</scmVersion>
                             <scmVersionType>tag</scmVersionType>
                             <checkoutDirectory>${project.build.directory}/jsonschematests</checkoutDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-jsonschema-tests</id>
-                        <goals>
-                            <goal>add-test-resource</goal>
-                        </goals>
-                        <configuration>
-                            <resources>
-                                <resource>
-                                    <directory>${project.build.directory}/jsonschematests</directory>
-                                    <includes>
-                                        <!-- no longer part ...
-                                        <inculde>**/tests/draft2019-09/additionalItems.json</inculde>
-                                        -->
-                                        <inculde>**/tests/draft2020-12/additionalProperties.json</inculde>
-                                        <inculde>**/tests/draft2020-12/boolean_schema.json</inculde>
-                                        <inculde>**/tests/draft2020-12/enum.json</inculde>
-                                        <inculde>**/tests/draft2020-12/exclusiveMaximum.json</inculde>
-                                        <inculde>**/tests/draft2020-12/exclusiveMinimum.json</inculde>
-                                        <inculde>**/tests/draft2020-12/format.json</inculde>
-                                        <!-- how to validate?
-                                        <inculde>**/tests/draft2020-12/id.json</inculde>
-                                        -->
-                                        <!-- more than items keyword needed :(
-                                        <inculde>**/tests/draft2020-12/items.json</inculde>
-                                        -->
-                                        <inculde>**/tests/draft2020-12/maxItems.json</inculde>
-                                        <inculde>**/tests/draft2020-12/maxLength.json</inculde>
-                                        <inculde>**/tests/draft2020-12/maximum.json</inculde>
-                                        <inculde>**/tests/draft2020-12/minItems.json</inculde>
-                                        <inculde>**/tests/draft2020-12/minLength.json</inculde>
-                                        <inculde>**/tests/draft2020-12/minimum.json</inculde>
-                                        <inculde>**/tests/draft2020-12/multipleOf.json</inculde>
-                                        <inculde>**/tests/draft2020-12/pattern.json</inculde>
-                                        <inculde>**/tests/draft2020-12/patternProperties.json</inculde>
-                                        <inculde>**/tests/draft2020-12/prefixItems.json</inculde>
-                                        <inculde>**/tests/draft2020-12/properties.json</inculde>
-                                        <!--
-                                        needs allOf, $anchor and dynamicAnchor and some other stuff :(
-                                        <inculde>**/tests/draft2020-12/ref.json</inculde>
-                                        -->
-                                        <inculde>**/tests/draft2020-12/required.json</inculde>
-                                        <inculde>**/tests/draft2020-12/type.json</inculde>
-                                        <inculde>**/tests/draft2020-12/uniqueItems.json</inculde>
-                                    </includes>
-                                </resource>
-                            </resources>
                         </configuration>
                     </execution>
                 </executions>

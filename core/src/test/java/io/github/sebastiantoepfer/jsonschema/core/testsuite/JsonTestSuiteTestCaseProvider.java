@@ -39,7 +39,7 @@ class JsonTestSuiteTestCaseProvider implements ArgumentsProvider {
     @Override
     @SuppressWarnings("MustBeClosedChecker")
     public Stream<? extends Arguments> provideArguments(final ExtensionContext context) throws Exception {
-        return new Resources()
+        return new Resources("tests")
             .all()
             .filter(resource -> resource.hasExtension("json"))
             .map(JsonSchemaTestSuites::new)

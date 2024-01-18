@@ -23,8 +23,8 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.testsuite;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,17 +32,12 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 final class Resources {
 
     private final String baseDir;
-
-    public Resources() {
-        this(".");
-    }
 
     public Resources(final String baseDir) {
         this.baseDir = baseDir;
@@ -75,13 +70,22 @@ final class Resources {
         }
     }
 
-    private static class PathResources {
+    private URI baseUri() {
+        try {
+            return Resource.class.getClassLoader().getResource(baseDir).toURI();
+        } catch (URISyntaxException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
-        private static final Pattern PATH_SEPARATOR = Pattern.compile(File.pathSeparator);
+    private class PathResources {
+
+        private final Path basePath;
         private final Path path;
 
         public PathResources(final Path path) {
             this.path = Objects.requireNonNull(path);
+            this.basePath = Paths.get(baseUri()).getParent();
         }
 
         @SuppressWarnings("StreamResourceLeak")
@@ -89,26 +93,11 @@ final class Resources {
             final Stream<Resource> result;
             try {
                 if (path.toFile().isFile()) {
-                    result =
-                        Stream.of(
-                            new Resource(
-                                path
-                                    .toFile()
-                                    .getAbsolutePath()
-                                    .substring(
-                                        PATH_SEPARATOR
-                                            .splitAsStream(System.getProperty("java.class.path"))
-                                            .map(Path::of)
-                                            .filter(path::startsWith)
-                                            .map(Path::toFile)
-                                            .map(File::getAbsolutePath)
-                                            .map(String::length)
-                                            .map(i -> i + 1)
-                                            .findAny()
-                                            .orElse(0)
-                                    )
-                            )
-                        );
+                    if (path.startsWith(basePath)) {
+                        result = Stream.of(new Resource(basePath.relativize(path).toString()));
+                    } else {
+                        result = Stream.of(new Resource(path.toString()));
+                    }
                 } else {
                     result = Files.list(path).map(PathResources::new).flatMap(PathResources::toResources);
                 }
