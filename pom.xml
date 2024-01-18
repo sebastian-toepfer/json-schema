@@ -18,6 +18,8 @@
     <name>Json Schema</name>
     <packaging>pom</packaging>
 
+    <description>json-schema for and with json-p</description>
+
     <url>https://github.com/sebastian-toepfer/json-schema</url>
 
     <licenses>
@@ -100,8 +102,38 @@
                         <useModulePath>false</useModulePath>
                     </configuration>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.cyclonedx</groupId>
+                    <artifactId>cyclonedx-maven-plugin</artifactId>
+                    <version>2.7.11</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>makeAggregateBom</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <projectType>library</projectType>
+                        <includeProvidedScope>false</includeProvidedScope>
+                        <includeRuntimeScope>false</includeRuntimeScope>
+                        <includeSystemScope>false</includeSystemScope>
+                        <includeLicenseText>false</includeLicenseText>
+                        <outputFormat>all</outputFormat>
+                        <outputName>sbom</outputName>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.cyclonedx</groupId>
+                <artifactId>cyclonedx-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
 
     <profiles>
