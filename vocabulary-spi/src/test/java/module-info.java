@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,19 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+open module io.github.sebastiantoepfer.jsonschema.vocabulary.spi {
+    exports io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
 
-open module io.github.sebastiantoepfer.jsonschema {
-    requires io.github.sebastiantoepfer.ddd.common;
-    requires io.github.sebastiantoepfer.ddd.media.core;
-    requires io.github.sebastiantoepfer.ddd.media.json;
-    requires jakarta.json;
+    uses io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies;
 
-    uses io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory;
+    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
+        with io.github.sebastiantoepfer.jsonschema.vocabulary.spi.TestLazyVocabularies;
 
-    provides io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory
-        with io.github.sebastiantoepfer.jsonschema.FakeJsonSchemaFactory;
+    requires io.github.sebastiantoepfer.jsonschema;
 
     requires org.junit.jupiter.api;
-    requires org.junit.jupiter.params;
+    requires hamcrest.optional;
     requires org.hamcrest;
 }

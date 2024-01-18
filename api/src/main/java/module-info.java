@@ -27,6 +27,8 @@ module io.github.sebastiantoepfer.jsonschema {
     exports io.github.sebastiantoepfer.jsonschema.keyword;
     exports io.github.sebastiantoepfer.jsonschema.spi;
 
+    uses io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory;
+
     requires io.github.sebastiantoepfer.ddd.common;
     requires io.github.sebastiantoepfer.ddd.media.json;
     requires jakarta.json;

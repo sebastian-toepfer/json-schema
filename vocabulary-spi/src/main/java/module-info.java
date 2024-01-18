@@ -25,5 +25,6 @@
 module io.github.sebastiantoepfer.jsonschema.vocabulary.spi {
     exports io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
 
+    uses io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies;
     requires io.github.sebastiantoepfer.jsonschema;
 }
