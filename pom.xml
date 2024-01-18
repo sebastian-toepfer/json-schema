@@ -13,7 +13,7 @@
 
     <groupId>io.github.sebastian-toepfer.json-schema</groupId>
     <artifactId>json-schema</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 
     <name>Json Schema</name>
     <packaging>pom</packaging>
@@ -45,7 +45,7 @@
     </scm>
 
     <properties>
-        <project.build.outputTimestamp>2024-01-18T19:26:12Z</project.build.outputTimestamp>
+        <project.build.outputTimestamp>2024-01-18T19:42:58Z</project.build.outputTimestamp>
 
         <maven.compiler.source>17</maven.compiler.source>
 
