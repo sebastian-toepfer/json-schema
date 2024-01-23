@@ -56,6 +56,6 @@ public final class ArraySubSchemaKeywordType implements KeywordType {
             .getJsonArray(name)
             .stream()
             .map(new DefaultJsonSchemaFactory()::create)
-            .collect(collectingAndThen(toList(), keywordCreator::apply));
+            .collect(collectingAndThen(toList(), keywordCreator));
     }
 }
