@@ -24,6 +24,7 @@
 package io.github.sebastiantoepfer.jsonschema;
 
 import jakarta.json.JsonNumber;
+import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -33,7 +34,7 @@ import java.util.Locale;
 /**
  * see: http://json-schema.org/draft/2020-12/json-schema-core.html#name-instance-data-model
  */
-public enum InstanceType {
+public enum InstanceType implements JsonString {
     NULL(JsonValue.ValueType.NULL),
     BOOLEAN(JsonValue.ValueType.TRUE, JsonValue.ValueType.FALSE),
     OBJECT(JsonValue.ValueType.OBJECT),
@@ -74,6 +75,21 @@ public enum InstanceType {
 
     @Override
     public String toString() {
+        return getString();
+    }
+
+    @Override
+    public CharSequence getChars() {
+        return getString();
+    }
+
+    @Override
+    public String getString() {
         return name().toLowerCase(Locale.US);
+    }
+
+    @Override
+    public ValueType getValueType() {
+        return JsonValue.ValueType.STRING;
     }
 }

@@ -24,6 +24,7 @@
 package io.github.sebastiantoepfer.jsonschema;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -92,6 +93,16 @@ class InstanceTypeTest {
             arguments(InstanceType.NUMBER, "number"),
             arguments(InstanceType.INTEGER, "integer")
         );
+    }
+
+    @Test
+    void should_be_from_json_type_string() {
+        assertThat(InstanceType.INTEGER.getValueType(), is(JsonValue.ValueType.STRING));
+    }
+
+    @Test
+    void should_retrun_his_value_as_charsquence() {
+        assertThat(InstanceType.INTEGER.getChars(), hasToString("integer"));
     }
 
     @Test
