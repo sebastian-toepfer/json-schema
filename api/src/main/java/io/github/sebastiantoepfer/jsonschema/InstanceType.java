@@ -52,7 +52,7 @@ public enum InstanceType implements JsonString {
                 BigDecimal.ZERO.equals(decimal) ||
                 BigDecimal.ONE.equals(decimal) ||
                 BigDecimal.TEN.equals(decimal) ||
-                decimal.stripTrailingZeros().scale() == 0
+                decimal.stripTrailingZeros().scale() <= 0
             );
         }
     },
