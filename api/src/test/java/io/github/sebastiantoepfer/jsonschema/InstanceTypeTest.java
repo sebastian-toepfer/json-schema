@@ -54,6 +54,9 @@ class InstanceTypeTest {
             arguments(InstanceType.NUMBER, Json.createValue(23L)),
             arguments(InstanceType.INTEGER, Json.createValue(23L)),
             arguments(InstanceType.INTEGER, Json.createValue(10L)),
+            arguments(InstanceType.INTEGER, Json.createValue(20L)),
+            arguments(InstanceType.INTEGER, Json.createValue(100L)),
+            arguments(InstanceType.INTEGER, Json.createValue(1000L)),
             arguments(InstanceType.INTEGER, Json.createValue(0.0))
         );
     }
