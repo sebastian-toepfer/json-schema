@@ -23,16 +23,16 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
+import io.github.sebastiantoepfer.common.condition4j.Fulfilable;
 import io.github.sebastiantoepfer.jsonschema.Validator;
-import io.github.sebastiantoepfer.jsonschema.core.codition.Condition;
 import jakarta.json.JsonValue;
 import java.util.Objects;
 
 final class DefaultValidator implements Validator {
 
-    private final Condition<? super JsonValue> contraint;
+    private final Fulfilable<? super JsonValue> contraint;
 
-    public DefaultValidator(final Condition<? super JsonValue> contraint) {
+    public DefaultValidator(final Fulfilable<? super JsonValue> contraint) {
         this.contraint = Objects.requireNonNull(contraint);
     }
 

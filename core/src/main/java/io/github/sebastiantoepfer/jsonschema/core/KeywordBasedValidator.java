@@ -26,11 +26,10 @@ package io.github.sebastiantoepfer.jsonschema.core;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+import io.github.sebastiantoepfer.common.condition4j.Fulfilable;
+import io.github.sebastiantoepfer.common.condition4j.core.AllOf;
+import io.github.sebastiantoepfer.common.condition4j.core.PredicateCondition;
 import io.github.sebastiantoepfer.jsonschema.Validator;
-import io.github.sebastiantoepfer.jsonschema.core.codition.AllOfCondition;
-import io.github.sebastiantoepfer.jsonschema.core.codition.ApplicatorBasedCondtion;
-import io.github.sebastiantoepfer.jsonschema.core.codition.AssertionBasedCondition;
-import io.github.sebastiantoepfer.jsonschema.core.codition.Condition;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonValue;
 import java.util.Collection;
@@ -46,9 +45,7 @@ final class KeywordBasedValidator implements Validator {
                 .stream()
                 .map(KeywordBasedValidator::asContraint)
                 .flatMap(Optional::stream)
-                .collect(
-                    collectingAndThen(toList(), constraints -> new DefaultValidator(new AllOfCondition<>(constraints)))
-                );
+                .collect(collectingAndThen(toList(), constraints -> new DefaultValidator(new AllOf<>(constraints))));
     }
 
     @Override
@@ -56,12 +53,12 @@ final class KeywordBasedValidator implements Validator {
         return validator.isValid(data);
     }
 
-    private static Optional<Condition<JsonValue>> asContraint(final Keyword keyword) {
-        final Condition<JsonValue> result;
+    private static Optional<Fulfilable<JsonValue>> asContraint(final Keyword keyword) {
+        final Fulfilable<JsonValue> result;
         if (keyword.hasCategory(Keyword.KeywordCategory.ASSERTION)) {
-            result = new AssertionBasedCondition(keyword.asAssertion());
+            result = new PredicateCondition<>(json -> keyword.asAssertion().isValidFor(json));
         } else if (keyword.hasCategory(Keyword.KeywordCategory.APPLICATOR)) {
-            result = new ApplicatorBasedCondtion(keyword.asApplicator());
+            result = new PredicateCondition<>(json -> keyword.asApplicator().applyTo(json));
         } else {
             result = null;
         }

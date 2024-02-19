@@ -23,10 +23,10 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
+import io.github.sebastiantoepfer.common.condition4j.core.UnfulfillableCondition;
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.Validator;
-import io.github.sebastiantoepfer.jsonschema.core.codition.UnfulfillableCondition;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonValue;
 import java.util.Optional;

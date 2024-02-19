@@ -26,13 +26,13 @@ package io.github.sebastiantoepfer.jsonschema.core.keyword.type;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+import io.github.sebastiantoepfer.common.condition4j.core.AllOf;
+import io.github.sebastiantoepfer.common.condition4j.core.ContainsOnlyItemsWhichFulfilThe;
+import io.github.sebastiantoepfer.common.condition4j.core.MappedToFullfillThe;
+import io.github.sebastiantoepfer.common.condition4j.core.PredicateCondition;
+import io.github.sebastiantoepfer.common.condition4j.json.JsonPropertyWhichFulfilThe;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.codition.AllOfCondition;
-import io.github.sebastiantoepfer.jsonschema.core.codition.CollectionElementsCondtion;
-import io.github.sebastiantoepfer.jsonschema.core.codition.JsonPropertyCondition;
-import io.github.sebastiantoepfer.jsonschema.core.codition.MappingConditionAdapter;
-import io.github.sebastiantoepfer.jsonschema.core.codition.OfTypeCondition;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonObject;
@@ -71,12 +71,14 @@ public final class StringArrayKeywordType implements KeywordType {
 
     private Keyword createKeyword(final JsonObject schema) {
         if (
-            new JsonPropertyCondition(
+            new JsonPropertyWhichFulfilThe(
                 jsonContext.createPointer(String.format("/%s", name)),
-                new AllOfCondition<>(
-                    new OfTypeCondition(InstanceType.ARRAY),
-                    new MappingConditionAdapter<>(
-                        new CollectionElementsCondtion<>(new OfTypeCondition(InstanceType.STRING)),
+                new AllOf<>(
+                    new PredicateCondition<>(InstanceType.ARRAY::isInstance),
+                    new MappedToFullfillThe<>(
+                        new ContainsOnlyItemsWhichFulfilThe<>(
+                            new PredicateCondition<>(InstanceType.STRING::isInstance)
+                        ),
                         JsonValue::asJsonArray
                     )
                 )

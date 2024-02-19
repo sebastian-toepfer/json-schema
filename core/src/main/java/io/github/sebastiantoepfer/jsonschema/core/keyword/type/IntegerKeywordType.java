@@ -23,10 +23,10 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.keyword.type;
 
+import io.github.sebastiantoepfer.common.condition4j.core.PredicateCondition;
+import io.github.sebastiantoepfer.common.condition4j.json.JsonPropertyWhichFulfilThe;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.codition.JsonPropertyCondition;
-import io.github.sebastiantoepfer.jsonschema.core.codition.OfTypeCondition;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonObject;
@@ -64,7 +64,10 @@ public final class IntegerKeywordType implements KeywordType {
 
     private Keyword createKeyword(final JsonObject asJsonObject) {
         if (
-            new JsonPropertyCondition(createJsonPointer(), new OfTypeCondition(InstanceType.INTEGER))
+            new JsonPropertyWhichFulfilThe(
+                createJsonPointer(),
+                new PredicateCondition<>(InstanceType.INTEGER::isInstance)
+            )
                 .isFulfilledBy(asJsonObject)
         ) {
             return keywordCreator.apply(asJsonObject.getJsonNumber(name).bigIntegerValueExact());

@@ -27,6 +27,9 @@ open module io.github.sebastiantoepfer.jsonschema.core {
     requires io.github.sebastiantoepfer.ddd.common;
     requires io.github.sebastiantoepfer.ddd.media.json;
     requires io.github.sebastiantoepfer.ddd.media.core;
+    requires io.github.sebastiantoepfer.common.condition4j;
+    requires io.github.sebastiantoepfer.common.condition4j.core;
+    requires io.github.sebastiantoepfer.common.condition4j.json;
     requires jakarta.json;
 
     uses io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies;
