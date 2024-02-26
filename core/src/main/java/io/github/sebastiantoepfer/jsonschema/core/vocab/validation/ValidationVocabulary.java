@@ -41,24 +41,23 @@ public final class ValidationVocabulary implements Vocabulary {
     private final Vocabulary vocab;
 
     public ValidationVocabulary(final JsonProvider jsonContext) {
-        this.vocab =
-            new DefaultVocabulary(
-                URI.create("https://json-schema.org/draft/2020-12/vocab/validation"),
-                new TypeKeywordType(),
-                new ArrayKeywordType(EnumKeyword.NAME, EnumKeyword::new),
-                new StringKeywordType(jsonContext, PatternKeyword.NAME, PatternKeyword::new),
-                new IntegerKeywordType(jsonContext, MinLengthKeyword.NAME, MinLengthKeyword::new),
-                new IntegerKeywordType(jsonContext, MaxLengthKeyword.NAME, MaxLengthKeyword::new),
-                new NumberKeywordType(jsonContext, ExclusiveMaximumKeyword.NAME, ExclusiveMaximumKeyword::new),
-                new NumberKeywordType(jsonContext, MultipleOfKeyword.NAME, MultipleOfKeyword::new),
-                new NumberKeywordType(jsonContext, ExclusiveMinimumKeyword.NAME, ExclusiveMinimumKeyword::new),
-                new NumberKeywordType(jsonContext, MaximumKeyword.NAME, MaximumKeyword::new),
-                new NumberKeywordType(jsonContext, MinimumKeyword.NAME, MinimumKeyword::new),
-                new StringArrayKeywordType(jsonContext, RequiredKeyword.NAME, RequiredKeyword::new),
-                new IntegerKeywordType(jsonContext, MaxItemsKeyword.NAME, MaxItemsKeyword::new),
-                new IntegerKeywordType(jsonContext, MinItemsKeyword.NAME, MinItemsKeyword::new),
-                new BooleanKeywordType(jsonContext, UniqueItemsKeyword.NAME, UniqueItemsKeyword::new)
-            );
+        this.vocab = new DefaultVocabulary(
+            URI.create("https://json-schema.org/draft/2020-12/vocab/validation"),
+            new TypeKeywordType(),
+            new ArrayKeywordType(EnumKeyword.NAME, EnumKeyword::new),
+            new StringKeywordType(jsonContext, PatternKeyword.NAME, PatternKeyword::new),
+            new IntegerKeywordType(jsonContext, MinLengthKeyword.NAME, MinLengthKeyword::new),
+            new IntegerKeywordType(jsonContext, MaxLengthKeyword.NAME, MaxLengthKeyword::new),
+            new NumberKeywordType(jsonContext, ExclusiveMaximumKeyword.NAME, ExclusiveMaximumKeyword::new),
+            new NumberKeywordType(jsonContext, MultipleOfKeyword.NAME, MultipleOfKeyword::new),
+            new NumberKeywordType(jsonContext, ExclusiveMinimumKeyword.NAME, ExclusiveMinimumKeyword::new),
+            new NumberKeywordType(jsonContext, MaximumKeyword.NAME, MaximumKeyword::new),
+            new NumberKeywordType(jsonContext, MinimumKeyword.NAME, MinimumKeyword::new),
+            new StringArrayKeywordType(jsonContext, RequiredKeyword.NAME, RequiredKeyword::new),
+            new IntegerKeywordType(jsonContext, MaxItemsKeyword.NAME, MaxItemsKeyword::new),
+            new IntegerKeywordType(jsonContext, MinItemsKeyword.NAME, MinItemsKeyword::new),
+            new BooleanKeywordType(jsonContext, UniqueItemsKeyword.NAME, UniqueItemsKeyword::new)
+        );
     }
 
     @Override

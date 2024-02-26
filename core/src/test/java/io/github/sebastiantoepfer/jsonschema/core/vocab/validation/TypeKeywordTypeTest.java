@@ -81,12 +81,10 @@ class TypeKeywordTypeTest {
             .createKeyword(
                 new DefaultJsonSchemaFactory()
                     .create(
-                        Json
-                            .createObjectBuilder()
+                        Json.createObjectBuilder()
                             .add(
                                 "type",
-                                Json
-                                    .createArrayBuilder()
+                                Json.createArrayBuilder()
                                     .add(Json.createValue("string"))
                                     .add(Json.createValue("object"))
                             )

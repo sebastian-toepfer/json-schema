@@ -40,12 +40,11 @@ final class KeywordBasedValidator implements Validator {
     private final DefaultValidator validator;
 
     public KeywordBasedValidator(final Collection<Keyword> keywords) {
-        this.validator =
-            keywords
-                .stream()
-                .map(KeywordBasedValidator::asContraint)
-                .flatMap(Optional::stream)
-                .collect(collectingAndThen(toList(), constraints -> new DefaultValidator(new AllOf<>(constraints))));
+        this.validator = keywords
+            .stream()
+            .map(KeywordBasedValidator::asContraint)
+            .flatMap(Optional::stream)
+            .collect(collectingAndThen(toList(), constraints -> new DefaultValidator(new AllOf<>(constraints))));
     }
 
     @Override

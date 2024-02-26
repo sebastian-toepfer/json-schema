@@ -62,8 +62,7 @@ public final class DefaultJsonObjectSchema extends AbstractJsonValueSchema {
 
     @Override
     public Optional<JsonSubSchema> asSubSchema(final String name) {
-        return Optional
-            .ofNullable(asJsonObject().get(name))
+        return Optional.ofNullable(asJsonObject().get(name))
             .flatMap(new DefaultJsonSchemaFactory()::tryToCreateSchemaFrom)
             .map(subSchema -> new DefaultJsonSubSchema(this, subSchema));
     }

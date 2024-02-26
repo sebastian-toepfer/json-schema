@@ -126,14 +126,16 @@ class UniqueItemsKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build())
-                .printOn(new HashMapMedia()),
+            createKeywordFrom(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build()).printOn(
+                new HashMapMedia()
+            ),
             (Matcher) hasEntry(is("uniqueItems"), is(true))
         );
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new BooleanKeywordType(JsonProvider.provider(), "uniqueItems", UniqueItemsKeyword::new)
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        return new BooleanKeywordType(JsonProvider.provider(), "uniqueItems", UniqueItemsKeyword::new).createKeyword(
+            new DefaultJsonSchemaFactory().create(json)
+        );
     }
 }

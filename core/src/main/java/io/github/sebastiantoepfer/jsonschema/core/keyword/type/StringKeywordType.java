@@ -66,8 +66,7 @@ public final class StringKeywordType implements KeywordType {
             new JsonPropertyWhichFulfilThe(
                 createJsonPointer(),
                 new PredicateCondition<>(InstanceType.STRING::isInstance)
-            )
-                .isFulfilledBy(obj)
+            ).isFulfilledBy(obj)
         ) {
             return keywordCreator.apply(obj.getString(name()));
         } else {

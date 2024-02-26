@@ -46,14 +46,13 @@ final class Resources {
     @com.google.errorprone.annotations.MustBeClosed
     Stream<Resource> all() {
         try {
-            return StreamSupport
-                .stream(
-                    Spliterators.spliteratorUnknownSize(
-                        Resource.class.getClassLoader().getResources(baseDir).asIterator(),
-                        Spliterator.ORDERED
-                    ),
-                    false
-                )
+            return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(
+                    Resource.class.getClassLoader().getResources(baseDir).asIterator(),
+                    Spliterator.ORDERED
+                ),
+                false
+            )
                 .map(url -> {
                     try {
                         return url.toURI();

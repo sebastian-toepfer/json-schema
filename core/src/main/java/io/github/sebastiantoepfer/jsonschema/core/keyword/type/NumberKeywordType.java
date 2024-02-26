@@ -66,8 +66,7 @@ public final class NumberKeywordType implements KeywordType {
             new JsonPropertyWhichFulfilThe(
                 jsonContext.createPointer(String.format("/%s", name)),
                 new PredicateCondition<>(InstanceType.NUMBER::isInstance)
-            )
-                .isFulfilledBy(schema)
+            ).isFulfilledBy(schema)
         ) {
             return keywordCreator.apply(schema.getJsonNumber(name).bigDecimalValue());
         } else {

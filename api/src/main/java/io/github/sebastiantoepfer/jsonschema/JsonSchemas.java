@@ -32,8 +32,7 @@ import java.util.ServiceLoader;
 
 public final class JsonSchemas {
 
-    private static final JsonSchemaFactory JSONSCHEMA_FACTORY = ServiceLoader
-        .load(JsonSchemaFactory.class)
+    private static final JsonSchemaFactory JSONSCHEMA_FACTORY = ServiceLoader.load(JsonSchemaFactory.class)
         .findFirst()
         .orElseThrow();
 

@@ -64,8 +64,9 @@ class StringKeywordTypeTest {
     @Test
     void should_create_keyword_from_strings() {
         assertThat(
-            new StringKeywordType(JsonProvider.provider(), "test", TestStringKeyword::new)
-                .createKeyword(JsonSchemas.load(Json.createObjectBuilder().add("test", "test").build())),
+            new StringKeywordType(JsonProvider.provider(), "test", TestStringKeyword::new).createKeyword(
+                JsonSchemas.load(Json.createObjectBuilder().add("test", "test").build())
+            ),
             isA(TestStringKeyword.class)
         );
     }

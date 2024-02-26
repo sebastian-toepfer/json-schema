@@ -68,15 +68,11 @@ class StringArrayKeywordTypeTest {
     @Test
     void should_create_keyword_from_strings() {
         assertThat(
-            new StringArrayKeywordType(JsonProvider.provider(), "test", StringArrayKeyword::new)
-                .createKeyword(
-                    JsonSchemas.load(
-                        Json
-                            .createObjectBuilder()
-                            .add("test", Json.createArrayBuilder().add("test").add("hello"))
-                            .build()
-                    )
-                ),
+            new StringArrayKeywordType(JsonProvider.provider(), "test", StringArrayKeyword::new).createKeyword(
+                JsonSchemas.load(
+                    Json.createObjectBuilder().add("test", Json.createArrayBuilder().add("test").add("hello")).build()
+                )
+            ),
             isA(StringArrayKeyword.class)
         );
     }

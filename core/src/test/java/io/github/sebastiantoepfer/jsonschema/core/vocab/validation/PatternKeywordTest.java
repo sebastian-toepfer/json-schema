@@ -64,8 +64,7 @@ class PatternKeywordTest {
     void should_be_invalid_for_non_matching_value() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("pattern", Json.createValue("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"))
                     .build()
             )
@@ -79,8 +78,7 @@ class PatternKeywordTest {
     void should_be_valid_matching_value() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("pattern", Json.createValue("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"))
                     .build()
             )
@@ -94,18 +92,17 @@ class PatternKeywordTest {
     void should_be_printable() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("pattern", Json.createValue("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"))
                     .build()
-            )
-                .printOn(new HashMapMedia()),
+            ).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("pattern"), is("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"))
         );
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new StringKeywordType(JsonProvider.provider(), "pattern", PatternKeyword::new)
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        return new StringKeywordType(JsonProvider.provider(), "pattern", PatternKeyword::new).createKeyword(
+            new DefaultJsonSchemaFactory().create(json)
+        );
     }
 }

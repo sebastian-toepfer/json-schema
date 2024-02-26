@@ -67,8 +67,7 @@ public final class IntegerKeywordType implements KeywordType {
             new JsonPropertyWhichFulfilThe(
                 createJsonPointer(),
                 new PredicateCondition<>(InstanceType.INTEGER::isInstance)
-            )
-                .isFulfilledBy(asJsonObject)
+            ).isFulfilledBy(asJsonObject)
         ) {
             return keywordCreator.apply(asJsonObject.getJsonNumber(name).bigIntegerValueExact());
         } else {

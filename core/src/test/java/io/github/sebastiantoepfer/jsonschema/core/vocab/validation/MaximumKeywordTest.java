@@ -94,14 +94,16 @@ class MaximumKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("maximum", Json.createValue(10)).build())
-                .printOn(new HashMapMedia()),
+            createKeywordFrom(Json.createObjectBuilder().add("maximum", Json.createValue(10)).build()).printOn(
+                new HashMapMedia()
+            ),
             (Matcher) hasEntry(is("maximum"), is(BigDecimal.valueOf(10)))
         );
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new NumberKeywordType(JsonProvider.provider(), "maximum", MaximumKeyword::new)
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        return new NumberKeywordType(JsonProvider.provider(), "maximum", MaximumKeyword::new).createKeyword(
+            new DefaultJsonSchemaFactory().create(json)
+        );
     }
 }

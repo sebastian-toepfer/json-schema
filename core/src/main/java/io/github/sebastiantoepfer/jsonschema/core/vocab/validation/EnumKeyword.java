@@ -64,14 +64,13 @@ final class EnumKeyword implements Assertion {
     public boolean isValidFor(final JsonValue instance) {
         final boolean result;
         if (InstanceType.NUMBER.isInstance(instance)) {
-            result =
-                allowedValues
-                    .stream()
-                    .filter(InstanceType.NUMBER::isInstance)
-                    .map(JsonNumber.class::cast)
-                    .map(JsonNumber::bigDecimalValue)
-                    .map(BigDecimal::stripTrailingZeros)
-                    .anyMatch(Predicate.isEqual(((JsonNumber) instance).bigDecimalValue().stripTrailingZeros()));
+            result = allowedValues
+                .stream()
+                .filter(InstanceType.NUMBER::isInstance)
+                .map(JsonNumber.class::cast)
+                .map(JsonNumber::bigDecimalValue)
+                .map(BigDecimal::stripTrailingZeros)
+                .anyMatch(Predicate.isEqual(((JsonNumber) instance).bigDecimalValue().stripTrailingZeros()));
         } else {
             result = allowedValues.stream().anyMatch(Predicate.isEqual(instance));
         }

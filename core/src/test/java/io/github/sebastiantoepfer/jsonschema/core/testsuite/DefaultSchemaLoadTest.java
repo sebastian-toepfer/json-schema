@@ -39,9 +39,9 @@ class DefaultSchemaLoadTest {
     void should_load_default_json_schema() throws Exception {
         assertThat(
             JsonSchemas.load(
-                Json
-                    .createReader(URI.create("https://json-schema.org/draft/2020-12/schema").toURL().openStream())
-                    .readValue()
+                Json.createReader(
+                    URI.create("https://json-schema.org/draft/2020-12/schema").toURL().openStream()
+                ).readValue()
             ),
             is(not(Matchers.nullValue()))
         );

@@ -50,11 +50,9 @@ final class Keywords {
     private static final Collection<Vocabulary> DEFAULT_VOCABS;
 
     static {
-        MANDANTORY_VOCABS =
-            List
-                .of(new BasicVocabulary(), new CoreVocabulary(JsonProvider.provider()))
-                .stream()
-                .collect(toMap(Vocabulary::id, Function.identity()));
+        MANDANTORY_VOCABS = List.of(new BasicVocabulary(), new CoreVocabulary(JsonProvider.provider()))
+            .stream()
+            .collect(toMap(Vocabulary::id, Function.identity()));
 
         DEFAULT_VOCABS = List.of(new ValidationVocabulary(JsonProvider.provider()), new ApplicatorVocabulary());
     }
@@ -70,19 +68,16 @@ final class Keywords {
         ) {
             throw new IllegalArgumentException("can not be created without core vocabulary is requiered!");
         }
-        vocabularies =
-            Stream
-                .concat(
-                    Stream.concat(MANDANTORY_VOCABS.values().stream(), DEFAULT_VOCABS.stream()),
-                    vocabDefs.stream().map(VocabularyDefinition::findVocabulary).flatMap(Optional::stream)
-                )
-                .collect(
-                    Collector.of(
-                        ArrayDeque::new,
-                        ArrayDeque::addFirst,
-                        (first, last) -> null //pitest otherwise see mutants here :(
-                    )
-                );
+        vocabularies = Stream.concat(
+            Stream.concat(MANDANTORY_VOCABS.values().stream(), DEFAULT_VOCABS.stream()),
+            vocabDefs.stream().map(VocabularyDefinition::findVocabulary).flatMap(Optional::stream)
+        ).collect(
+            Collector.of(
+                ArrayDeque::new,
+                ArrayDeque::addFirst,
+                (first, last) -> null //pitest otherwise see mutants here :(
+            )
+        );
     }
 
     public Keyword createKeywordFor(final JsonSchema schema, final String propertyName) {

@@ -30,8 +30,7 @@ import java.util.ServiceLoader;
 
 public record VocabularyDefinition(URI id, boolean required) {
     public Optional<Vocabulary> findVocabulary() {
-        final Optional<Vocabulary> result = ServiceLoader
-            .load(LazyVocabularies.class)
+        final Optional<Vocabulary> result = ServiceLoader.load(LazyVocabularies.class)
             .stream()
             .map(ServiceLoader.Provider::get)
             .map(loader -> loader.loadVocabularyWithId(id))

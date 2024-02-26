@@ -69,8 +69,9 @@ class IntegerKeywordTypeTest {
     @Test
     void should_create_keyword_from_strings() {
         assertThat(
-            new IntegerKeywordType(JsonProvider.provider(), "test", TestIntegerKeyword::new)
-                .createKeyword(JsonSchemas.load(Json.createObjectBuilder().add("test", 12).build())),
+            new IntegerKeywordType(JsonProvider.provider(), "test", TestIntegerKeyword::new).createKeyword(
+                JsonSchemas.load(Json.createObjectBuilder().add("test", 12).build())
+            ),
             isA(TestIntegerKeyword.class)
         );
     }

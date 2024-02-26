@@ -57,8 +57,7 @@ class DefaultJsonSubSchemaTest {
             new DefaultJsonSubSchema(
                 owner,
                 new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("sub", JsonValue.TRUE).build())
-            )
-                .asSubSchema("sub"),
+            ).asSubSchema("sub"),
             isPresent()
         );
     }
@@ -73,8 +72,7 @@ class DefaultJsonSubSchemaTest {
             new DefaultJsonSubSchema(
                 owner,
                 new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("sub", JsonValue.TRUE).build())
-            )
-                .asJsonObject(),
+            ).asJsonObject(),
             is(Json.createObjectBuilder().add("sub", JsonValue.TRUE).build())
         );
     }
@@ -85,8 +83,7 @@ class DefaultJsonSubSchemaTest {
             new DefaultJsonSubSchema(
                 new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("test", JsonValue.TRUE).build()),
                 new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("type", "array").build())
-            )
-                .keywordByName("test"),
+            ).keywordByName("test"),
             isEmpty()
         );
     }
@@ -97,8 +94,7 @@ class DefaultJsonSubSchemaTest {
             new DefaultJsonSubSchema(
                 new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("test", JsonValue.TRUE).build()),
                 new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("type", "array").build())
-            )
-                .keywordByName("type"),
+            ).keywordByName("type"),
             isPresent()
         );
     }
@@ -109,8 +105,7 @@ class DefaultJsonSubSchemaTest {
             new DefaultJsonSubSchema(
                 new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("test", JsonValue.TRUE).build()),
                 new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("type", "array").build())
-            )
-                .printOn(new HashMapMedia()),
+            ).printOn(new HashMapMedia()),
             hasEntry("type", "array")
         );
     }

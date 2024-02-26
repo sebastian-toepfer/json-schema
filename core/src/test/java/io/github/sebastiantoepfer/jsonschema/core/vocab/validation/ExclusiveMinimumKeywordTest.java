@@ -94,14 +94,18 @@ class ExclusiveMinimumKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("exclusiveMinimum", Json.createValue(0)).build())
-                .printOn(new HashMapMedia()),
+            createKeywordFrom(Json.createObjectBuilder().add("exclusiveMinimum", Json.createValue(0)).build()).printOn(
+                new HashMapMedia()
+            ),
             (Matcher) hasEntry(is("exclusiveMinimum"), is(BigDecimal.valueOf(0)))
         );
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new NumberKeywordType(JsonProvider.provider(), "exclusiveMinimum", ExclusiveMinimumKeyword::new)
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        return new NumberKeywordType(
+            JsonProvider.provider(),
+            "exclusiveMinimum",
+            ExclusiveMinimumKeyword::new
+        ).createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

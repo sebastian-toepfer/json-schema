@@ -68,8 +68,7 @@ class PrefixItemsKeywordTest {
     void should_retrun_true_if_is_applies_to_all_values() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("prefixItems", Json.createArrayBuilder().add(JsonValue.TRUE).add(JsonValue.TRUE))
                     .build()
             )
@@ -107,8 +106,7 @@ class PrefixItemsKeywordTest {
     void should_be_invalid_if_second_item_does_not_match_schema() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("prefixItems", Json.createArrayBuilder().add(JsonValue.TRUE).add(JsonValue.FALSE))
                     .build()
             )
@@ -121,8 +119,9 @@ class PrefixItemsKeywordTest {
     @Test
     void should_be_applicator_and_annotation() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("prefixItems", JsonValue.EMPTY_JSON_ARRAY).build())
-                .categories(),
+            createKeywordFrom(
+                Json.createObjectBuilder().add("prefixItems", JsonValue.EMPTY_JSON_ARRAY).build()
+            ).categories(),
             containsInAnyOrder(Keyword.KeywordCategory.APPLICATOR, Keyword.KeywordCategory.ANNOTATION)
         );
     }
@@ -132,14 +131,14 @@ class PrefixItemsKeywordTest {
         assertThat(
             createKeywordFrom(
                 Json.createObjectBuilder().add("prefixItems", Json.createArrayBuilder().add(JsonValue.TRUE)).build()
-            )
-                .printOn(new HashMapMedia()),
+            ).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("prefixItems"), contains(anEmptyMap()))
         );
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new ArraySubSchemaKeywordType("prefixItems", PrefixItemsKeyword::new)
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        return new ArraySubSchemaKeywordType("prefixItems", PrefixItemsKeyword::new).createKeyword(
+            new DefaultJsonSchemaFactory().create(json)
+        );
     }
 }

@@ -94,14 +94,16 @@ class MinLengthKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build())
-                .printOn(new HashMapMedia()),
+            createKeywordFrom(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build()).printOn(
+                new HashMapMedia()
+            ),
             (Matcher) hasEntry(is("minLength"), is(BigInteger.valueOf(2L)))
         );
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new IntegerKeywordType(JsonProvider.provider(), "minLength", MinLengthKeyword::new)
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        return new IntegerKeywordType(JsonProvider.provider(), "minLength", MinLengthKeyword::new).createKeyword(
+            new DefaultJsonSchemaFactory().create(json)
+        );
     }
 }

@@ -53,11 +53,9 @@ class RefKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword ref = new RefKeywordType(JsonProvider.provider())
-            .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(Json.createObjectBuilder().add("$ref", Json.createValue("#")).build())
-            );
+        final Keyword ref = new RefKeywordType(JsonProvider.provider()).createKeyword(
+            new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("$ref", Json.createValue("#")).build())
+        );
 
         assertThat(ref.hasName("$ref"), is(true));
         assertThat(ref.hasName("test"), is(false));
@@ -65,22 +63,19 @@ class RefKeywordTest {
 
     @Test
     void should_use_local_referenced_schema_for_validation() {
-        final Keyword keyword = new RefKeywordType(JsonProvider.provider())
-            .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(
-                        Json
-                            .createObjectBuilder()
-                            .add(
-                                "$defs",
-                                Json
-                                    .createObjectBuilder()
-                                    .add("positiveInteger", Json.createObjectBuilder().add("type", "integer"))
-                            )
-                            .add("$ref", Json.createValue("#/$defs/positiveInteger"))
-                            .build()
-                    )
-            );
+        final Keyword keyword = new RefKeywordType(JsonProvider.provider()).createKeyword(
+            new DefaultJsonSchemaFactory()
+                .create(
+                    Json.createObjectBuilder()
+                        .add(
+                            "$defs",
+                            Json.createObjectBuilder()
+                                .add("positiveInteger", Json.createObjectBuilder().add("type", "integer"))
+                        )
+                        .add("$ref", Json.createValue("#/$defs/positiveInteger"))
+                        .build()
+                )
+        );
 
         assertThat(keyword.asApplicator().applyTo(Json.createValue(1L)), is(true));
         assertThat(keyword.asApplicator().applyTo(Json.createValue("invalid")), is(false));
@@ -88,22 +83,19 @@ class RefKeywordTest {
 
     @Test
     void should_use_remote_referenced_schema_for_validation() {
-        final Keyword keyword = new RefKeywordType(JsonProvider.provider())
-            .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(
-                        Json
-                            .createObjectBuilder()
-                            .add(
-                                "$defs",
-                                Json
-                                    .createObjectBuilder()
-                                    .add("positiveInteger", Json.createObjectBuilder().add("type", "integer"))
-                            )
-                            .add("$ref", Json.createValue("#/$defs/positiveInteger"))
-                            .build()
-                    )
-            );
+        final Keyword keyword = new RefKeywordType(JsonProvider.provider()).createKeyword(
+            new DefaultJsonSchemaFactory()
+                .create(
+                    Json.createObjectBuilder()
+                        .add(
+                            "$defs",
+                            Json.createObjectBuilder()
+                                .add("positiveInteger", Json.createObjectBuilder().add("type", "integer"))
+                        )
+                        .add("$ref", Json.createValue("#/$defs/positiveInteger"))
+                        .build()
+                )
+        );
 
         assertThat(keyword.asApplicator().applyTo(Json.createValue(1L)), is(true));
     }
@@ -123,7 +115,10 @@ class RefKeywordTest {
 
     private static Keyword createKeywordFrom(final JsonObject json) {
         final JsonSchema schema = new DefaultJsonSchemaFactory().create(json);
-        return new StringKeywordType(JsonProvider.provider(), "$ref", s -> new RefKeyword(schema, URI.create(s)))
-            .createKeyword(schema);
+        return new StringKeywordType(
+            JsonProvider.provider(),
+            "$ref",
+            s -> new RefKeyword(schema, URI.create(s))
+        ).createKeyword(schema);
     }
 }

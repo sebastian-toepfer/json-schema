@@ -44,15 +44,14 @@ public final class ApplicatorVocabulary implements Vocabulary {
     private final Vocabulary vocab;
 
     public ApplicatorVocabulary() {
-        this.vocab =
-            new DefaultVocabulary(
-                URI.create("https://json-schema.org/draft/2020-12/vocab/applicator"),
-                new NamedJsonSchemaKeywordType(PropertiesKeyword.NAME, PropertiesKeyword::new),
-                new SubSchemaKeywordType(AdditionalPropertiesKeyword.NAME, AdditionalPropertiesKeyword::new),
-                new NamedJsonSchemaKeywordType(PatternPropertiesKeyword.NAME, PatternPropertiesKeyword::new),
-                new SubSchemaKeywordType(ItemsKeyword.NAME, ItemsKeyword::new),
-                new ArraySubSchemaKeywordType(PrefixItemsKeyword.NAME, PrefixItemsKeyword::new)
-            );
+        this.vocab = new DefaultVocabulary(
+            URI.create("https://json-schema.org/draft/2020-12/vocab/applicator"),
+            new NamedJsonSchemaKeywordType(PropertiesKeyword.NAME, PropertiesKeyword::new),
+            new SubSchemaKeywordType(AdditionalPropertiesKeyword.NAME, AdditionalPropertiesKeyword::new),
+            new NamedJsonSchemaKeywordType(PatternPropertiesKeyword.NAME, PatternPropertiesKeyword::new),
+            new SubSchemaKeywordType(ItemsKeyword.NAME, ItemsKeyword::new),
+            new ArraySubSchemaKeywordType(PrefixItemsKeyword.NAME, PrefixItemsKeyword::new)
+        );
     }
 
     @Override

@@ -59,13 +59,12 @@ class JsonTestSuiteTestCaseProvider implements ArgumentsProvider {
             final Stream<JsonTestSuiteTestCase> result;
             final JsonParser parser = Json.createParser(jsonResource.content());
             if (parser.next() == JsonParser.Event.START_ARRAY) {
-                result =
-                    parser
-                        .getArrayStream()
-                        .onClose(() -> parser.close())
-                        .map(JsonValue::asJsonObject)
-                        .map(JsonSchemaTestSuite::new)
-                        .flatMap(JsonSchemaTestSuite::allTestCases);
+                result = parser
+                    .getArrayStream()
+                    .onClose(() -> parser.close())
+                    .map(JsonValue::asJsonObject)
+                    .map(JsonSchemaTestSuite::new)
+                    .flatMap(JsonSchemaTestSuite::allTestCases);
             } else {
                 parser.close();
                 result = Stream.empty();

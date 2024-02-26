@@ -82,8 +82,7 @@ public final class StringArrayKeywordType implements KeywordType {
                         JsonValue::asJsonArray
                     )
                 )
-            )
-                .isFulfilledBy(schema)
+            ).isFulfilledBy(schema)
         ) {
             return schema
                 .getJsonArray(name)

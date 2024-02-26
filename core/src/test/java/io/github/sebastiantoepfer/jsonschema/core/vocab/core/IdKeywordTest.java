@@ -52,8 +52,7 @@ class IdKeywordTest {
     void should_retun_his_uri() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("$id", Json.createValue("https://json-schema.org/draft/2020-12/schema"))
                     .build()
             )
@@ -67,18 +66,17 @@ class IdKeywordTest {
     void should_be_printable() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("$id", Json.createValue("https://json-schema.org/draft/2020-12/schema"))
                     .build()
-            )
-                .printOn(new HashMapMedia()),
+            ).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("$id"), is("https://json-schema.org/draft/2020-12/schema"))
         );
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new StringKeywordType(JsonProvider.provider(), "$id", s -> new IdKeyword(URI.create(s)))
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        return new StringKeywordType(JsonProvider.provider(), "$id", s -> new IdKeyword(URI.create(s))).createKeyword(
+            new DefaultJsonSchemaFactory().create(json)
+        );
     }
 }

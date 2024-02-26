@@ -47,8 +47,10 @@ class DefaultVocabularyTest {
     @Test
     void should_return_empty_if_requested_keyword_is_unknown() {
         assertThat(
-            new DefaultVocabulary(URI.create("http://localhost"), new SimpleTestKeywordType("name"))
-                .findKeywordTypeByName("test"),
+            new DefaultVocabulary(
+                URI.create("http://localhost"),
+                new SimpleTestKeywordType("name")
+            ).findKeywordTypeByName("test"),
             isEmpty()
         );
     }
