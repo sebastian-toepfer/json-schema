@@ -74,8 +74,9 @@ class ItemsKeywordTest {
     @Test
     void should_be_applicator_and_annotation() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("items", JsonValue.EMPTY_JSON_OBJECT).build())
-                .categories(),
+            createKeywordFrom(
+                Json.createObjectBuilder().add("items", JsonValue.EMPTY_JSON_OBJECT).build()
+            ).categories(),
             contains(Keyword.KeywordCategory.APPLICATOR, Keyword.KeywordCategory.ANNOTATION)
         );
     }
@@ -94,8 +95,7 @@ class ItemsKeywordTest {
     void should_return_false_if_not_applies_to_any_item() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("prefixItems", Json.createArrayBuilder().add(true))
                     .add("items", JsonValue.FALSE)
                     .build()
@@ -110,8 +110,7 @@ class ItemsKeywordTest {
     void should_be_valid_if_invaliditem_is_already_checked_by_prefixItems() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("prefixItems", Json.createArrayBuilder().add(true).add(true))
                     .add("items", Json.createObjectBuilder().add("type", "integer"))
                     .build()
@@ -126,8 +125,7 @@ class ItemsKeywordTest {
     void should_be_invalid_if_invaliditem_is_not_already_checked_by_prefixItems() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("prefixItems", Json.createArrayBuilder().add(true))
                     .add("items", Json.createObjectBuilder().add("type", "integer"))
                     .build()
@@ -139,7 +137,8 @@ class ItemsKeywordTest {
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new SubSchemaKeywordType("items", ItemsKeyword::new)
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        return new SubSchemaKeywordType("items", ItemsKeyword::new).createKeyword(
+            new DefaultJsonSchemaFactory().create(json)
+        );
     }
 }

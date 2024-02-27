@@ -44,16 +44,15 @@ public final class OfficialVocabularies implements LazyVocabularies {
     private static final Collection<Vocabulary> OFFICEAL_VOCABS;
 
     static {
-        OFFICEAL_VOCABS =
-            List.of(
-                new CoreVocabulary(JSONP),
-                new ApplicatorVocabulary(),
-                new ValidationVocabulary(JSONP),
-                new MetaDataVocabulary(),
-                new FormatVocabulary(),
-                new UnevaluatedVocabulary(),
-                new ContentVocabulary()
-            );
+        OFFICEAL_VOCABS = List.of(
+            new CoreVocabulary(JSONP),
+            new ApplicatorVocabulary(),
+            new ValidationVocabulary(JSONP),
+            new MetaDataVocabulary(),
+            new FormatVocabulary(),
+            new UnevaluatedVocabulary(),
+            new ContentVocabulary()
+        );
     }
 
     @Override

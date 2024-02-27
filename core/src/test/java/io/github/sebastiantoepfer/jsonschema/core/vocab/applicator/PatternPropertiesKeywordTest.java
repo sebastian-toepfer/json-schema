@@ -57,8 +57,9 @@ class PatternPropertiesKeywordTest {
     @Test
     void should_be_an_applicator_and_an_annotation() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("patternProperties", JsonValue.EMPTY_JSON_OBJECT).build())
-                .categories(),
+            createKeywordFrom(
+                Json.createObjectBuilder().add("patternProperties", JsonValue.EMPTY_JSON_OBJECT).build()
+            ).categories(),
             containsInAnyOrder(Keyword.KeywordCategory.APPLICATOR, Keyword.KeywordCategory.ANNOTATION)
         );
     }
@@ -87,8 +88,7 @@ class PatternPropertiesKeywordTest {
     void should_be_valid_if_properties_applies_to_his_schema() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("patternProperties", Json.createObjectBuilder().add("t.st", JsonValue.TRUE))
                     .build()
             )
@@ -102,8 +102,7 @@ class PatternPropertiesKeywordTest {
     void should_be_invalid_if_properties_not_applies_to_his_schema() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("patternProperties", Json.createObjectBuilder().add("t.st", JsonValue.FALSE))
                     .build()
             )
@@ -122,8 +121,7 @@ class PatternPropertiesKeywordTest {
     void should_be_invalid_if_one_schema_doesn_apply() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add(
                         "patternProperties",
                         Json.createObjectBuilder().add("t.st", JsonValue.TRUE).add("t.*", JsonValue.FALSE)
@@ -140,8 +138,7 @@ class PatternPropertiesKeywordTest {
     void should_be_valid_if_properties_not_covered() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("patternProperties", Json.createObjectBuilder().add("t.st", JsonValue.FALSE))
                     .build()
             )
@@ -155,15 +152,13 @@ class PatternPropertiesKeywordTest {
     void should_return_the_matching_property_names() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("patternProperties", Json.createObjectBuilder().add("f.o", JsonValue.TRUE))
                     .build()
             )
                 .asAnnotation()
                 .valueFor(
-                    Json
-                        .createObjectBuilder()
+                    Json.createObjectBuilder()
                         .add("foo", BigDecimal.ONE)
                         .add("test", BigDecimal.ONE)
                         .add("fao", 1)
@@ -182,18 +177,17 @@ class PatternPropertiesKeywordTest {
     void should_be_printable() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("patternProperties", Json.createObjectBuilder().add("f.o", JsonValue.TRUE))
                     .build()
-            )
-                .printOn(new HashMapMedia()),
+            ).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("patternProperties"), hasEntry(is("f.o"), anEmptyMap()))
         );
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new NamedJsonSchemaKeywordType("patternProperties", PatternPropertiesKeyword::new)
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        return new NamedJsonSchemaKeywordType("patternProperties", PatternPropertiesKeyword::new).createKeyword(
+            new DefaultJsonSchemaFactory().create(json)
+        );
     }
 }

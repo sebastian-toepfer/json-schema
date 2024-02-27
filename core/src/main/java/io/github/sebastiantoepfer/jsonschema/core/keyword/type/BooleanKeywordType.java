@@ -65,8 +65,7 @@ public final class BooleanKeywordType implements KeywordType {
             new JsonPropertyWhichFulfilThe(
                 jsonContext.createPointer(String.format("/%s", name)),
                 new PredicateCondition<>(InstanceType.BOOLEAN::isInstance)
-            )
-                .isFulfilledBy(schema)
+            ).isFulfilledBy(schema)
         ) {
             return keywordCreator.apply(schema.getBoolean(name));
         } else {

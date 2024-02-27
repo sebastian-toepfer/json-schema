@@ -45,20 +45,19 @@ class LazyVocabulariesTest implements LazyVocabularies {
     public Optional<Vocabulary> loadVocabularyWithId(final URI id) {
         final Optional<Vocabulary> result;
         if (Objects.equals(URI.create("http://github.com/sebastian-toepfer/json-schema/basic"), id)) {
-            result =
-                Optional.of(
-                    new Vocabulary() {
-                        @Override
-                        public URI id() {
-                            throw new UnsupportedOperationException("Not supported yet.");
-                        }
-
-                        @Override
-                        public Optional<KeywordType> findKeywordTypeByName(String name) {
-                            throw new UnsupportedOperationException("Not supported yet.");
-                        }
+            result = Optional.of(
+                new Vocabulary() {
+                    @Override
+                    public URI id() {
+                        throw new UnsupportedOperationException("Not supported yet.");
                     }
-                );
+
+                    @Override
+                    public Optional<KeywordType> findKeywordTypeByName(String name) {
+                        throw new UnsupportedOperationException("Not supported yet.");
+                    }
+                }
+            );
         } else {
             result = Optional.empty();
         }

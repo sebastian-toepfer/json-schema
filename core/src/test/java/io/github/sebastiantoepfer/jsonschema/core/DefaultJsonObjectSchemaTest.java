@@ -41,8 +41,7 @@ import org.junit.jupiter.api.Test;
 class DefaultJsonObjectSchemaTest {
 
     private final DefaultJsonObjectSchema schema = new DefaultJsonObjectSchema(
-        Json
-            .createObjectBuilder()
+        Json.createObjectBuilder()
             .add("type", "array")
             .add("items", Json.createObjectBuilder().add("type", "integer"))
             .build()
@@ -71,8 +70,7 @@ class DefaultJsonObjectSchemaTest {
     @Test
     void should_not_be_usable_without_mandantory_core_vocabulary() {
         final DefaultJsonObjectSchema invalidSchema = new DefaultJsonObjectSchema(
-            Json
-                .createObjectBuilder()
+            Json.createObjectBuilder()
                 .add(
                     "$vocabulary",
                     Json.createObjectBuilder().add("https://json-schema.org/draft/2020-12/vocab/core", false)
@@ -87,15 +85,13 @@ class DefaultJsonObjectSchemaTest {
     void should_find_keyword_by_name() {
         assertThat(
             new DefaultJsonObjectSchema(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add(
                         "$vocabulary",
                         Json.createObjectBuilder().add("https://json-schema.org/draft/2020-12/vocab/core", true)
                     )
                     .build()
-            )
-                .keywordByName("$vocabulary"),
+            ).keywordByName("$vocabulary"),
             isPresent()
         );
     }
@@ -104,15 +100,13 @@ class DefaultJsonObjectSchemaTest {
     void should_return_empty_for_non_existing_keyword() {
         assertThat(
             new DefaultJsonObjectSchema(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add(
                         "$vocabulary",
                         Json.createObjectBuilder().add("https://json-schema.org/draft/2020-12/vocab/core", true)
                     )
                     .build()
-            )
-                .keywordByName("type"),
+            ).keywordByName("type"),
             isEmpty()
         );
     }
@@ -120,8 +114,9 @@ class DefaultJsonObjectSchemaTest {
     @Test
     void should_return_empty_if_non_subschema_exists_under_the_given_name() {
         assertThat(
-            new DefaultJsonObjectSchema(Json.createObjectBuilder().add("test", "hallo").build())
-                .asSubSchema("properties"),
+            new DefaultJsonObjectSchema(Json.createObjectBuilder().add("test", "hallo").build()).asSubSchema(
+                "properties"
+            ),
             isEmpty()
         );
     }
@@ -129,8 +124,9 @@ class DefaultJsonObjectSchemaTest {
     @Test
     void should_return_subschema_if_subschema_exists_under_the_given_name() {
         assertThat(
-            new DefaultJsonObjectSchema(Json.createObjectBuilder().add("test", JsonValue.FALSE).build())
-                .asSubSchema("test"),
+            new DefaultJsonObjectSchema(Json.createObjectBuilder().add("test", JsonValue.FALSE).build()).asSubSchema(
+                "test"
+            ),
             isPresent()
         );
     }
@@ -138,8 +134,9 @@ class DefaultJsonObjectSchemaTest {
     @Test
     void should_return_empty_if_given_name_not_resolve_to_a_valid_schematype() {
         assertThat(
-            new DefaultJsonObjectSchema(Json.createObjectBuilder().add("test", JsonValue.EMPTY_JSON_ARRAY).build())
-                .asSubSchema("test"),
+            new DefaultJsonObjectSchema(
+                Json.createObjectBuilder().add("test", JsonValue.EMPTY_JSON_ARRAY).build()
+            ).asSubSchema("test"),
             isEmpty()
         );
     }

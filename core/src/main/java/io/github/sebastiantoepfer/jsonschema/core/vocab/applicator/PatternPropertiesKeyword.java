@@ -66,12 +66,11 @@ class PatternPropertiesKeyword implements Applicator, Annotation {
     private final Map<Pattern, JsonSchema> properties;
 
     public PatternPropertiesKeyword(final NamedJsonSchemas properties) {
-        this.properties =
-            properties
-                .schemas()
-                .stream()
-                .map(e -> Map.entry(Pattern.compile(e.getKey()), e.getValue()))
-                .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+        this.properties = properties
+            .schemas()
+            .stream()
+            .map(e -> Map.entry(Pattern.compile(e.getKey()), e.getValue()))
+            .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     @Override

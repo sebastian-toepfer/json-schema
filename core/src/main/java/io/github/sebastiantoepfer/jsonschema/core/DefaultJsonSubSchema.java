@@ -77,8 +77,10 @@ final class DefaultJsonSubSchema implements JsonSubSchema {
         final Stream<Keyword> result;
         if (isJsonObject()) {
             final Keywords keywords = new KeywordExtractor(schema).createKeywords();
-            result =
-                asJsonObject().keySet().stream().map(propertyName -> keywords.createKeywordFor(this, propertyName));
+            result = asJsonObject()
+                .keySet()
+                .stream()
+                .map(propertyName -> keywords.createKeywordFor(this, propertyName));
         } else {
             result = Stream.empty();
         }
@@ -91,8 +93,7 @@ final class DefaultJsonSubSchema implements JsonSubSchema {
 
     @Override
     public Optional<JsonSubSchema> asSubSchema(final String name) {
-        return Optional
-            .ofNullable(asJsonObject().get(name))
+        return Optional.ofNullable(asJsonObject().get(name))
             .flatMap(new DefaultJsonSchemaFactory()::tryToCreateSchemaFrom)
             .map(subSchema -> new DefaultJsonSubSchema(this, subSchema));
     }

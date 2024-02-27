@@ -93,14 +93,14 @@ class RequiredKeywordTest {
         assertThat(
             createKeywordFrom(
                 Json.createObjectBuilder().add("required", Json.createArrayBuilder().add("foo").add("bar")).build()
-            )
-                .printOn(new HashMapMedia()),
+            ).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("required"), containsInAnyOrder("foo", "bar"))
         );
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new StringArrayKeywordType(JsonProvider.provider(), "required", RequiredKeyword::new)
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        return new StringArrayKeywordType(JsonProvider.provider(), "required", RequiredKeyword::new).createKeyword(
+            new DefaultJsonSchemaFactory().create(json)
+        );
     }
 }

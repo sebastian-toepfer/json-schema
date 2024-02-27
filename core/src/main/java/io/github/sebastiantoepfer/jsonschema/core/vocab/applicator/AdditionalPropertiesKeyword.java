@@ -97,11 +97,10 @@ final class AdditionalPropertiesKeyword implements Applicator, Annotation {
     }
 
     private Collection<String> findPropertyNamesAlreadyConveredByOthersIn(final JsonValue instance) {
-        return Stream
-            .of(
-                additionalPropertiesSchema.owner().keywordByName("properties"),
-                additionalPropertiesSchema.owner().keywordByName("patternProperties")
-            )
+        return Stream.of(
+            additionalPropertiesSchema.owner().keywordByName("properties"),
+            additionalPropertiesSchema.owner().keywordByName("patternProperties")
+        )
             .flatMap(Optional::stream)
             .map(Keyword::asAnnotation)
             .map(anno -> anno.valueFor(instance))

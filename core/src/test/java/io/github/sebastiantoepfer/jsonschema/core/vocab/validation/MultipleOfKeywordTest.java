@@ -96,14 +96,16 @@ class MultipleOfKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("multipleOf", Json.createValue(2)).build())
-                .printOn(new HashMapMedia()),
+            createKeywordFrom(Json.createObjectBuilder().add("multipleOf", Json.createValue(2)).build()).printOn(
+                new HashMapMedia()
+            ),
             (Matcher) hasEntry(is("multipleOf"), is(new BigDecimal(2)))
         );
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new NumberKeywordType(JsonProvider.provider(), "multipleOf", MultipleOfKeyword::new)
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        return new NumberKeywordType(JsonProvider.provider(), "multipleOf", MultipleOfKeyword::new).createKeyword(
+            new DefaultJsonSchemaFactory().create(json)
+        );
     }
 }

@@ -61,12 +61,10 @@ class VocabularyKeywordTypeTest {
                     .createKeyword(
                         new DefaultJsonSchemaFactory()
                             .create(
-                                Json
-                                    .createObjectBuilder()
+                                Json.createObjectBuilder()
                                     .add(
                                         "$vocabulary",
-                                        Json
-                                            .createObjectBuilder()
+                                        Json.createObjectBuilder()
                                             .add("https://json-schema.org/draft/2020-12/vocab/core", true)
                                             .add("http://openapi.org/test", false)
                                     )
@@ -88,12 +86,10 @@ class VocabularyKeywordTypeTest {
                 .createKeyword(
                     new DefaultJsonSchemaFactory()
                         .create(
-                            Json
-                                .createObjectBuilder()
+                            Json.createObjectBuilder()
                                 .add(
                                     "$vocabulary",
-                                    Json
-                                        .createObjectBuilder()
+                                    Json.createObjectBuilder()
                                         .add("https://json-schema.org/draft/2020-12/vocab/core", true)
                                         .add("http://openapi.org/test", false)
                                 )

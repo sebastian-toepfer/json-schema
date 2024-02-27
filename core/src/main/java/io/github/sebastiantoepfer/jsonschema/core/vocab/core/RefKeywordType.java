@@ -46,7 +46,10 @@ final class RefKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        return new StringKeywordType(jsonContext, RefKeyword.NAME, s -> new RefKeyword(schema, URI.create(s)))
-            .createKeyword(schema);
+        return new StringKeywordType(
+            jsonContext,
+            RefKeyword.NAME,
+            s -> new RefKeyword(schema, URI.create(s))
+        ).createKeyword(schema);
     }
 }

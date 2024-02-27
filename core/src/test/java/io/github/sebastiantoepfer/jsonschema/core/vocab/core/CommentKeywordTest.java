@@ -51,14 +51,16 @@ class CommentKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("$comment", Json.createValue("comment")).build())
-                .printOn(new HashMapMedia()),
+            createKeywordFrom(Json.createObjectBuilder().add("$comment", Json.createValue("comment")).build()).printOn(
+                new HashMapMedia()
+            ),
             hasEntry("$comment", "comment")
         );
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new StringKeywordType(JsonProvider.provider(), "$comment", CommentKeyword::new)
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        return new StringKeywordType(JsonProvider.provider(), "$comment", CommentKeyword::new).createKeyword(
+            new DefaultJsonSchemaFactory().create(json)
+        );
     }
 }

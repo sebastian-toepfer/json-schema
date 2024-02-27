@@ -92,14 +92,16 @@ class MaxLengthKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("maxLength", Json.createValue(2)).build())
-                .printOn(new HashMapMedia()),
+            createKeywordFrom(Json.createObjectBuilder().add("maxLength", Json.createValue(2)).build()).printOn(
+                new HashMapMedia()
+            ),
             (Matcher) hasEntry(is("maxLength"), is(BigInteger.valueOf(2L)))
         );
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new IntegerKeywordType(JsonProvider.provider(), "maxLength", MaxLengthKeyword::new)
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        return new IntegerKeywordType(JsonProvider.provider(), "maxLength", MaxLengthKeyword::new).createKeyword(
+            new DefaultJsonSchemaFactory().create(json)
+        );
     }
 }

@@ -62,8 +62,9 @@ class DynamicRefKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("$dynamicRef", "test").build())
-                .printOn(new HashMapMedia()),
+            createKeywordFrom(Json.createObjectBuilder().add("$dynamicRef", "test").build()).printOn(
+                new HashMapMedia()
+            ),
             (Matcher) hasEntry(is("$dynamicRef"), is("test"))
         );
     }
@@ -73,7 +74,6 @@ class DynamicRefKeywordTest {
             JsonProvider.provider(),
             DynamicRefKeyword.NAME,
             s -> new DynamicRefKeyword(URI.create(s))
-        )
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        ).createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

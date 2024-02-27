@@ -94,14 +94,16 @@ class MinItemsKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build())
-                .printOn(new HashMapMedia()),
+            createKeywordFrom(Json.createObjectBuilder().add("minItems", Json.createValue(1)).build()).printOn(
+                new HashMapMedia()
+            ),
             (Matcher) hasEntry(is("minItems"), is(BigInteger.valueOf(1)))
         );
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new IntegerKeywordType(JsonProvider.provider(), "minItems", MinItemsKeyword::new)
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        return new IntegerKeywordType(JsonProvider.provider(), "minItems", MinItemsKeyword::new).createKeyword(
+            new DefaultJsonSchemaFactory().create(json)
+        );
     }
 }

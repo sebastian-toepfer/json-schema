@@ -89,14 +89,14 @@ class EnumKeywordTest {
         assertThat(
             createKeywordFrom(
                 Json.createObjectBuilder().add("enum", Json.createArrayBuilder().add("TEST").add("VALID")).build()
-            )
-                .printOn(new HashMapMedia()),
+            ).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("enum"), containsInAnyOrder("TEST", "VALID"))
         );
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new ArrayKeywordType("enum", EnumKeyword::new)
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        return new ArrayKeywordType("enum", EnumKeyword::new).createKeyword(
+            new DefaultJsonSchemaFactory().create(json)
+        );
     }
 }

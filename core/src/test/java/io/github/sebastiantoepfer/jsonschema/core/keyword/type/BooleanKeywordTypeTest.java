@@ -67,8 +67,9 @@ class BooleanKeywordTypeTest {
     @Test
     void should_create_keyword_from_strings() {
         assertThat(
-            new BooleanKeywordType(JsonProvider.provider(), "test", TestBooleanKeyword::new)
-                .createKeyword(JsonSchemas.load(Json.createObjectBuilder().add("test", true).build())),
+            new BooleanKeywordType(JsonProvider.provider(), "test", TestBooleanKeyword::new).createKeyword(
+                JsonSchemas.load(Json.createObjectBuilder().add("test", true).build())
+            ),
             isA(TestBooleanKeyword.class)
         );
     }

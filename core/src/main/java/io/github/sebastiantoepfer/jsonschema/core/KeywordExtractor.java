@@ -44,11 +44,10 @@ class KeywordExtractor {
         if (
             schema.getValueType() == JsonValue.ValueType.OBJECT && schema.asJsonObject().containsKey(keywordType.name())
         ) {
-            result =
-                keywordType
-                    .createKeyword(schema)
-                    .definitions()
-                    .collect(Collectors.collectingAndThen(Collectors.toList(), Keywords::new));
+            result = keywordType
+                .createKeyword(schema)
+                .definitions()
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Keywords::new));
         } else {
             result = new Keywords(List.of());
         }

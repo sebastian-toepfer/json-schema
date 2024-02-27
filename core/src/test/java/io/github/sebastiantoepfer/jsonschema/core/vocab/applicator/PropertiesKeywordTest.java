@@ -55,8 +55,9 @@ class PropertiesKeywordTest {
     @Test
     void should_be_an_applicator_and_annotation() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("properties", JsonValue.EMPTY_JSON_OBJECT).build())
-                .categories(),
+            createKeywordFrom(
+                Json.createObjectBuilder().add("properties", JsonValue.EMPTY_JSON_OBJECT).build()
+            ).categories(),
             containsInAnyOrder(Keyword.KeywordCategory.APPLICATOR, Keyword.KeywordCategory.ANNOTATION)
         );
     }
@@ -75,8 +76,7 @@ class PropertiesKeywordTest {
     void should_be_valid_if_properties_applies_to_his_schema() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
                     .build()
             )
@@ -90,8 +90,7 @@ class PropertiesKeywordTest {
     void should_be_invalid_if_properties_not_applies_to_his_schema() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("properties", Json.createObjectBuilder().add("test", JsonValue.FALSE))
                     .build()
             )
@@ -105,8 +104,7 @@ class PropertiesKeywordTest {
     void should_be_valid_for_empty_objects() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("properties", Json.createObjectBuilder().add("test", JsonValue.FALSE))
                     .build()
             )
@@ -120,8 +118,7 @@ class PropertiesKeywordTest {
     void should_return_all_matched_propertynames() {
         assertThat(
             createKeywordFrom(
-                Json
-                    .createObjectBuilder()
+                Json.createObjectBuilder()
                     .add("properties", Json.createObjectBuilder().add("test", true).add("foo", true))
                     .build()
             )
@@ -138,8 +135,7 @@ class PropertiesKeywordTest {
     void should_be_printable() {
         assertThat(
             ((Map) createKeywordFrom(
-                    Json
-                        .createObjectBuilder()
+                    Json.createObjectBuilder()
                         .add("properties", Json.createObjectBuilder().add("test", JsonValue.TRUE))
                         .build()
                 )
@@ -150,7 +146,8 @@ class PropertiesKeywordTest {
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new NamedJsonSchemaKeywordType("properties", PropertiesKeyword::new)
-            .createKeyword(new DefaultJsonSchemaFactory().create(json));
+        return new NamedJsonSchemaKeywordType("properties", PropertiesKeyword::new).createKeyword(
+            new DefaultJsonSchemaFactory().create(json)
+        );
     }
 }
