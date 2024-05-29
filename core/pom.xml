@@ -122,6 +122,7 @@
                     <include>**/tests/draft2020-12/allOf.json</include>
                     -->
                     <include>**/tests/draft2020-12/anyOf.json</include>
+                    <include>**/tests/draft2020-12/oneOf.json</include>
                     <include>**/tests/draft2020-12/boolean_schema.json</include>
                     <include>**/tests/draft2020-12/const.json</include>
                     <include>**/tests/draft2020-12/contains.json</include>
