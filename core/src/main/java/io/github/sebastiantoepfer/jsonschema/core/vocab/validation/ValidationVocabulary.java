@@ -50,6 +50,7 @@ public final class ValidationVocabulary implements Vocabulary {
             new ArrayKeywordType(EnumKeyword.NAME, EnumKeyword::new),
             new ObjectKeywordType(DependentRequiredKeyword.NAME, DependentRequiredKeyword::new),
             new IntegerKeywordType(jsonContext, MaxPropertiesKeyword.NAME, MaxPropertiesKeyword::new),
+            new IntegerKeywordType(jsonContext, MinPropertiesKeyword.NAME, MinPropertiesKeyword::new),
             new StringKeywordType(jsonContext, PatternKeyword.NAME, PatternKeyword::new),
             new IntegerKeywordType(jsonContext, MinLengthKeyword.NAME, MinLengthKeyword::new),
             new IntegerKeywordType(jsonContext, MaxLengthKeyword.NAME, MaxLengthKeyword::new),

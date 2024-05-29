@@ -137,6 +137,7 @@
                     <include>**/tests/draft2020-12/minItems.json</include>
                     <include>**/tests/draft2020-12/minLength.json</include>
                     <include>**/tests/draft2020-12/minimum.json</include>
+                    <include>**/tests/draft2020-12/minProperties.json</include>
                     <include>**/tests/draft2020-12/multipleOf.json</include>
                     <include>**/tests/draft2020-12/pattern.json</include>
                     <include>**/tests/draft2020-12/patternProperties.json</include>
