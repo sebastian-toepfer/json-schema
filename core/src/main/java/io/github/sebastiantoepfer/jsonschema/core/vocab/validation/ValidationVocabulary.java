@@ -24,6 +24,7 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AnyKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ArrayKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.BooleanKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.IntegerKeywordType;
@@ -44,6 +45,7 @@ public final class ValidationVocabulary implements Vocabulary {
         this.vocab = new DefaultVocabulary(
             URI.create("https://json-schema.org/draft/2020-12/vocab/validation"),
             new TypeKeywordType(),
+            new AnyKeywordType(ConstKeyword.NAME, ConstKeyword::new),
             new ArrayKeywordType(EnumKeyword.NAME, EnumKeyword::new),
             new StringKeywordType(jsonContext, PatternKeyword.NAME, PatternKeyword::new),
             new IntegerKeywordType(jsonContext, MinLengthKeyword.NAME, MinLengthKeyword::new),
