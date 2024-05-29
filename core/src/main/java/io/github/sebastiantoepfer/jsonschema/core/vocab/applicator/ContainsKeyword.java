@@ -27,14 +27,16 @@ import static jakarta.json.stream.JsonCollectors.toJsonArray;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
-import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Annotation;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * <b>contains</b> : <i>Schema</i>
@@ -51,9 +53,11 @@ import java.util.Objects;
 final class ContainsKeyword implements Applicator, Annotation {
 
     static final String NAME = "contains";
-    private final JsonSubSchema contains;
+    private final JsonSchema contains;
+    private final List<Keyword> affectedBy;
 
-    public ContainsKeyword(final JsonSubSchema contains) {
+    public ContainsKeyword(final List<Keyword> affectedBy, final JsonSchema contains) {
+        this.affectedBy = List.copyOf(affectedBy);
         this.contains = Objects.requireNonNull(contains);
     }
 
@@ -78,7 +82,7 @@ final class ContainsKeyword implements Applicator, Annotation {
     }
 
     private boolean contains(final JsonArray array) {
-        return array.stream().anyMatch(contains.validator()::isValid);
+        return !affectedBy.isEmpty() || matchingValues(array).findAny().isPresent();
     }
 
     @Override
@@ -94,12 +98,16 @@ final class ContainsKeyword implements Applicator, Annotation {
 
     private JsonValue valueFor(final JsonArray values) {
         final JsonValue result;
-        final JsonArray matchingItems = values.stream().filter(contains.validator()::isValid).collect(toJsonArray());
-        if (matchingItems.size() == values.size()) {
+        final JsonArray matchingItems = matchingValues(values).collect(toJsonArray());
+        if (matchingItems.size() == values.size() && !values.isEmpty()) {
             result = JsonValue.TRUE;
         } else {
             result = matchingItems;
         }
         return result;
+    }
+
+    Stream<JsonValue> matchingValues(final JsonArray values) {
+        return values.stream().filter(contains.validator()::isValid);
     }
 }
