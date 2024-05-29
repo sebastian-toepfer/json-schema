@@ -31,6 +31,8 @@ import static org.hamcrest.Matchers.is;
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import org.junit.jupiter.api.Test;
 
 class StaticAnnotationTest {
@@ -62,7 +64,7 @@ class StaticAnnotationTest {
     void should_be_printable_with_decimalnumber_as_value() {
         assertThat(
             new StaticAnnotation("default", Json.createValue(32)).printOn(new HashMapMedia()),
-            hasEntry("default", 32L)
+            hasEntry("default", BigInteger.valueOf(32L))
         );
     }
 
@@ -70,7 +72,7 @@ class StaticAnnotationTest {
     void should_be_printable_with_decimal_as_value() {
         assertThat(
             new StaticAnnotation("default", Json.createValue(32.1)).printOn(new HashMapMedia()),
-            hasEntry("default", 32.1)
+            hasEntry("default", BigDecimal.valueOf(32.1))
         );
     }
 
