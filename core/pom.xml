@@ -157,6 +157,7 @@
                     <include>**/tests/draft2020-12/patternProperties.json</include>
                     <include>**/tests/draft2020-12/prefixItems.json</include>
                     <include>**/tests/draft2020-12/properties.json</include>
+                    <include>**/tests/draft2020-12/propertyNames.json</include>
                     <!--
                     needs allOf, $anchor and dynamicAnchor and some other stuff :(
                     <include>**/tests/draft2020-12/ref.json</include>

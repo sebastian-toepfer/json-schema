@@ -36,6 +36,7 @@ import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.ListVocabulary;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
+import jakarta.json.spi.JsonProvider;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +52,7 @@ public final class ApplicatorVocabulary implements Vocabulary {
 
     private final Vocabulary vocab;
 
-    public ApplicatorVocabulary() {
+    public ApplicatorVocabulary(final JsonProvider provider) {
         this.vocab = new ListVocabulary(
             URI.create("https://json-schema.org/draft/2020-12/vocab/applicator"),
             new SchemaArrayKeywordType(AllOfKeyword.NAME, AllOfKeyword::new),
@@ -74,6 +75,7 @@ public final class ApplicatorVocabulary implements Vocabulary {
             ),
             new NamedJsonSchemaKeywordType(PatternPropertiesKeyword.NAME, PatternPropertiesKeyword::new),
             new NamedJsonSchemaKeywordType(DependentSchemasKeyword.NAME, DependentSchemasKeyword::new),
+            new SubSchemaKeywordType(PropertyNames.NAME, s -> new PropertyNames(provider, s)),
             //this example shows my missunderstanding from affects, affectedBy and keywordtypes :(
             new AffectedByKeywordType(
                 ItemsKeyword.NAME,
