@@ -128,6 +128,7 @@
                     <include>**/tests/draft2020-12/const.json</include>
                     <include>**/tests/draft2020-12/contains.json</include>
                     <include>**/tests/draft2020-12/dependentRequired.json</include>
+                    <include>**/tests/draft2020-12/dependentSchemas.json</include>
                     <include>**/tests/draft2020-12/enum.json</include>
                     <include>**/tests/draft2020-12/exclusiveMaximum.json</include>
                     <include>**/tests/draft2020-12/exclusiveMinimum.json</include>
