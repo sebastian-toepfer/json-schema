@@ -119,6 +119,7 @@
                     <include>**/tests/draft2020-12/additionalProperties.json</include>
                     <include>**/tests/draft2020-12/boolean_schema.json</include>
                     <include>**/tests/draft2020-12/const.json</include>
+                    <include>**/tests/draft2020-12/contains.json</include>
                     <include>**/tests/draft2020-12/dependentRequired.json</include>
                     <include>**/tests/draft2020-12/enum.json</include>
                     <include>**/tests/draft2020-12/exclusiveMaximum.json</include>
