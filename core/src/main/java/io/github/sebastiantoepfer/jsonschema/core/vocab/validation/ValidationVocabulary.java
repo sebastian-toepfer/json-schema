@@ -29,6 +29,7 @@ import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ArrayKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.BooleanKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.IntegerKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NumberKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ObjectKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.StringArrayKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.StringKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
@@ -47,6 +48,7 @@ public final class ValidationVocabulary implements Vocabulary {
             new TypeKeywordType(),
             new AnyKeywordType(ConstKeyword.NAME, ConstKeyword::new),
             new ArrayKeywordType(EnumKeyword.NAME, EnumKeyword::new),
+            new ObjectKeywordType(DependentRequiredKeyword.NAME, DependentRequiredKeyword::new),
             new StringKeywordType(jsonContext, PatternKeyword.NAME, PatternKeyword::new),
             new IntegerKeywordType(jsonContext, MinLengthKeyword.NAME, MinLengthKeyword::new),
             new IntegerKeywordType(jsonContext, MaxLengthKeyword.NAME, MaxLengthKeyword::new),
