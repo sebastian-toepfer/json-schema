@@ -32,7 +32,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ArraySubSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SchemaArrayKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -137,7 +137,7 @@ class PrefixItemsKeywordTest {
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new ArraySubSchemaKeywordType("prefixItems", PrefixItemsKeyword::new).createKeyword(
+        return new SchemaArrayKeywordType("prefixItems", PrefixItemsKeyword::new).createKeyword(
             new DefaultJsonSchemaFactory().create(json)
         );
     }
