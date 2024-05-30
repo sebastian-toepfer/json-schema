@@ -29,7 +29,10 @@ import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectsKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.IntegerKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import io.github.sebastiantoepfer.jsonschema.keyword.StaticAnnotation;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
@@ -38,12 +41,11 @@ import java.math.BigInteger;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
-class MaxContainsKeywordTypeTest {
+class MaxContainsKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword enumKeyword = createKeywordFrom(Json.createObjectBuilder().add("maxContains", 2).build());
-
+        final Keyword enumKeyword = new MaxContainsKeyword(new StaticAnnotation("", JsonValue.NULL), BigInteger.ONE);
         assertThat(enumKeyword.hasName("maxContains"), is(true));
         assertThat(enumKeyword.hasName("test"), is(false));
     }
@@ -182,8 +184,15 @@ class MaxContainsKeywordTypeTest {
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new MaxContainsKeywordType(JsonProvider.provider()).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
-        );
+        return new AffectsKeywordType(
+            "maxContains",
+            "contains",
+            (a, s) ->
+                new IntegerKeywordType(
+                    JsonProvider.provider(),
+                    "maxContains",
+                    value -> new MaxContainsKeyword(a, value)
+                ).createKeyword(s)
+        ).createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

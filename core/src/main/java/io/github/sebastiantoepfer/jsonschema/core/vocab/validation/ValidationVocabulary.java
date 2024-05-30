@@ -24,6 +24,7 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectsKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AnyKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ArrayKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.BooleanKeywordType;
@@ -62,6 +63,26 @@ public final class ValidationVocabulary implements Vocabulary {
             new StringArrayKeywordType(jsonContext, RequiredKeyword.NAME, RequiredKeyword::new),
             new IntegerKeywordType(jsonContext, MaxItemsKeyword.NAME, MaxItemsKeyword::new),
             new IntegerKeywordType(jsonContext, MinItemsKeyword.NAME, MinItemsKeyword::new),
+            new AffectsKeywordType(
+                MaxContainsKeyword.NAME,
+                "contains",
+                (affects, schema) ->
+                    new IntegerKeywordType(
+                        JsonProvider.provider(),
+                        MaxContainsKeyword.NAME,
+                        value -> new MaxContainsKeyword(affects, value)
+                    ).createKeyword(schema)
+            ),
+            new AffectsKeywordType(
+                MinContainsKeyword.NAME,
+                "contains",
+                (a, s) ->
+                    new IntegerKeywordType(
+                        JsonProvider.provider(),
+                        MinContainsKeyword.NAME,
+                        value -> new MinContainsKeyword(a, value)
+                    ).createKeyword(s)
+            ),
             new BooleanKeywordType(jsonContext, UniqueItemsKeyword.NAME, UniqueItemsKeyword::new)
         );
     }

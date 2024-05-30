@@ -131,13 +131,12 @@
                     <!-- more than items keyword needed :(
                     <include>**/tests/draft2020-12/items.json</include>
                     -->
-                    <!-- needs minContains too :(
                     <include>**/tests/draft2020-12/maxContains.json</include>
-                    -->
                     <include>**/tests/draft2020-12/maxItems.json</include>
                     <include>**/tests/draft2020-12/maxLength.json</include>
                     <include>**/tests/draft2020-12/maximum.json</include>
                     <include>**/tests/draft2020-12/maxProperties.json</include>
+                    <include>**/tests/draft2020-12/minContains.json</include>
                     <include>**/tests/draft2020-12/minItems.json</include>
                     <include>**/tests/draft2020-12/minLength.json</include>
                     <include>**/tests/draft2020-12/minimum.json</include>

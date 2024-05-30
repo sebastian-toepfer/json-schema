@@ -31,11 +31,13 @@ import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectedByKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SubSchemaKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import java.util.List;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -54,8 +56,9 @@ class ContainsKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword enumKeyword = createKeywordFrom(
-            Json.createObjectBuilder().add("contains", Json.createObjectBuilder().add("type", "number")).build()
+        final Keyword enumKeyword = new ContainsKeyword(
+            List.of(),
+            new DefaultJsonSchemaFactory().create(JsonValue.TRUE)
         );
 
         assertThat(enumKeyword.hasName("contains"), is(true));
@@ -81,6 +84,33 @@ class ContainsKeywordTest {
                 .asApplicator()
                 .applyTo(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
+        );
+    }
+
+    @Test
+    void should_apply_to_empty_array_if_min_andor_max_provided() {
+        assertThat(
+            createKeywordFrom(
+                Json.createObjectBuilder()
+                    .add("contains", Json.createObjectBuilder().add("type", "number"))
+                    .add("minContains", 0)
+                    .build()
+            )
+                .asApplicator()
+                .applyTo(JsonValue.EMPTY_JSON_ARRAY),
+            is(true)
+        );
+    }
+
+    @Test
+    void should_not_apply_to_empty_array_if_non_min_andor_max_is_provided() {
+        assertThat(
+            createKeywordFrom(
+                Json.createObjectBuilder().add("contains", Json.createObjectBuilder().add("type", "number")).build()
+            )
+                .asApplicator()
+                .applyTo(JsonValue.EMPTY_JSON_ARRAY),
+            is(false)
         );
     }
 
@@ -156,6 +186,19 @@ class ContainsKeywordTest {
     }
 
     @Test
+    void should_return_empty_array_for_empty_array() {
+        assertThat(
+            createKeywordFrom(
+                Json.createObjectBuilder().add("contains", Json.createObjectBuilder().add("type", "number")).build()
+            )
+                .asAnnotation()
+                .valueFor(JsonValue.EMPTY_JSON_ARRAY)
+                .asJsonArray(),
+            is(empty())
+        );
+    }
+
+    @Test
     void should_return_matching_items() {
         assertThat(
             createKeywordFrom(
@@ -189,8 +232,10 @@ class ContainsKeywordTest {
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new SubSchemaKeywordType("contains", ContainsKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
-        );
+        return new AffectedByKeywordType(
+            "contains",
+            List.of("minContains", "maxContains"),
+            (a, schema) -> new SubSchemaKeywordType("contains", s -> new ContainsKeyword(a, s)).createKeyword(schema)
+        ).createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }
