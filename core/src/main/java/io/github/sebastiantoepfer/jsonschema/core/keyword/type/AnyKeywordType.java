@@ -27,15 +27,22 @@ import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import jakarta.json.JsonValue;
+import jakarta.json.spi.JsonProvider;
 import java.util.Objects;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 public class AnyKeywordType implements KeywordType {
 
+    private final JsonProvider jsonContext;
     private final String name;
-    private final Function<JsonValue, Keyword> keywordCreator;
+    private final BiFunction<JsonProvider, JsonValue, Keyword> keywordCreator;
 
-    public AnyKeywordType(final String name, final Function<JsonValue, Keyword> keywordCreator) {
+    public AnyKeywordType(
+        final JsonProvider jsonContext,
+        final String name,
+        final BiFunction<JsonProvider, JsonValue, Keyword> keywordCreator
+    ) {
+        this.jsonContext = Objects.requireNonNull(jsonContext);
         this.name = Objects.requireNonNull(name);
         this.keywordCreator = Objects.requireNonNull(keywordCreator);
     }
@@ -47,6 +54,6 @@ public class AnyKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        return keywordCreator.apply(schema.asJsonObject().getOrDefault(name, JsonValue.NULL));
+        return keywordCreator.apply(jsonContext, schema.asJsonObject().getOrDefault(name, JsonValue.NULL));
     }
 }

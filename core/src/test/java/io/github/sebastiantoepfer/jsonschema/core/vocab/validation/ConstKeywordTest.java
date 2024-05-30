@@ -35,6 +35,7 @@ import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import jakarta.json.spi.JsonProvider;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
@@ -139,7 +140,7 @@ class ConstKeywordTest {
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new AnyKeywordType("const", ConstKeyword::new).createKeyword(
+        return new AnyKeywordType(JsonProvider.provider(), "const", ConstKeyword::new).createKeyword(
             new DefaultJsonSchemaFactory().create(json)
         );
     }

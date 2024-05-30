@@ -27,9 +27,9 @@ import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.ddd.media.json.JsonObjectPrintable;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
-import jakarta.json.Json;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonValue;
+import jakarta.json.spi.JsonProvider;
 import java.util.Objects;
 
 /**
@@ -46,9 +46,11 @@ import java.util.Objects;
 class ConstKeyword implements Assertion {
 
     static final String NAME = "const";
+    private final JsonProvider jsonContext;
     private final JsonValue allowedValue;
 
-    public ConstKeyword(final JsonValue allowedValue) {
+    public ConstKeyword(final JsonProvider jsonContext, final JsonValue allowedValue) {
+        this.jsonContext = Objects.requireNonNull(jsonContext);
         this.allowedValue = Objects.requireNonNull(allowedValue);
     }
 
@@ -79,6 +81,8 @@ class ConstKeyword implements Assertion {
 
     @Override
     public <T extends Media<T>> T printOn(final T media) {
-        return new JsonObjectPrintable(Json.createObjectBuilder().add(NAME, allowedValue).build()).printOn(media);
+        return new JsonObjectPrintable(jsonContext.createObjectBuilder().add(NAME, allowedValue).build()).printOn(
+            media
+        );
     }
 }
