@@ -31,6 +31,18 @@ import jakarta.json.JsonValue;
 import java.math.BigInteger;
 import java.util.Objects;
 
+/**
+ * <b>minProperties</b> : <i>Integer</i>
+ * An object instance is valid if its number of properties is less than, or equal to, the value of this keyword.<br/>
+ * keyword.<br/>
+ * <br/>
+ * <ul>
+ * <li>assertion</li>
+ * </ul>
+ *
+ * source: https://www.learnjsonschema.com/2020-12/validation/minproperties/
+ * spec: https://json-schema.org/draft/2020-12/json-schema-validation.html#section-6.5.2
+ */
 final class MinPropertiesKeyword implements Assertion {
 
     static final String NAME = "minProperties";
