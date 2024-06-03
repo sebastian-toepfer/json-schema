@@ -23,27 +23,26 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.keyword.type;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
-
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.BiFunction;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.function.Function;
 
 public class AffectedByKeywordType implements KeywordType {
 
     private final String name;
-    private final List<String> affectedBy;
-    private final BiFunction<List<Keyword>, JsonSchema, Keyword> keywordCreator;
+    private final Collection<AffectedBy> affectedBy;
+    private final Function<JsonSchema, Keyword> keywordCreator;
 
     public AffectedByKeywordType(
         final String name,
-        final List<String> affectedBy,
-        final BiFunction<List<Keyword>, JsonSchema, Keyword> keywordCreator
+        final Collection<AffectedBy> affectedBy,
+        final Function<JsonSchema, Keyword> keywordCreator
     ) {
         this.name = Objects.requireNonNull(name);
         this.affectedBy = List.copyOf(affectedBy);
@@ -57,24 +56,24 @@ public class AffectedByKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        return new AffectedByKeyword(schema, name, affectedBy, keywordCreator);
+        return new AffectedKeyword(schema, name, affectedBy, keywordCreator);
     }
 
-    static final class AffectedByKeyword extends KeywordRelationship {
+    static final class AffectedKeyword extends KeywordRelationship {
 
         private final JsonSchema schema;
-        private final List<String> affectedBy;
-        private final BiFunction<List<Keyword>, JsonSchema, Keyword> keywordCreator;
+        private final SortedSet<AffectedBy> affectedBy;
+        private final Function<JsonSchema, Keyword> keywordCreator;
 
-        public AffectedByKeyword(
+        public AffectedKeyword(
             final JsonSchema schema,
             final String name,
-            final List<String> affectedBy,
-            final BiFunction<List<Keyword>, JsonSchema, Keyword> keywordCreator
+            final Collection<AffectedBy> affectedBy,
+            final Function<JsonSchema, Keyword> keywordCreator
         ) {
             super(name);
             this.schema = Objects.requireNonNull(schema);
-            this.affectedBy = List.copyOf(affectedBy);
+            this.affectedBy = new TreeSet<>(affectedBy);
             this.keywordCreator = Objects.requireNonNull(keywordCreator);
         }
 
@@ -82,9 +81,10 @@ public class AffectedByKeywordType implements KeywordType {
         protected Keyword delegate() {
             return affectedBy
                 .stream()
-                .map(schema::keywordByName)
-                .flatMap(Optional::stream)
-                .collect(collectingAndThen(toList(), k -> keywordCreator.apply(k, schema)));
+                .map(a -> a.findAffectedByKeywordIn(schema))
+                .reduce(Function::andThen)
+                .orElseThrow()
+                .apply(keywordCreator.apply(schema));
         }
     }
 }
