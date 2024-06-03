@@ -34,12 +34,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-public final class ArraySubSchemaKeywordType implements KeywordType {
+public final class SchemaArrayKeywordType implements KeywordType {
 
     private final String name;
     private final Function<List<JsonSchema>, Keyword> keywordCreator;
 
-    public ArraySubSchemaKeywordType(final String name, final Function<List<JsonSchema>, Keyword> keywordCreator) {
+    public SchemaArrayKeywordType(final String name, final Function<List<JsonSchema>, Keyword> keywordCreator) {
         this.name = Objects.requireNonNull(name);
         this.keywordCreator = Objects.requireNonNull(keywordCreator);
     }

@@ -25,8 +25,8 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectedByKeywordType;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ArraySubSchemaKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NamedJsonSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SchemaArrayKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SubSchemaKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
@@ -48,11 +48,12 @@ public final class ApplicatorVocabulary implements Vocabulary {
     public ApplicatorVocabulary() {
         this.vocab = new DefaultVocabulary(
             URI.create("https://json-schema.org/draft/2020-12/vocab/applicator"),
+            new SchemaArrayKeywordType(AllOfKeyword.NAME, AllOfKeyword::new),
             new NamedJsonSchemaKeywordType(PropertiesKeyword.NAME, PropertiesKeyword::new),
             new SubSchemaKeywordType(AdditionalPropertiesKeyword.NAME, AdditionalPropertiesKeyword::new),
             new NamedJsonSchemaKeywordType(PatternPropertiesKeyword.NAME, PatternPropertiesKeyword::new),
             new SubSchemaKeywordType(ItemsKeyword.NAME, ItemsKeyword::new),
-            new ArraySubSchemaKeywordType(PrefixItemsKeyword.NAME, PrefixItemsKeyword::new),
+            new SchemaArrayKeywordType(PrefixItemsKeyword.NAME, PrefixItemsKeyword::new),
             //normally affeced by minContains and maxContains, but only min has a direct effect!
             new AffectedByKeywordType(
                 ContainsKeyword.NAME,
