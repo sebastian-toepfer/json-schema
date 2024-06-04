@@ -49,6 +49,7 @@ public final class ApplicatorVocabulary implements Vocabulary {
         this.vocab = new DefaultVocabulary(
             URI.create("https://json-schema.org/draft/2020-12/vocab/applicator"),
             new SchemaArrayKeywordType(AllOfKeyword.NAME, AllOfKeyword::new),
+            new SchemaArrayKeywordType(AnyOfKeyword.NAME, AnyOfKeyword::new),
             new NamedJsonSchemaKeywordType(PropertiesKeyword.NAME, PropertiesKeyword::new),
             new SubSchemaKeywordType(AdditionalPropertiesKeyword.NAME, AdditionalPropertiesKeyword::new),
             new NamedJsonSchemaKeywordType(PatternPropertiesKeyword.NAME, PatternPropertiesKeyword::new),
