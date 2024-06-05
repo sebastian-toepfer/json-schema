@@ -117,10 +117,7 @@
                         <include>**/tests/draft2019-09/additionalItems.json</include>
                     -->
                     <include>**/tests/draft2020-12/additionalProperties.json</include>
-                    <!--
-                    needs anyOf, oneOf :(
                     <include>**/tests/draft2020-12/allOf.json</include>
-                    -->
                     <include>**/tests/draft2020-12/anyOf.json</include>
                     <include>**/tests/draft2020-12/oneOf.json</include>
                     <include>**/tests/draft2020-12/boolean_schema.json</include>
