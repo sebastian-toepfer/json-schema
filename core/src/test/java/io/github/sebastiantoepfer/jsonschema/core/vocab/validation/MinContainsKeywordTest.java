@@ -29,6 +29,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.Affects;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectsKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.IntegerKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
@@ -38,6 +39,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import jakarta.json.spi.JsonProvider;
 import java.math.BigInteger;
+import java.util.List;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +47,10 @@ class MinContainsKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword enumKeyword = new MinContainsKeyword(new StaticAnnotation("", JsonValue.NULL), BigInteger.ONE);
+        final Keyword enumKeyword = new MinContainsKeyword(
+            List.of(new StaticAnnotation("", JsonValue.NULL)),
+            BigInteger.ONE
+        );
 
         assertThat(enumKeyword.hasName("minContains"), is(true));
         assertThat(enumKeyword.hasName("test"), is(false));
@@ -62,19 +67,14 @@ class MinContainsKeywordTest {
     @Test
     void should_be_valid_for_non_arrays() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minContains", 2).build())
+            createKeywordFrom(
+                Json.createObjectBuilder()
+                    .add("contains", Json.createObjectBuilder().add("type", "string"))
+                    .add("minContains", 2)
+                    .build()
+            )
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
-            is(true)
-        );
-    }
-
-    @Test
-    void should_be_valid_if_no_contains_is_present() {
-        assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minContains", 2).build())
-                .asAssertion()
-                .isValidFor(Json.createArrayBuilder().add("foo").build()),
             is(true)
         );
     }
@@ -187,7 +187,7 @@ class MinContainsKeywordTest {
     private static Keyword createKeywordFrom(final JsonObject json) {
         return new AffectsKeywordType(
             "minContains",
-            "contains",
+            List.of(new Affects("contains", new Affects.ReplaceKeyword())),
             (a, s) ->
                 new IntegerKeywordType(
                     JsonProvider.provider(),

@@ -33,7 +33,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Function;
 
-public class AffectedByKeywordType implements KeywordType {
+public final class AffectedByKeywordType implements KeywordType {
 
     private final String name;
     private final Collection<AffectedBy> affectedBy;
@@ -44,6 +44,9 @@ public class AffectedByKeywordType implements KeywordType {
         final Collection<AffectedBy> affectedBy,
         final Function<JsonSchema, Keyword> keywordCreator
     ) {
+        if (affectedBy.isEmpty()) {
+            throw new IllegalArgumentException("affectedBy can not be empty!");
+        }
         this.name = Objects.requireNonNull(name);
         this.affectedBy = List.copyOf(affectedBy);
         this.keywordCreator = Objects.requireNonNull(keywordCreator);

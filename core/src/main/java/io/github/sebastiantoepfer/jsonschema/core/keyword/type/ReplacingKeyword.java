@@ -40,15 +40,15 @@ import java.util.Objects;
 
 final class ReplacingKeyword implements Keyword {
 
-    private final Keyword affectedKeyword;
+    private final Keyword keywordToReplace;
     private final Collection<KeywordCategory> categoriesToReplace;
 
-    public ReplacingKeyword(final Keyword affectedKeyword) {
-        this(affectedKeyword, EnumSet.of(KeywordCategory.APPLICATOR, KeywordCategory.ASSERTION));
+    public ReplacingKeyword(final Keyword keywordToReplace) {
+        this(keywordToReplace, EnumSet.of(KeywordCategory.APPLICATOR, KeywordCategory.ASSERTION));
     }
 
-    public ReplacingKeyword(final Keyword affectedKeyword, final Collection<KeywordCategory> categoriesToReplace) {
-        this.affectedKeyword = Objects.requireNonNull(affectedKeyword);
+    public ReplacingKeyword(final Keyword keywordToReplace, final Collection<KeywordCategory> categoriesToReplace) {
+        this.keywordToReplace = Objects.requireNonNull(keywordToReplace);
         this.categoriesToReplace = List.copyOf(categoriesToReplace);
     }
 
@@ -57,7 +57,7 @@ final class ReplacingKeyword implements Keyword {
         if (categoriesToReplace.contains(KeywordCategory.IDENTIFIER)) {
             throw new UnsupportedOperationException();
         } else {
-            return affectedKeyword.asIdentifier();
+            return keywordToReplace.asIdentifier();
         }
     }
 
@@ -66,7 +66,7 @@ final class ReplacingKeyword implements Keyword {
         if (categoriesToReplace.contains(KeywordCategory.ASSERTION)) {
             throw new UnsupportedOperationException();
         } else {
-            return affectedKeyword.asAssertion();
+            return keywordToReplace.asAssertion();
         }
     }
 
@@ -75,7 +75,7 @@ final class ReplacingKeyword implements Keyword {
         if (categoriesToReplace.contains(KeywordCategory.ANNOTATION)) {
             throw new UnsupportedOperationException();
         } else {
-            return affectedKeyword.asAnnotation();
+            return keywordToReplace.asAnnotation();
         }
     }
 
@@ -84,7 +84,7 @@ final class ReplacingKeyword implements Keyword {
         if (categoriesToReplace.contains(KeywordCategory.APPLICATOR)) {
             throw new UnsupportedOperationException();
         } else {
-            return affectedKeyword.asApplicator();
+            return keywordToReplace.asApplicator();
         }
     }
 
@@ -93,22 +93,22 @@ final class ReplacingKeyword implements Keyword {
         if (categoriesToReplace.contains(KeywordCategory.RESERVED_LOCATION)) {
             throw new UnsupportedOperationException();
         } else {
-            return affectedKeyword.asReservedLocation();
+            return keywordToReplace.asReservedLocation();
         }
     }
 
     @Override
     public Collection<Keyword.KeywordCategory> categories() {
-        return affectedKeyword.categories().stream().filter(not(categoriesToReplace::contains)).collect(toSet());
+        return keywordToReplace.categories().stream().filter(not(categoriesToReplace::contains)).collect(toSet());
     }
 
     @Override
     public boolean hasName(final String string) {
-        return affectedKeyword.hasName(string);
+        return keywordToReplace.hasName(string);
     }
 
     @Override
     public <T extends Media<T>> T printOn(final T media) {
-        return affectedKeyword.printOn(media);
+        return keywordToReplace.printOn(media);
     }
 }

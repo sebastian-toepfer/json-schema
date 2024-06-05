@@ -58,7 +58,7 @@ public final class ApplicatorVocabulary implements Vocabulary {
             new NamedJsonSchemaKeywordType(PatternPropertiesKeyword.NAME, PatternPropertiesKeyword::new),
             new SubSchemaKeywordType(ItemsKeyword.NAME, ItemsKeyword::new),
             new SchemaArrayKeywordType(PrefixItemsKeyword.NAME, PrefixItemsKeyword::new),
-            new ArraySubSchemaKeywordType(PrefixItemsKeyword.NAME, PrefixItemsKeyword::new),
+            new SchemaArrayKeywordType(PrefixItemsKeyword.NAME, PrefixItemsKeyword::new),
             new AffectedByKeywordType(
                 ContainsKeyword.NAME,
                 List.of(

@@ -24,6 +24,7 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.validation;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.Affects;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectsKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AnyKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ArrayKeywordType;
@@ -37,6 +38,7 @@ import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
 import jakarta.json.spi.JsonProvider;
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 public final class ValidationVocabulary implements Vocabulary {
@@ -65,7 +67,7 @@ public final class ValidationVocabulary implements Vocabulary {
             new IntegerKeywordType(jsonContext, MinItemsKeyword.NAME, MinItemsKeyword::new),
             new AffectsKeywordType(
                 MaxContainsKeyword.NAME,
-                "contains",
+                List.of(new Affects("contains", new Affects.ReplaceKeyword())),
                 (affects, schema) ->
                     new IntegerKeywordType(
                         JsonProvider.provider(),
@@ -75,13 +77,13 @@ public final class ValidationVocabulary implements Vocabulary {
             ),
             new AffectsKeywordType(
                 MinContainsKeyword.NAME,
-                "contains",
-                (a, s) ->
+                List.of(new Affects("contains", new Affects.ReplaceKeyword())),
+                (affects, schema) ->
                     new IntegerKeywordType(
                         JsonProvider.provider(),
                         MinContainsKeyword.NAME,
-                        value -> new MinContainsKeyword(a, value)
-                    ).createKeyword(s)
+                        value -> new MinContainsKeyword(affects, value)
+                    ).createKeyword(schema)
             ),
             new BooleanKeywordType(jsonContext, UniqueItemsKeyword.NAME, UniqueItemsKeyword::new)
         );

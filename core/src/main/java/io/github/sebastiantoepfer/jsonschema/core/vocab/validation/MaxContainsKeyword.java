@@ -30,6 +30,8 @@ import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
 import java.math.BigInteger;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -47,11 +49,11 @@ import java.util.Objects;
 final class MaxContainsKeyword implements Assertion {
 
     static final String NAME = "maxContains";
-    private final Annotation affects;
+    private final Collection<Annotation> affects;
     private final BigInteger maxContains;
 
-    public MaxContainsKeyword(final Annotation affects, final BigInteger maxContains) {
-        this.affects = Objects.requireNonNull(affects);
+    public MaxContainsKeyword(final Collection<Annotation> affects, final BigInteger maxContains) {
+        this.affects = List.copyOf(affects);
         this.maxContains = Objects.requireNonNull(maxContains);
     }
 
@@ -67,20 +69,21 @@ final class MaxContainsKeyword implements Assertion {
 
     @Override
     public boolean isValidFor(final JsonValue instance) {
-        return (
-            !InstanceType.ARRAY.isInstance(instance) || isValidFor(affects.valueFor(instance), instance.asJsonArray())
+        return (!InstanceType.ARRAY.isInstance(instance) || isValidFor(instance.asJsonArray()));
+    }
+
+    private boolean isValidFor(final JsonArray instance) {
+        return isValidFor(
+            affects
+                .stream()
+                .map(a -> a.valueFor(instance))
+                .map(v -> new NumberOfMatches(instance, v))
+                .mapToInt(NumberOfMatches::count)
+                .sum()
         );
     }
 
-    private boolean isValidFor(final JsonValue containing, final JsonArray values) {
-        final boolean result;
-        if (JsonValue.NULL.equals(containing)) {
-            result = true;
-        } else if (JsonValue.TRUE.equals(containing)) {
-            result = values.size() <= maxContains.intValue();
-        } else {
-            result = containing.asJsonArray().size() <= maxContains.intValue();
-        }
-        return result;
+    private boolean isValidFor(final int containing) {
+        return containing <= maxContains.intValue();
     }
 }
