@@ -27,7 +27,7 @@ import io.github.sebastiantoepfer.jsonschema.Vocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.applicator.ApplicatorVocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.content.ContentVocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreVocabulary;
-import io.github.sebastiantoepfer.jsonschema.core.vocab.format.FormatVocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.format.FormatAnnotationVocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.meta.MetaDataVocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.unevaluated.UnevaluatedVocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.validation.ValidationVocabulary;
@@ -49,7 +49,7 @@ public final class OfficialVocabularies implements LazyVocabularies {
             new ApplicatorVocabulary(),
             new ValidationVocabulary(JSONP),
             new MetaDataVocabulary(),
-            new FormatVocabulary(),
+            new FormatAnnotationVocabulary(),
             new UnevaluatedVocabulary(),
             new ContentVocabulary()
         );
