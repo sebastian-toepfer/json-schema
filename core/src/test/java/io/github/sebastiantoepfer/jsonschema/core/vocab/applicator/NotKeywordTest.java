@@ -29,11 +29,9 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SubSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
@@ -42,7 +40,7 @@ class NotKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword items = createKeywordFrom(Json.createObjectBuilder().add("not", JsonValue.FALSE).build());
+        final Keyword items = new NotKeyword(JsonSchemas.load(JsonValue.FALSE));
 
         assertThat(items.hasName("not"), is(true));
         assertThat(items.hasName("test"), is(false));
@@ -51,18 +49,16 @@ class NotKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add(
-                        "not",
-                        Json.createObjectBuilder()
-                            .add(
-                                "properties",
-                                Json.createObjectBuilder().add("foo", Json.createObjectBuilder().add("type", "string"))
-                            )
-                            .add("required", Json.createArrayBuilder().add("foo"))
-                    )
-                    .build()
+            new NotKeyword(
+                JsonSchemas.load(
+                    Json.createObjectBuilder()
+                        .add(
+                            "properties",
+                            Json.createObjectBuilder().add("foo", Json.createObjectBuilder().add("type", "string"))
+                        )
+                        .add("required", Json.createArrayBuilder().add("foo"))
+                        .build()
+                )
             ).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("not"), hasKey("properties"))
         );
@@ -71,7 +67,7 @@ class NotKeywordTest {
     @Test
     void should_be_valid_if_schema_not_apply() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("not", JsonValue.FALSE).build())
+            new NotKeyword(JsonSchemas.load(JsonValue.FALSE))
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("foo", "foo").build()),
             is(true)
@@ -81,16 +77,10 @@ class NotKeywordTest {
     @Test
     void should_be_invalid_if_schema_apply() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("not", JsonValue.TRUE).build())
+            new NotKeyword(JsonSchemas.load(JsonValue.TRUE))
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("foo", 3).add("bar", "bar").build()),
             is(false)
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new SubSchemaKeywordType("not", NotKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

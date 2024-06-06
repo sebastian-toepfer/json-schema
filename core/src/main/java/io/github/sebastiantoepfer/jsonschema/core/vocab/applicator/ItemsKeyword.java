@@ -107,12 +107,18 @@ final class ItemsKeyword implements Applicator, Annotation {
     }
 
     private int startIndexFor(final JsonArray value) {
-        return affectedBys
-            .stream()
-            .map(anno -> anno.valueFor(value))
-            .map(v -> new MaxIndexCalculator(value, v))
-            .mapToInt(MaxIndexCalculator::maxIndex)
-            .sum();
+        final int result;
+        if (affectedBys.isEmpty()) {
+            result = -1;
+        } else {
+            result = affectedBys
+                .stream()
+                .map(anno -> anno.valueFor(value))
+                .map(v -> new MaxIndexCalculator(value, v))
+                .mapToInt(MaxIndexCalculator::maxIndex)
+                .sum();
+        }
+        return result;
     }
 
     private static class MaxIndexCalculator {
