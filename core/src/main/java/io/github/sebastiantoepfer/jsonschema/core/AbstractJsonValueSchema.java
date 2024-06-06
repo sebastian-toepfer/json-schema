@@ -51,4 +51,9 @@ abstract class AbstractJsonValueSchema implements JsonSchema {
     public final JsonArray asJsonArray() {
         return value.asJsonArray();
     }
+
+    @Override
+    public String toString() {
+        return value.toString();
+    }
 }

@@ -109,4 +109,15 @@ class DefaultJsonSubSchemaTest {
             hasEntry("type", "array")
         );
     }
+
+    @Test
+    void should_has_a_nice_to_string() {
+        assertThat(
+            new DefaultJsonSubSchema(
+                new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("test", JsonValue.TRUE).build()),
+                new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("type", "array").build())
+            ).toString(),
+            is("{\"type\":\"array\"}")
+        );
+    }
 }
