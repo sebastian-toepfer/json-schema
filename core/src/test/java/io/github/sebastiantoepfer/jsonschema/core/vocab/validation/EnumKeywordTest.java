@@ -29,11 +29,8 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ArrayKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
@@ -42,9 +39,7 @@ class EnumKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword enumKeyword = createKeywordFrom(
-            Json.createObjectBuilder().add("enum", JsonValue.EMPTY_JSON_ARRAY).build()
-        );
+        final Keyword enumKeyword = new EnumKeyword(JsonValue.EMPTY_JSON_ARRAY);
 
         assertThat(enumKeyword.hasName("enum"), is(true));
         assertThat(enumKeyword.hasName("test"), is(false));
@@ -53,9 +48,7 @@ class EnumKeywordTest {
     @Test
     void should_valid_for_string_value_which_is_in_array() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("enum", Json.createArrayBuilder().add("TEST").add("VALID")).build()
-            )
+            new EnumKeyword(Json.createArrayBuilder().add("TEST").add("VALID").build())
                 .asAssertion()
                 .isValidFor(Json.createValue("TEST")),
             is(true)
@@ -65,9 +58,7 @@ class EnumKeywordTest {
     @Test
     void should_be_invalid_for_number_which_is_not_in_array() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("enum", Json.createArrayBuilder().add("TEST").add("VALID")).build()
-            )
+            new EnumKeyword(Json.createArrayBuilder().add("TEST").add("VALID").build())
                 .asAssertion()
                 .isValidFor(Json.createValue(2)),
             is(false)
@@ -77,9 +68,7 @@ class EnumKeywordTest {
     @Test
     void should_be_valid_for_decimal_without_scale_if_number_is_valid() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("enum", Json.createArrayBuilder().add(1)).build())
-                .asAssertion()
-                .isValidFor(Json.createValue(1.0)),
+            new EnumKeyword(Json.createArrayBuilder().add(1).build()).asAssertion().isValidFor(Json.createValue(1.0)),
             is(true)
         );
     }
@@ -87,16 +76,8 @@ class EnumKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("enum", Json.createArrayBuilder().add("TEST").add("VALID")).build()
-            ).printOn(new HashMapMedia()),
+            new EnumKeyword(Json.createArrayBuilder().add("TEST").add("VALID").build()).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("enum"), containsInAnyOrder("TEST", "VALID"))
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new ArrayKeywordType("enum", EnumKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

@@ -28,13 +28,9 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.StringKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
@@ -42,9 +38,7 @@ class PatternKeywordTest {
 
     @Test
     void should_be_know_his_name() {
-        final Keyword pattern = createKeywordFrom(
-            Json.createObjectBuilder().add("pattern", Json.createValue("a")).build()
-        );
+        final Keyword pattern = new PatternKeyword("a");
 
         assertThat(pattern.hasName("pattern"), is(true));
         assertThat(pattern.hasName("test"), is(false));
@@ -52,22 +46,13 @@ class PatternKeywordTest {
 
     @Test
     void should_be_valid_for_non_string_value() {
-        assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("pattern", Json.createValue("a")).build())
-                .asAssertion()
-                .isValidFor(JsonValue.TRUE),
-            is(true)
-        );
+        assertThat(new PatternKeyword("a").asAssertion().isValidFor(JsonValue.TRUE), is(true));
     }
 
     @Test
     void should_be_invalid_for_non_matching_value() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("pattern", Json.createValue("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"))
-                    .build()
-            )
+            new PatternKeyword("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$")
                 .asAssertion()
                 .isValidFor(Json.createValue("(888)555-1212 ext. 532")),
             is(false)
@@ -77,11 +62,7 @@ class PatternKeywordTest {
     @Test
     void should_be_valid_matching_value() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("pattern", Json.createValue("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"))
-                    .build()
-            )
+            new PatternKeyword("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$")
                 .asAssertion()
                 .isValidFor(Json.createValue("(888)555-1212")),
             is(true)
@@ -91,18 +72,8 @@ class PatternKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("pattern", Json.createValue("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"))
-                    .build()
-            ).printOn(new HashMapMedia()),
+            new PatternKeyword("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$").printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("pattern"), is("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"))
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new StringKeywordType(JsonProvider.provider(), "pattern", PatternKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

@@ -28,13 +28,9 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NumberKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
 import java.math.BigDecimal;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
@@ -43,9 +39,7 @@ class ExclusiveMinimumKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword minimum = createKeywordFrom(
-            Json.createObjectBuilder().add("exclusiveMinimum", Json.createValue(1)).build()
-        );
+        final Keyword minimum = new ExclusiveMinimumKeyword(BigDecimal.valueOf(1));
 
         assertThat(minimum.hasName("exclusiveMinimum"), is(true));
         assertThat(minimum.hasName("test"), is(false));
@@ -54,9 +48,7 @@ class ExclusiveMinimumKeywordTest {
     @Test
     void should_be_valid_for_non_number_values() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("exclusiveMinimum", Json.createValue(1)).build())
-                .asAssertion()
-                .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
+            new ExclusiveMinimumKeyword(BigDecimal.valueOf(1)).asAssertion().isValidFor(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
         );
     }
@@ -64,9 +56,7 @@ class ExclusiveMinimumKeywordTest {
     @Test
     void should_be_invalid_for_smaller_numbers() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("exclusiveMinimum", Json.createValue(0)).build())
-                .asAssertion()
-                .isValidFor(Json.createValue(-1)),
+            new ExclusiveMinimumKeyword(BigDecimal.valueOf(0)).asAssertion().isValidFor(Json.createValue(-1)),
             is(false)
         );
     }
@@ -74,9 +64,7 @@ class ExclusiveMinimumKeywordTest {
     @Test
     void should_be_invalid_for_equals_numbers() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("exclusiveMinimum", Json.createValue(0)).build())
-                .asAssertion()
-                .isValidFor(Json.createValue(0)),
+            new ExclusiveMinimumKeyword(BigDecimal.valueOf(0)).asAssertion().isValidFor(Json.createValue(0)),
             is(false)
         );
     }
@@ -84,9 +72,7 @@ class ExclusiveMinimumKeywordTest {
     @Test
     void shhould_be_valid_for_greater_numbers() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("exclusiveMinimum", Json.createValue(0)).build())
-                .asAssertion()
-                .isValidFor(Json.createValue(1)),
+            new ExclusiveMinimumKeyword(BigDecimal.valueOf(0)).asAssertion().isValidFor(Json.createValue(1)),
             is(true)
         );
     }
@@ -94,18 +80,8 @@ class ExclusiveMinimumKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("exclusiveMinimum", Json.createValue(0)).build()).printOn(
-                new HashMapMedia()
-            ),
+            new ExclusiveMinimumKeyword(BigDecimal.valueOf(0)).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("exclusiveMinimum"), is(BigDecimal.valueOf(0)))
         );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new NumberKeywordType(
-            JsonProvider.provider(),
-            "exclusiveMinimum",
-            ExclusiveMinimumKeyword::new
-        ).createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

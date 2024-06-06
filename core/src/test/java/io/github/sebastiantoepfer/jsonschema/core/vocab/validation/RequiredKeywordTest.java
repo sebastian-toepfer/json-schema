@@ -29,14 +29,11 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.StringArrayKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
 import java.math.BigDecimal;
+import java.util.List;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
@@ -44,9 +41,7 @@ class RequiredKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword required = createKeywordFrom(
-            Json.createObjectBuilder().add("required", JsonValue.EMPTY_JSON_ARRAY).build()
-        );
+        final Keyword required = new RequiredKeyword(List.of());
 
         assertThat(required.hasName("required"), is(true));
         assertThat(required.hasName("test"), is(false));
@@ -55,9 +50,7 @@ class RequiredKeywordTest {
     @Test
     void should_invalid_if_not_all_properties_in_the_instance() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("required", Json.createArrayBuilder().add("foo").add("bar")).build()
-            )
+            new RequiredKeyword(List.of("foo", "bar"))
                 .asAssertion()
                 .isValidFor(Json.createObjectBuilder().add("foo", BigDecimal.ONE).build()),
             is(false)
@@ -67,11 +60,7 @@ class RequiredKeywordTest {
     @Test
     void should_valid_for_non_objects() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("required", Json.createArrayBuilder().add("foo").add("bar")).build()
-            )
-                .asAssertion()
-                .isValidFor(JsonValue.EMPTY_JSON_ARRAY),
+            new RequiredKeyword(List.of("foo", "bar")).asAssertion().isValidFor(JsonValue.EMPTY_JSON_ARRAY),
             is(true)
         );
     }
@@ -79,9 +68,7 @@ class RequiredKeywordTest {
     @Test
     void should_valid_if_all_properties_are_in_the_instance() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("required", Json.createArrayBuilder().add("foo").add("bar")).build()
-            )
+            new RequiredKeyword(List.of("foo", "bar"))
                 .asAssertion()
                 .isValidFor(Json.createObjectBuilder().add("foo", BigDecimal.ONE).add("bar", "test").build()),
             is(true)
@@ -91,16 +78,8 @@ class RequiredKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("required", Json.createArrayBuilder().add("foo").add("bar")).build()
-            ).printOn(new HashMapMedia()),
+            new RequiredKeyword(List.of("foo", "bar")).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("required"), containsInAnyOrder("foo", "bar"))
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new StringArrayKeywordType(JsonProvider.provider(), "required", RequiredKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

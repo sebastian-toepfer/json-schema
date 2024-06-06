@@ -28,13 +28,9 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.IntegerKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
 import java.math.BigInteger;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
@@ -43,7 +39,7 @@ class MaxLengthKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword keyword = createKeywordFrom(Json.createObjectBuilder().add("maxLength", 1).build());
+        final Keyword keyword = new MaxLengthKeyword(BigInteger.valueOf(1));
 
         assertThat(keyword.hasName("test"), is(false));
         assertThat(keyword.hasName("maxLength"), is(true));
@@ -52,9 +48,7 @@ class MaxLengthKeywordTest {
     @Test
     void should_be_valid_for_non_string_values() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("maxLength", Json.createValue(2)).build())
-                .asAssertion()
-                .isValidFor(JsonValue.EMPTY_JSON_ARRAY),
+            new MaxLengthKeyword(BigInteger.valueOf(2)).asAssertion().isValidFor(JsonValue.EMPTY_JSON_ARRAY),
             is(true)
         );
     }
@@ -62,9 +56,7 @@ class MaxLengthKeywordTest {
     @Test
     void should_be_invalid_for_longer_string() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("maxLength", Json.createValue(2)).build())
-                .asAssertion()
-                .isValidFor(Json.createValue("1234")),
+            new MaxLengthKeyword(BigInteger.valueOf(2)).asAssertion().isValidFor(Json.createValue("1234")),
             is(false)
         );
     }
@@ -72,9 +64,7 @@ class MaxLengthKeywordTest {
     @Test
     void should_be_valid_for_string_with_length_is_equal() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("maxLength", Json.createValue(2)).build())
-                .asAssertion()
-                .isValidFor(Json.createValue("12")),
+            new MaxLengthKeyword(BigInteger.valueOf(2)).asAssertion().isValidFor(Json.createValue("12")),
             is(true)
         );
     }
@@ -82,9 +72,7 @@ class MaxLengthKeywordTest {
     @Test
     void should_ne_valid_for_string_with_is_shorter() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("maxLength", Json.createValue(2)).build())
-                .asAssertion()
-                .isValidFor(Json.createValue("1")),
+            new MaxLengthKeyword(BigInteger.valueOf(2)).asAssertion().isValidFor(Json.createValue("1")),
             is(true)
         );
     }
@@ -92,16 +80,8 @@ class MaxLengthKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("maxLength", Json.createValue(2)).build()).printOn(
-                new HashMapMedia()
-            ),
+            new MaxLengthKeyword(BigInteger.valueOf(2)).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("maxLength"), is(BigInteger.valueOf(2L)))
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new IntegerKeywordType(JsonProvider.provider(), "maxLength", MaxLengthKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

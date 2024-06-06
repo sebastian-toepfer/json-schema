@@ -28,13 +28,9 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.IntegerKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
 import java.math.BigInteger;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
@@ -43,7 +39,7 @@ class MinPropertiesKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword enumKeyword = createKeywordFrom(Json.createObjectBuilder().add("minProperties", 1).build());
+        final Keyword enumKeyword = new MinPropertiesKeyword(BigInteger.valueOf(1));
 
         assertThat(enumKeyword.hasName("minProperties"), is(true));
         assertThat(enumKeyword.hasName("test"), is(false));
@@ -52,7 +48,7 @@ class MinPropertiesKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minProperties", 1).build()).printOn(new HashMapMedia()),
+            new MinPropertiesKeyword(BigInteger.valueOf(1)).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("minProperties"), is(BigInteger.valueOf(1)))
         );
     }
@@ -60,9 +56,7 @@ class MinPropertiesKeywordTest {
     @Test
     void should_be_valid_for_non_objects() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minProperties", 1).build())
-                .asAssertion()
-                .isValidFor(JsonValue.EMPTY_JSON_ARRAY),
+            new MinPropertiesKeyword(BigInteger.valueOf(1)).asAssertion().isValidFor(JsonValue.EMPTY_JSON_ARRAY),
             is(true)
         );
     }
@@ -70,7 +64,7 @@ class MinPropertiesKeywordTest {
     @Test
     void should_be_valid_for_excat_properties_count() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minProperties", 1).build())
+            new MinPropertiesKeyword(BigInteger.valueOf(1))
                 .asAssertion()
                 .isValidFor(Json.createObjectBuilder().add("foo", 1).build()),
             is(true)
@@ -80,7 +74,7 @@ class MinPropertiesKeywordTest {
     @Test
     void should_be_valid_for_more_properties() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minProperties", 1).build())
+            new MinPropertiesKeyword(BigInteger.valueOf(1))
                 .asAssertion()
                 .isValidFor(Json.createObjectBuilder().add("foo", 1).add("bar", "hi").build()),
             is(true)
@@ -90,18 +84,10 @@ class MinPropertiesKeywordTest {
     @Test
     void should_be_invalid_for_less_properties() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minProperties", 2).build())
+            new MinPropertiesKeyword(BigInteger.valueOf(2))
                 .asAssertion()
                 .isValidFor(Json.createObjectBuilder().add("foo", 1).build()),
             is(false)
         );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new IntegerKeywordType(
-            JsonProvider.provider(),
-            "minProperties",
-            MinPropertiesKeyword::new
-        ).createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

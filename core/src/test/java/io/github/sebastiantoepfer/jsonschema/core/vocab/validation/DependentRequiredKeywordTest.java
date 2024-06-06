@@ -30,8 +30,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ObjectKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -62,9 +60,7 @@ class DependentRequiredKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword enumKeyword = createKeywordFrom(
-            Json.createObjectBuilder().add("dependentRequired", JsonValue.EMPTY_JSON_OBJECT).build()
-        );
+        final Keyword enumKeyword = new DependentRequiredKeyword(JsonValue.EMPTY_JSON_OBJECT);
 
         assertThat(enumKeyword.hasName("dependentRequired"), is(true));
         assertThat(enumKeyword.hasName("test"), is(false));
@@ -73,13 +69,8 @@ class DependentRequiredKeywordTest {
     @Test
     void should_be_valid_if_both_properties_available() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add(
-                        "dependentRequired",
-                        Json.createObjectBuilder().add("license", Json.createArrayBuilder().add("age"))
-                    )
-                    .build()
+            new DependentRequiredKeyword(
+                Json.createObjectBuilder().add("license", Json.createArrayBuilder().add("age")).build()
             )
                 .asAssertion()
                 .isValidFor(
@@ -92,13 +83,8 @@ class DependentRequiredKeywordTest {
     @Test
     void should_be_valid_if_required_properties_is_missing() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add(
-                        "dependentRequired",
-                        Json.createObjectBuilder().add("license", Json.createArrayBuilder().add("age"))
-                    )
-                    .build()
+            new DependentRequiredKeyword(
+                Json.createObjectBuilder().add("license", Json.createArrayBuilder().add("age")).build()
             )
                 .asAssertion()
                 .isValidFor(Json.createObjectBuilder().add("name", "John").add("license", "XYZ123").build()),
@@ -109,13 +95,8 @@ class DependentRequiredKeywordTest {
     @Test
     void should_be_valid_if_both_properties_are_missing() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add(
-                        "dependentRequired",
-                        Json.createObjectBuilder().add("license", Json.createArrayBuilder().add("age"))
-                    )
-                    .build()
+            new DependentRequiredKeyword(
+                Json.createObjectBuilder().add("license", Json.createArrayBuilder().add("age")).build()
             )
                 .asAssertion()
                 .isValidFor(Json.createObjectBuilder().add("name", "John").build()),
@@ -126,21 +107,10 @@ class DependentRequiredKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add(
-                        "dependentRequired",
-                        Json.createObjectBuilder().add("license", Json.createArrayBuilder().add("age"))
-                    )
-                    .build()
+            new DependentRequiredKeyword(
+                Json.createObjectBuilder().add("license", Json.createArrayBuilder().add("age")).build()
             ).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("dependentRequired"), hasEntry(is("license"), contains("age")))
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new ObjectKeywordType("dependentRequired", DependentRequiredKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

@@ -28,13 +28,9 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.IntegerKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
 import java.math.BigInteger;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
@@ -43,9 +39,7 @@ class MinLengthKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword keyword = createKeywordFrom(
-            Json.createObjectBuilder().add("minLength", Json.createValue(1)).build()
-        );
+        final Keyword keyword = new MinLengthKeyword(BigInteger.valueOf(1));
 
         assertThat(keyword.hasName("test"), is(false));
         assertThat(keyword.hasName("minLength"), is(true));
@@ -54,9 +48,7 @@ class MinLengthKeywordTest {
     @Test
     void should_be_invalid_with_shorter_string() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build())
-                .asAssertion()
-                .isValidFor(Json.createValue("A")),
+            new MinLengthKeyword(BigInteger.valueOf(2)).asAssertion().isValidFor(Json.createValue("A")),
             is(false)
         );
     }
@@ -64,9 +56,7 @@ class MinLengthKeywordTest {
     @Test
     void should_be_valid_with_string_with_equal_length() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build())
-                .asAssertion()
-                .isValidFor(Json.createValue("AB")),
+            new MinLengthKeyword(BigInteger.valueOf(2)).asAssertion().isValidFor(Json.createValue("AB")),
             is(true)
         );
     }
@@ -74,9 +64,7 @@ class MinLengthKeywordTest {
     @Test
     void should_be_valid_with_string_that_is_longer() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build())
-                .asAssertion()
-                .isValidFor(Json.createValue("ABC")),
+            new MinLengthKeyword(BigInteger.valueOf(2)).asAssertion().isValidFor(Json.createValue("ABC")),
             is(true)
         );
     }
@@ -84,9 +72,7 @@ class MinLengthKeywordTest {
     @Test
     void should_be_valid_for_non_string_values() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build())
-                .asAssertion()
-                .isValidFor(JsonValue.EMPTY_JSON_ARRAY),
+            new MinLengthKeyword(BigInteger.valueOf(2)).asAssertion().isValidFor(JsonValue.EMPTY_JSON_ARRAY),
             is(true)
         );
     }
@@ -94,16 +80,8 @@ class MinLengthKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minLength", Json.createValue(2)).build()).printOn(
-                new HashMapMedia()
-            ),
+            new MinLengthKeyword(BigInteger.valueOf(2)).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("minLength"), is(BigInteger.valueOf(2L)))
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new IntegerKeywordType(JsonProvider.provider(), "minLength", MinLengthKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }
