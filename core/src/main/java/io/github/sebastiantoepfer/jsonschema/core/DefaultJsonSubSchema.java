@@ -107,4 +107,9 @@ final class DefaultJsonSubSchema implements JsonSubSchema {
     public JsonObject asJsonObject() {
         return schema.asJsonObject();
     }
+
+    @Override
+    public String toString() {
+        return schema.toString();
+    }
 }
