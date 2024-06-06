@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import jakarta.json.JsonValue;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
@@ -37,5 +38,10 @@ class FalseJsonSchemaTest {
     @ArgumentsSource(JsonValuesArguments.class)
     void should_be_invalid_for_everything(final JsonValue value) {
         assertThat(new FalseJsonSchema().validator().isValid(value), is(not(true)));
+    }
+
+    @Test
+    void should_has_a_nice_to_string() {
+        assertThat(new FalseJsonSchema().toString(), is("false"));
     }
 }

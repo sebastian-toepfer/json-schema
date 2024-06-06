@@ -45,4 +45,9 @@ class EmptyJsonSchemaTest {
     void should_be_printable() {
         assertThat(new EmptyJsonSchema().printOn(new HashMapMedia()), anEmptyMap());
     }
+
+    @Test
+    void should_has_a_nice_to_string() {
+        assertThat(new EmptyJsonSchema().toString(), is("{}"));
+    }
 }
