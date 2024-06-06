@@ -31,13 +31,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.StringKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import jakarta.json.spi.JsonProvider;
-import java.net.URI;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
@@ -111,14 +108,5 @@ class RefKeywordTest {
                 .printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("$ref"), is("#"))
         );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        final JsonSchema schema = new DefaultJsonSchemaFactory().create(json);
-        return new StringKeywordType(
-            JsonProvider.provider(),
-            "$ref",
-            s -> new RefKeyword(schema, URI.create(s))
-        ).createKeyword(schema);
     }
 }
