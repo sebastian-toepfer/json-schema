@@ -28,13 +28,8 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.StringKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
 import java.net.URI;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
@@ -43,37 +38,27 @@ class DynamicRefKeywordTest {
 
     @Test
     void should_create_keyword_with_name() {
-        assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("$dynamicRef", "test").build()).hasName("$dynamicRef"),
-            is(true)
-        );
-    }
-
-    @Test
-    void notFinischedYet() {
-        final Keyword keyword = createKeywordFrom(Json.createObjectBuilder().add("$dynamicRef", "test").build());
+        final Keyword keyword = new DynamicRefKeyword(URI.create("test"));
 
         assertThat(keyword.hasName("$dynamicRef"), is(true));
         assertThat(keyword.hasName("$id"), is(false));
-
-        assertThat(keyword.asApplicator().applyTo(JsonValue.TRUE), is(true));
     }
 
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("$dynamicRef", "test").build()).printOn(
-                new HashMapMedia()
-            ),
+            new DynamicRefKeyword(URI.create("test")).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("$dynamicRef"), is("test"))
         );
     }
 
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new StringKeywordType(
-            JsonProvider.provider(),
-            DynamicRefKeyword.NAME,
-            s -> new DynamicRefKeyword(URI.create(s))
-        ).createKeyword(new DefaultJsonSchemaFactory().create(json));
+    @Test
+    void notFinischedYet() {
+        final Keyword keyword = new DynamicRefKeyword(URI.create("test"));
+
+        assertThat(keyword.hasName("$dynamicRef"), is(true));
+        assertThat(keyword.hasName("$id"), is(false));
+
+        assertThat(keyword.asApplicator().applyTo(JsonValue.TRUE), is(true));
     }
 }

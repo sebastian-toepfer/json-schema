@@ -23,21 +23,11 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
-import io.github.sebastiantoepfer.ddd.common.Media;
-import io.github.sebastiantoepfer.ddd.media.json.JsonObjectPrintable;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinitions;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import java.net.URI;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 /**
  * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-the-vocabulary-keyword
@@ -46,11 +36,11 @@ public final class VocabularyKeywordType implements KeywordType {
 
     @Override
     public String name() {
-        return "$vocabulary";
+        return VocabularyKeyword.NAME;
     }
 
     @Override
-    public VocabularyKeyword createKeyword(final JsonSchema schema) {
+    public VocabularyDefinitions createKeyword(final JsonSchema schema) {
         final JsonValue value = schema.asJsonObject().get((name()));
         final VocabularyKeyword result;
         if (InstanceType.OBJECT.isInstance(value)) {
@@ -63,54 +53,5 @@ public final class VocabularyKeywordType implements KeywordType {
             );
         }
         return result;
-    }
-
-    /**
-     * <b>$vocabulary</b> : <i>Object&lt;URI, Boolean&gt;</i><br/>
-     * This keyword is used in meta-schemas to identify the required and optional vocabularies available for use in<br/>
-     * schemas described by that meta-schema.<br/>
-     * <br/>
-     * <ul>
-     * <li>identifier</li>
-     * </ul>
-     *
-     * source: https://www.learnjsonschema.com/2020-12/core/vocabulary/
-     * spec: https://json-schema.org/draft/2020-12/json-schema-core.html#section-8.1.2
-     */
-    public final class VocabularyKeyword implements Keyword, VocabularyDefinitions {
-
-        private final JsonObject vocabularies;
-
-        VocabularyKeyword(final JsonValue vocabularies) {
-            this(vocabularies.asJsonObject());
-        }
-
-        VocabularyKeyword(final JsonObject vocabularies) {
-            this.vocabularies = Objects.requireNonNull(vocabularies);
-        }
-
-        @Override
-        public <T extends Media<T>> T printOn(final T media) {
-            return media.withValue(name(), new JsonObjectPrintable(vocabularies));
-        }
-
-        @Override
-        public boolean hasName(final String name) {
-            return Objects.equals(name(), name);
-        }
-
-        @Override
-        public Collection<KeywordCategory> categories() {
-            //is a identifier after spec ... but how to implement it as it?
-            return List.of();
-        }
-
-        @Override
-        public Stream<VocabularyDefinition> definitions() {
-            return vocabularies
-                .entrySet()
-                .stream()
-                .map(entry -> new VocabularyDefinition(URI.create(entry.getKey()), entry.getValue() == JsonValue.TRUE));
-        }
     }
 }

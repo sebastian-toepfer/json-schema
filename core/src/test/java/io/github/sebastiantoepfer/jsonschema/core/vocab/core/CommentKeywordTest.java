@@ -28,21 +28,14 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.StringKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.spi.JsonProvider;
 import org.junit.jupiter.api.Test;
 
 class CommentKeywordTest {
 
     @Test
     void should_know_her_name() {
-        final Keyword keyword = createKeywordFrom(
-            Json.createObjectBuilder().add("$comment", Json.createValue("comment")).build()
-        );
+        final Keyword keyword = new CommentKeyword("comment");
 
         assertThat(keyword.hasName("$comment"), is(true));
         assertThat(keyword.hasName("test"), is(false));
@@ -50,17 +43,6 @@ class CommentKeywordTest {
 
     @Test
     void should_be_printable() {
-        assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("$comment", Json.createValue("comment")).build()).printOn(
-                new HashMapMedia()
-            ),
-            hasEntry("$comment", "comment")
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new StringKeywordType(JsonProvider.provider(), "$comment", CommentKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
-        );
+        assertThat(new CommentKeyword("comment").printOn(new HashMapMedia()), hasEntry("$comment", "comment"));
     }
 }

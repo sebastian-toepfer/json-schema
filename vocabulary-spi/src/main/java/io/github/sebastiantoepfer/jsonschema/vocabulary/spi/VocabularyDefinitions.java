@@ -23,8 +23,9 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
 
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import java.util.stream.Stream;
 
-public interface VocabularyDefinitions {
+public interface VocabularyDefinitions extends Keyword {
     Stream<VocabularyDefinition> definitions();
 }

@@ -30,10 +30,8 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinitions;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import java.net.URI;
@@ -44,11 +42,7 @@ class VocabularyKeywordTypeTest {
 
     @Test
     void should_created_keyword_should_know_his_name() {
-        final Keyword vocabulary = new VocabularyKeywordType()
-            .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(Json.createObjectBuilder().add("$vocabulary", JsonValue.EMPTY_JSON_OBJECT).build())
-            );
+        final Keyword vocabulary = new VocabularyKeyword(JsonValue.EMPTY_JSON_OBJECT);
 
         assertThat(vocabulary.hasName("$vocabulary"), is(true));
         assertThat(vocabulary.hasName("$id"), is(false));
@@ -57,20 +51,13 @@ class VocabularyKeywordTypeTest {
     @Test
     void should_create_definitions() {
         assertThat(
-            ((VocabularyDefinitions) new VocabularyKeywordType()
-                    .createKeyword(
-                        new DefaultJsonSchemaFactory()
-                            .create(
-                                Json.createObjectBuilder()
-                                    .add(
-                                        "$vocabulary",
-                                        Json.createObjectBuilder()
-                                            .add("https://json-schema.org/draft/2020-12/vocab/core", true)
-                                            .add("http://openapi.org/test", false)
-                                    )
-                                    .build()
-                            )
-                    )).definitions()
+            new VocabularyKeyword(
+                Json.createObjectBuilder()
+                    .add("https://json-schema.org/draft/2020-12/vocab/core", true)
+                    .add("http://openapi.org/test", false)
+                    .build()
+            )
+                .definitions()
                 .toList(),
             containsInAnyOrder(
                 new VocabularyDefinition(URI.create("https://json-schema.org/draft/2020-12/vocab/core"), true),
@@ -82,21 +69,12 @@ class VocabularyKeywordTypeTest {
     @Test
     void should_be_printable() {
         assertThat(
-            new VocabularyKeywordType()
-                .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(
-                            Json.createObjectBuilder()
-                                .add(
-                                    "$vocabulary",
-                                    Json.createObjectBuilder()
-                                        .add("https://json-schema.org/draft/2020-12/vocab/core", true)
-                                        .add("http://openapi.org/test", false)
-                                )
-                                .build()
-                        )
-                )
-                .printOn(new HashMapMedia()),
+            new VocabularyKeyword(
+                Json.createObjectBuilder()
+                    .add("https://json-schema.org/draft/2020-12/vocab/core", true)
+                    .add("http://openapi.org/test", false)
+                    .build()
+            ).printOn(new HashMapMedia()),
             (Matcher) hasEntry(
                 is("$vocabulary"),
                 allOf(
