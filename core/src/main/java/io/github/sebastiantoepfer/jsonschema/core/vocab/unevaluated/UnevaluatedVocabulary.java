@@ -24,9 +24,14 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.unevaluated;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.Affects;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectsKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SubSchemaKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
+import jakarta.json.JsonValue;
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -41,7 +46,26 @@ public final class UnevaluatedVocabulary implements Vocabulary {
     private final Vocabulary vocab;
 
     public UnevaluatedVocabulary() {
-        this.vocab = new DefaultVocabulary(URI.create("https://json-schema.org/draft/2020-12/vocab/unevaluated"));
+        this.vocab = new DefaultVocabulary(
+            URI.create("https://json-schema.org/draft/2020-12/vocab/unevaluated"),
+            List.of(
+                //must be a affectedbykeyword -> but current impl. doesnt' do this in this way :(,
+                //must understand how they works .. and than recreate the logic!
+                new AffectsKeywordType(
+                    UnevaluatedPropertiesKeyword.NAME,
+                    List.of(
+                        new Affects("properties", JsonValue.EMPTY_JSON_ARRAY),
+                        new Affects("patternProperties ", JsonValue.EMPTY_JSON_ARRAY),
+                        new Affects("additionalProperties ", JsonValue.EMPTY_JSON_ARRAY)
+                    ),
+                    (annotations, schema) ->
+                        new SubSchemaKeywordType(
+                            UnevaluatedPropertiesKeyword.NAME,
+                            s -> new UnevaluatedPropertiesKeyword(annotations, s)
+                        ).createKeyword(schema)
+                )
+            )
+        );
     }
 
     @Override
@@ -51,6 +75,6 @@ public final class UnevaluatedVocabulary implements Vocabulary {
 
     @Override
     public Optional<KeywordType> findKeywordTypeByName(final String name) {
-        return Optional.empty();
+        return vocab.findKeywordTypeByName(name);
     }
 }
