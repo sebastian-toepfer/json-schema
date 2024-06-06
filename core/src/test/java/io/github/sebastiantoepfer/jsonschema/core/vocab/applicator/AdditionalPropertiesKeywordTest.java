@@ -30,12 +30,16 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.Affects;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectsKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SubSchemaKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import java.util.List;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
@@ -43,9 +47,7 @@ class AdditionalPropertiesKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword keyword = createKeywordFrom(
-            Json.createObjectBuilder().add("additionalProperties", JsonValue.EMPTY_JSON_OBJECT).build()
-        );
+        final Keyword keyword = new AdditionalPropertiesKeyword(List.of(), JsonSchemas.load(JsonValue.TRUE));
         assertThat(keyword.hasName("additionalProperties"), is(true));
         assertThat(keyword.hasName("test"), is(false));
     }
@@ -147,8 +149,17 @@ class AdditionalPropertiesKeywordTest {
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new SubSchemaKeywordType("additionalProperties", AdditionalPropertiesKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
-        );
+        return new AffectsKeywordType(
+            "additionalProperties",
+            List.of(
+                new Affects("properties", JsonValue.EMPTY_JSON_ARRAY),
+                new Affects("patternProperties", JsonValue.EMPTY_JSON_ARRAY)
+            ),
+            (affects, schema) ->
+                new SubSchemaKeywordType(
+                    "additionalProperties",
+                    s -> new AdditionalPropertiesKeyword(affects, s)
+                ).createKeyword(schema)
+        ).createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }
