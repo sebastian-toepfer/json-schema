@@ -36,11 +36,11 @@ import java.util.Optional;
  * source: https://www.learnjsonschema.com/2020-12/format-annotation/
  * spec: https://json-schema.org/draft/2020-12/json-schema-validation.html#section-7.2.1
  */
-public final class FormatVocabulary implements Vocabulary {
+public final class FormatAnnotationVocabulary implements Vocabulary {
 
     private final Vocabulary vocab;
 
-    public FormatVocabulary() {
+    public FormatAnnotationVocabulary() {
         this.vocab = new DefaultVocabulary(URI.create("https://json-schema.org/draft/2020-12/vocab/format-annotation"));
     }
 
