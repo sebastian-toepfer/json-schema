@@ -34,6 +34,7 @@ import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SchemaArrayKeywor
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SubSchemaKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
+import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import java.net.URI;
 import java.util.List;
@@ -73,7 +74,25 @@ public final class ApplicatorVocabulary implements Vocabulary {
             ),
             new NamedJsonSchemaKeywordType(PatternPropertiesKeyword.NAME, PatternPropertiesKeyword::new),
             new NamedJsonSchemaKeywordType(DependentSchemasKeyword.NAME, DependentSchemasKeyword::new),
-            new SubSchemaKeywordType(ItemsKeyword.NAME, ItemsKeyword::new),
+            //this example shows my missunderstanding from affects, affectedBy and keywordtypes :(
+            new AffectedByKeywordType(
+                ItemsKeyword.NAME,
+                List.of(
+                    new AffectedBy(AffectByType.EXTENDS, "minItems"),
+                    new AffectedBy(AffectByType.EXTENDS, "maxItems")
+                ),
+                //nomally affectedBy too ... but we had the needed function only in affects :(
+                schema ->
+                    new AffectsKeywordType(
+                        ItemsKeyword.NAME,
+                        List.of(new Affects("prefixItems", Json.createValue(-1))),
+                        (affects, subSchema) ->
+                            new SubSchemaKeywordType(
+                                ItemsKeyword.NAME,
+                                s -> new ItemsKeyword(affects, s)
+                            ).createKeyword(subSchema)
+                    ).createKeyword(schema)
+            ),
             new SchemaArrayKeywordType(PrefixItemsKeyword.NAME, PrefixItemsKeyword::new),
             new AffectedByKeywordType(
                 ContainsKeyword.NAME,

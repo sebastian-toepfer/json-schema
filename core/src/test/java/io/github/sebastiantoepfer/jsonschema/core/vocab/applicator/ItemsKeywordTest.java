@@ -27,22 +27,26 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectByType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectedBy;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectedByKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.Affects;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectsKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SubSchemaKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class ItemsKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword items = createKeywordFrom(
-            Json.createObjectBuilder().add("items", JsonValue.EMPTY_JSON_OBJECT).build()
-        );
-
+        final Keyword items = new ItemsKeyword(List.of(), JsonSchemas.load(JsonValue.TRUE));
         assertThat(items.hasName("items"), is(true));
         assertThat(items.hasName("test"), is(false));
     }
@@ -84,7 +88,7 @@ class ItemsKeywordTest {
     @Test
     void should_produces_true_if_is_applied_to_any_instance() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("items", JsonValue.EMPTY_JSON_OBJECT).build())
+            createKeywordFrom(Json.createObjectBuilder().add("items", JsonValue.TRUE).build())
                 .asAnnotation()
                 .valueFor(Json.createArrayBuilder().add(1).build()),
             is(JsonValue.TRUE)
@@ -137,8 +141,17 @@ class ItemsKeywordTest {
     }
 
     private static Keyword createKeywordFrom(final JsonObject json) {
-        return new SubSchemaKeywordType("items", ItemsKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
-        );
+        return new AffectedByKeywordType(
+            "items",
+            List.of(new AffectedBy(AffectByType.EXTENDS, "minItems"), new AffectedBy(AffectByType.EXTENDS, "maxItems")),
+            //nomally affectedBy too ... but we had the needed function only in affects :(
+            schema ->
+                new AffectsKeywordType(
+                    "items",
+                    List.of(new Affects("prefixItems", Json.createValue(-1))),
+                    (affects, inner_schema) ->
+                        new SubSchemaKeywordType("items", s -> new ItemsKeyword(affects, s)).createKeyword(inner_schema)
+                ).createKeyword(schema)
+        ).createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

@@ -25,17 +25,16 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
-import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
-import io.github.sebastiantoepfer.jsonschema.Validator;
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Annotation;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonValue;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * <b>items</b> : <i>Schema</i><br/>
@@ -56,9 +55,11 @@ import java.util.Objects;
 final class ItemsKeyword implements Applicator, Annotation {
 
     static final String NAME = "items";
-    private final JsonSubSchema schema;
+    private final Collection<Annotation> affectedBys;
+    private final JsonSchema schema;
 
-    public ItemsKeyword(final JsonSubSchema schema) {
+    public ItemsKeyword(final Collection<Annotation> affectedBys, final JsonSchema schema) {
+        this.affectedBys = List.copyOf(affectedBys);
         this.schema = Objects.requireNonNull(schema);
     }
 
@@ -89,28 +90,29 @@ final class ItemsKeyword implements Applicator, Annotation {
     }
 
     private boolean appliesToAnyFor(final JsonArray value) {
-        return startIndexFor(value) == -1;
+        return itemsForValidation(value).anyMatch(schema.validator()::isValid);
     }
 
     @Override
     public boolean applyTo(final JsonValue instance) {
-        return !InstanceType.ARRAY.isInstance(instance) || matchesSchema(instance.asJsonArray());
+        return !InstanceType.ARRAY.isInstance(instance) || applyTo(instance.asJsonArray());
     }
 
-    private boolean matchesSchema(final JsonArray items) {
-        final Validator itemValidator = schema.validator();
-        return items.stream().skip(startIndexFor(items) + 1L).allMatch(itemValidator::isValid);
+    private boolean applyTo(final JsonArray items) {
+        return itemsForValidation(items).allMatch(schema.validator()::isValid);
+    }
+
+    private Stream<JsonValue> itemsForValidation(final JsonArray items) {
+        return items.stream().skip(startIndexFor(items) + 1L);
     }
 
     private int startIndexFor(final JsonArray value) {
-        return schema
-            .owner()
-            .keywordByName("prefixItems")
-            .map(Keyword::asAnnotation)
+        return affectedBys
+            .stream()
             .map(anno -> anno.valueFor(value))
             .map(v -> new MaxIndexCalculator(value, v))
-            .map(MaxIndexCalculator::maxIndex)
-            .orElse(-1);
+            .mapToInt(MaxIndexCalculator::maxIndex)
+            .sum();
     }
 
     private static class MaxIndexCalculator {
