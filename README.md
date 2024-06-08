@@ -1,5 +1,14 @@
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=sebastian-toepfer_json-schema&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=sebastian-toepfer_json-schema)
-[![Reproducible Builds](https://img.shields.io/badge/Reproducible_Builds-ok-success?labelColor=1e5b96)](https://github.com/jvm-repo-rebuild/reproducible-central#io.github.sebastian-toepfer.json-schema:json-schema)
+![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/sebastian-toepfer_json-schema?server=https%3A%2F%2Fsonarcloud.io)
+![Sonar Tests](https://img.shields.io/sonar/tests/sebastian-toepfer_json-schema?server=https%3A%2F%2Fsonarcloud.io)
+![Sonar Violations](https://img.shields.io/sonar/violations/sebastian-toepfer_json-schema?server=https%3A%2F%2Fsonarcloud.io)
+
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sebastian-toepfer/json-schema/build.yml)
+
+![Maven Central Version](https://img.shields.io/maven-central/v/io.github.sebastian-toepfer.json-schema/json-schema)
+![GitHub Release](https://img.shields.io/github/v/release/sebastian-toepfer/json-schema)
+![GitHub commits since latest release](https://img.shields.io/github/commits-since/sebastian-toepfer/json-schema/latest)
+
+[![Reproducible Builds](https://img.shields.io/badge/Reproducible_Builds-ok-success?labelColor=1e5b96)](https://github.com/jvm-repo-rebuild/reproducible-central/blob/master/content/io/github/sebastian-toepfer/json-schema/json-schema/README.md)
 
 # json-schema
 json schema for json-api
