@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,35 +23,20 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.StringKeywordType;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.spi.JsonProvider;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+import jakarta.json.JsonValue;
 import java.net.URI;
-import java.util.Objects;
+import org.junit.jupiter.api.Test;
 
-final class RefKeywordType implements KeywordType {
+class SchemaRegistryTest {
 
-    private final JsonProvider jsonContext;
-    private final SchemaRegistry schemaRegistry;
-
-    public RefKeywordType(final JsonProvider jsonContext) {
-        this.jsonContext = Objects.requireNonNull(jsonContext);
-        this.schemaRegistry = new SchemaRegistry.RemoteSchemaRegistry();
-    }
-
-    @Override
-    public String name() {
-        return RefKeyword.NAME;
-    }
-
-    @Override
-    public Keyword createKeyword(final JsonSchema schema) {
-        return new StringKeywordType(
-            jsonContext,
-            RefKeyword.NAME,
-            s -> new RefKeyword(schema, URI.create(s), schemaRegistry)
-        ).createKeyword(schema);
+    @Test
+    void should_return_false_schema() throws Exception {
+        assertThat(
+            new SchemaRegistry.DefaultSchemaRegistry().schemaForUrl(URI.create("test")).getValueType(),
+            is(JsonValue.ValueType.FALSE)
+        );
     }
 }

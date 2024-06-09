@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,34 +24,37 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.StringKeywordType;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import jakarta.json.spi.JsonProvider;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
+import jakarta.json.Json;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
+import java.io.IOException;
 import java.net.URI;
-import java.util.Objects;
 
-final class RefKeywordType implements KeywordType {
+interface SchemaRegistry {
+    JsonSchema schemaForUrl(URI uri) throws IOException;
 
-    private final JsonProvider jsonContext;
-    private final SchemaRegistry schemaRegistry;
+    class DefaultSchemaRegistry implements SchemaRegistry {
 
-    public RefKeywordType(final JsonProvider jsonContext) {
-        this.jsonContext = Objects.requireNonNull(jsonContext);
-        this.schemaRegistry = new SchemaRegistry.RemoteSchemaRegistry();
+        private JsonSchema schema;
+
+        public DefaultSchemaRegistry() {
+            schema = JsonSchemas.load(JsonValue.FALSE);
+        }
+
+        @Override
+        public JsonSchema schemaForUrl(final URI uri) throws IOException {
+            return schema;
+        }
     }
 
-    @Override
-    public String name() {
-        return RefKeyword.NAME;
-    }
+    class RemoteSchemaRegistry implements SchemaRegistry {
 
-    @Override
-    public Keyword createKeyword(final JsonSchema schema) {
-        return new StringKeywordType(
-            jsonContext,
-            RefKeyword.NAME,
-            s -> new RefKeyword(schema, URI.create(s), schemaRegistry)
-        ).createKeyword(schema);
+        @Override
+        public JsonSchema schemaForUrl(final URI uri) throws IOException {
+            try (JsonReader reader = Json.createReader(uri.toURL().openStream())) {
+                return JsonSchemas.load(reader.readValue());
+            }
+        }
     }
 }
