@@ -27,7 +27,7 @@ import io.github.sebastiantoepfer.jsonschema.Vocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NamedJsonSchemaKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.StringKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.ListVocabulary;
 import jakarta.json.spi.JsonProvider;
 import java.net.URI;
 import java.util.Optional;
@@ -37,7 +37,7 @@ public final class CoreVocabulary implements Vocabulary {
     private final Vocabulary vocab;
 
     public CoreVocabulary(final JsonProvider jsonContext) {
-        this.vocab = new DefaultVocabulary(
+        this.vocab = new ListVocabulary(
             URI.create("https://json-schema.org/draft/2020-12/vocab/core"),
             new StringKeywordType(jsonContext, SchemaKeyword.NAME, value -> new SchemaKeyword(URI.create(value))),
             new StringKeywordType(jsonContext, IdKeyword.NAME, value -> new IdKeyword(URI.create(value))),

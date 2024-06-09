@@ -26,19 +26,11 @@ package io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
 import java.net.URI;
 import java.util.Optional;
-import java.util.ServiceLoader;
 
-public record VocabularyDefinition(URI id, boolean required) {
-    public Optional<Vocabulary> findVocabulary() {
-        final Optional<Vocabulary> result = ServiceLoader.load(LazyVocabularies.class)
-            .stream()
-            .map(ServiceLoader.Provider::get)
-            .map(loader -> loader.loadVocabularyWithId(id))
-            .flatMap(Optional::stream)
-            .findFirst();
-        if (result.isEmpty() && required) {
-            throw new IllegalStateException("can not find required vocabulary: " + id);
-        }
-        return result;
-    }
+public interface VocabularyDefinition {
+    Optional<Vocabulary> findVocabulary();
+
+    boolean hasid(URI id);
+
+    boolean isRequired();
 }

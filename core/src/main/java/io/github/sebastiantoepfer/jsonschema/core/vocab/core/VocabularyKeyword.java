@@ -25,6 +25,8 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.ddd.media.json.JsonObjectPrintable;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularyDefinition;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.ServiceLoaderLazyVocabulariesSupplier;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinitions;
 import jakarta.json.JsonObject;
@@ -81,6 +83,13 @@ final class VocabularyKeyword implements VocabularyDefinitions {
         return vocabularies
             .entrySet()
             .stream()
-            .map(entry -> new VocabularyDefinition(URI.create(entry.getKey()), entry.getValue() == JsonValue.TRUE));
+            .map(
+                entry ->
+                    new LazyVocabularyDefinition(
+                        URI.create(entry.getKey()),
+                        entry.getValue() == JsonValue.TRUE,
+                        new ServiceLoaderLazyVocabulariesSupplier()
+                    )
+            );
     }
 }

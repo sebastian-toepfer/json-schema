@@ -32,16 +32,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public final class DefaultVocabulary implements Vocabulary {
+public final class ListVocabulary implements Vocabulary {
 
     private final URI id;
     private final List<KeywordType> keywords;
 
-    public DefaultVocabulary(final URI id, final KeywordType... keywortds) {
+    public ListVocabulary(final URI id, final KeywordType... keywortds) {
         this(id, Arrays.asList(keywortds));
     }
 
-    public DefaultVocabulary(final URI id, final Collection<KeywordType> keywords) {
+    public ListVocabulary(final URI id, final Collection<KeywordType> keywords) {
         this.id = Objects.requireNonNull(id);
         this.keywords = List.copyOf(keywords);
     }

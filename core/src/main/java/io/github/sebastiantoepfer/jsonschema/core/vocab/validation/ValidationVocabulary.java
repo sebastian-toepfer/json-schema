@@ -35,7 +35,7 @@ import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ObjectKeywordType
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.StringArrayKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.StringKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.ListVocabulary;
 import jakarta.json.spi.JsonProvider;
 import java.net.URI;
 import java.util.List;
@@ -46,7 +46,7 @@ public final class ValidationVocabulary implements Vocabulary {
     private final Vocabulary vocab;
 
     public ValidationVocabulary(final JsonProvider jsonContext) {
-        this.vocab = new DefaultVocabulary(
+        this.vocab = new ListVocabulary(
             URI.create("https://json-schema.org/draft/2020-12/vocab/validation"),
             new TypeKeywordType(),
             new AnyKeywordType(jsonContext, ConstKeyword.NAME, ConstKeyword::new),

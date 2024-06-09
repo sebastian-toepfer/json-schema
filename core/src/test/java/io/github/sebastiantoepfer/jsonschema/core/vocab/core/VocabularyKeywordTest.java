@@ -26,6 +26,7 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.either;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
@@ -35,10 +36,13 @@ import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import java.net.URI;
+import java.util.Objects;
+import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.jupiter.api.Test;
 
-class VocabularyKeywordTypeTest {
+class VocabularyKeywordTest {
 
     @Test
     void should_created_keyword_should_know_his_name() {
@@ -60,8 +64,8 @@ class VocabularyKeywordTypeTest {
                 .definitions()
                 .toList(),
             containsInAnyOrder(
-                new VocabularyDefinition(URI.create("https://json-schema.org/draft/2020-12/vocab/core"), true),
-                new VocabularyDefinition(URI.create("http://openapi.org/test"), false)
+                new VocabularyDefinitionMatcher(URI.create("https://json-schema.org/draft/2020-12/vocab/core"), true),
+                new VocabularyDefinitionMatcher(URI.create("http://openapi.org/test"), false)
             )
         );
     }
@@ -83,5 +87,35 @@ class VocabularyKeywordTypeTest {
                 )
             )
         );
+    }
+
+    private static class VocabularyDefinitionMatcher extends TypeSafeMatcher<VocabularyDefinition> {
+
+        private final URI id;
+        private final Matcher<Boolean> required;
+
+        public VocabularyDefinitionMatcher(final URI id) {
+            this(id, null);
+        }
+
+        public VocabularyDefinitionMatcher(final URI id, final Boolean required) {
+            super(VocabularyDefinition.class);
+            this.id = Objects.requireNonNull(id);
+            this.required = required == null ? either(is(true)).or(is(false)) : is(required);
+        }
+
+        @Override
+        protected boolean matchesSafely(final VocabularyDefinition item) {
+            return item.hasid(id) && required.matches(item.isRequired());
+        }
+
+        @Override
+        public void describeTo(final Description description) {
+            description
+                .appendText("Vocabulary definition with id: ")
+                .appendValue(id)
+                .appendText(" and required: ")
+                .appendDescriptionOf(required);
+        }
     }
 }

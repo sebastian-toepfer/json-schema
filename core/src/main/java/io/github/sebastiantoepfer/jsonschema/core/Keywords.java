@@ -74,8 +74,8 @@ final class Keywords {
         if (
             vocabDefs
                 .stream()
-                .filter(vocabDef -> MANDANTORY_VOCABS.containsKey(vocabDef.id()))
-                .anyMatch(not(VocabularyDefinition::required))
+                .filter(vocabDef -> MANDANTORY_VOCABS.keySet().stream().anyMatch(vocabDef::hasid))
+                .anyMatch(not(VocabularyDefinition::isRequired))
         ) {
             throw new IllegalArgumentException("can not be created without core vocabulary is requiered!");
         }

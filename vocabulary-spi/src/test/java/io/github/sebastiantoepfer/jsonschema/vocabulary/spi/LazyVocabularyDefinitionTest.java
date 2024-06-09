@@ -26,24 +26,41 @@ package io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
 import static com.github.npathai.hamcrestopt.OptionalMatchers.isEmpty;
 import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresentAndIs;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
 import java.net.URI;
+import java.util.stream.Stream;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.Test;
 
-class VocabularyDefinitionTest {
+class LazyVocabularyDefinitionTest {
+
+    @Test
+    void verifyEqualsContract() {
+        EqualsVerifier.forClass(LazyVocabularyDefinition.class).suppress(Warning.ALL_FIELDS_SHOULD_BE_USED).verify();
+    }
 
     @Test
     void should_throw_illegal_state_if_a_required_vocabulary_can_not_be_loaded() {
-        final VocabularyDefinition vocabDef = new VocabularyDefinition(URI.create("https://invalid"), true);
+        final VocabularyDefinition vocabDef = new LazyVocabularyDefinition(
+            URI.create("https://invalid"),
+            true,
+            () -> Stream.empty()
+        );
         assertThrows(IllegalStateException.class, () -> vocabDef.findVocabulary());
     }
 
     @Test
     void should_find_mandatory_core_vocabulary() {
         assertThat(
-            new VocabularyDefinition(URI.create("https://json-schema.org/draft/2020-12/vocab/core"), true)
+            new LazyVocabularyDefinition(
+                URI.create("https://json-schema.org/draft/2020-12/vocab/core"),
+                true,
+                new ServiceLoaderLazyVocabulariesSupplier()
+            )
                 .findVocabulary()
                 .map(Vocabulary::id),
             isPresentAndIs(URI.create("https://json-schema.org/draft/2020-12/vocab/core"))
@@ -53,8 +70,22 @@ class VocabularyDefinitionTest {
     @Test
     void should_retrun_empty_for_optional_vocabulary_which_can_not_be_loaded() {
         assertThat(
-            new VocabularyDefinition(URI.create("https://invalid"), false).findVocabulary().map(Vocabulary::id),
+            new LazyVocabularyDefinition(URI.create("https://invalid"), false, () -> Stream.empty())
+                .findVocabulary()
+                .map(Vocabulary::id),
             isEmpty()
         );
+    }
+
+    @Test
+    void should_know_this_id() {
+        final LazyVocabularyDefinition vocbDef = new LazyVocabularyDefinition(
+            URI.create("https://json-schema.org/draft/2020-12/vocab/core"),
+            false,
+            () -> Stream.empty()
+        );
+
+        assertThat(vocbDef.hasid(URI.create("https://json-schema.org/draft/2020-12/vocab/core")), is(true));
+        assertThat(vocbDef.hasid(URI.create("https://invalid")), is(false));
     }
 }

@@ -25,7 +25,7 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.unevaluated;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.ListVocabulary;
 import java.net.URI;
 import java.util.Optional;
 
@@ -41,7 +41,7 @@ public final class UnevaluatedVocabulary implements Vocabulary {
     private final Vocabulary vocab;
 
     public UnevaluatedVocabulary() {
-        this.vocab = new DefaultVocabulary(URI.create("https://json-schema.org/draft/2020-12/vocab/unevaluated"));
+        this.vocab = new ListVocabulary(URI.create("https://json-schema.org/draft/2020-12/vocab/unevaluated"));
     }
 
     @Override

@@ -33,7 +33,7 @@ import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NamedJsonSchemaKe
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SchemaArrayKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SubSchemaKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.ListVocabulary;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import java.net.URI;
@@ -52,7 +52,7 @@ public final class ApplicatorVocabulary implements Vocabulary {
     private final Vocabulary vocab;
 
     public ApplicatorVocabulary() {
-        this.vocab = new DefaultVocabulary(
+        this.vocab = new ListVocabulary(
             URI.create("https://json-schema.org/draft/2020-12/vocab/applicator"),
             new SchemaArrayKeywordType(AllOfKeyword.NAME, AllOfKeyword::new),
             new SchemaArrayKeywordType(AnyOfKeyword.NAME, AnyOfKeyword::new),
