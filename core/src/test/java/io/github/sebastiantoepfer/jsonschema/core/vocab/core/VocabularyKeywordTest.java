@@ -31,12 +31,18 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
+import io.github.sebastiantoepfer.jsonschema.Vocabulary;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.ListVocabulary;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -46,7 +52,7 @@ class VocabularyKeywordTest {
 
     @Test
     void should_created_keyword_should_know_his_name() {
-        final Keyword vocabulary = new VocabularyKeyword(JsonValue.EMPTY_JSON_OBJECT);
+        final Keyword vocabulary = new VocabularyKeyword(JsonValue.EMPTY_JSON_OBJECT, Stream::empty);
 
         assertThat(vocabulary.hasName("$vocabulary"), is(true));
         assertThat(vocabulary.hasName("$id"), is(false));
@@ -59,7 +65,8 @@ class VocabularyKeywordTest {
                 Json.createObjectBuilder()
                     .add("https://json-schema.org/draft/2020-12/vocab/core", true)
                     .add("http://openapi.org/test", false)
-                    .build()
+                    .build(),
+                Stream::empty
             )
                 .definitions()
                 .toList(),
@@ -77,7 +84,8 @@ class VocabularyKeywordTest {
                 Json.createObjectBuilder()
                     .add("https://json-schema.org/draft/2020-12/vocab/core", true)
                     .add("http://openapi.org/test", false)
-                    .build()
+                    .build(),
+                Stream::empty
             ).printOn(new HashMapMedia()),
             (Matcher) hasEntry(
                 is("$vocabulary"),
@@ -85,6 +93,67 @@ class VocabularyKeywordTest {
                     hasEntry("https://json-schema.org/draft/2020-12/vocab/core", true),
                     hasEntry("http://openapi.org/test", false)
                 )
+            )
+        );
+    }
+
+    @Test
+    void should_not_lazy_load_offical_vocabs() {
+        //security and peformance. it should not be possible to override keywords define by this module!
+        assertThat(
+            new VocabularyKeyword(
+                Json.createObjectBuilder().add("https://json-schema.org/draft/2020-12/vocab/core", true).build(),
+                Stream::empty
+            )
+                .definitions()
+                .map(VocabularyDefinition::findVocabulary)
+                .flatMap(Optional::stream)
+                .map(Vocabulary::id)
+                .toList(),
+            containsInAnyOrder(URI.create("https://json-schema.org/draft/2020-12/vocab/core"))
+        );
+    }
+
+    @Test
+    void should_provide_vocab_which_know_they_id() {
+        final VocabularyDefinition vocabDef = new VocabularyKeyword(
+            Json.createObjectBuilder().add("https://json-schema.org/draft/2020-12/vocab/core", true).build(),
+            Stream::empty
+        )
+            .definitions()
+            .findFirst()
+            .orElseThrow();
+
+        assertThat(vocabDef.hasid(URI.create("https://json-schema.org/draft/2020-12/vocab/core")), is(true));
+        assertThat(vocabDef.hasid(URI.create("http://openapi.org/test")), is(false));
+    }
+
+    @Test
+    void should_lazy_load_non_offical_vocabs() {
+        assertThat(
+            new VocabularyKeyword(
+                Json.createObjectBuilder()
+                    .add("https://json-schema.org/draft/2020-12/vocab/core", true)
+                    .add("http://openapi.org/test", false)
+                    .build(),
+                () ->
+                    Stream.of(
+                        new LazyVocabularies() {
+                            @Override
+                            public Optional<Vocabulary> loadVocabularyWithId(final URI id) {
+                                return Optional.of(new ListVocabulary(id, List.of()));
+                            }
+                        }
+                    )
+            )
+                .definitions()
+                .map(VocabularyDefinition::findVocabulary)
+                .flatMap(Optional::stream)
+                .map(Vocabulary::id)
+                .toList(),
+            containsInAnyOrder(
+                URI.create("https://json-schema.org/draft/2020-12/vocab/core"),
+                URI.create("http://openapi.org/test")
             )
         );
     }

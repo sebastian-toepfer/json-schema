@@ -26,6 +26,7 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.ServiceLoaderLazyVocabulariesSupplier;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinitions;
 import jakarta.json.JsonValue;
 
@@ -33,6 +34,12 @@ import jakarta.json.JsonValue;
  * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-the-vocabulary-keyword
  */
 public final class VocabularyKeywordType implements KeywordType {
+
+    private final ServiceLoaderLazyVocabulariesSupplier lazyVocabulariesSupplier;
+
+    public VocabularyKeywordType() {
+        this.lazyVocabulariesSupplier = new ServiceLoaderLazyVocabulariesSupplier();
+    }
 
     @Override
     public String name() {
@@ -44,7 +51,7 @@ public final class VocabularyKeywordType implements KeywordType {
         final JsonValue value = schema.asJsonObject().get((name()));
         final VocabularyKeyword result;
         if (InstanceType.OBJECT.isInstance(value)) {
-            result = new VocabularyKeyword(value);
+            result = new VocabularyKeyword(value, lazyVocabulariesSupplier);
         } else {
             throw new IllegalArgumentException(
                 "must be an object! " +

@@ -25,8 +25,10 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.ddd.media.json.JsonObjectPrintable;
+import io.github.sebastiantoepfer.jsonschema.Vocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.OfficialVocabularies;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularyDefinition;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.ServiceLoaderLazyVocabulariesSupplier;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinitions;
 import jakarta.json.JsonObject;
@@ -34,7 +36,10 @@ import jakarta.json.JsonValue;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
@@ -53,13 +58,18 @@ final class VocabularyKeyword implements VocabularyDefinitions {
 
     static final String NAME = "$vocabulary";
     private final JsonObject vocabularies;
+    private final Supplier<Stream<LazyVocabularies>> lazyVocabulariesSupplier;
 
-    VocabularyKeyword(final JsonValue vocabularies) {
-        this(vocabularies.asJsonObject());
+    VocabularyKeyword(final JsonValue vocabularies, final Supplier<Stream<LazyVocabularies>> lazyVocabulariesSupplier) {
+        this(vocabularies.asJsonObject(), lazyVocabulariesSupplier);
     }
 
-    VocabularyKeyword(final JsonObject vocabularies) {
+    VocabularyKeyword(
+        final JsonObject vocabularies,
+        final Supplier<Stream<LazyVocabularies>> lazyVocabulariesSupplier
+    ) {
         this.vocabularies = Objects.requireNonNull(vocabularies);
+        this.lazyVocabulariesSupplier = Objects.requireNonNull(lazyVocabulariesSupplier);
     }
 
     @Override
@@ -80,16 +90,38 @@ final class VocabularyKeyword implements VocabularyDefinitions {
 
     @Override
     public Stream<VocabularyDefinition> definitions() {
-        return vocabularies
-            .entrySet()
-            .stream()
-            .map(
-                entry ->
-                    new LazyVocabularyDefinition(
-                        URI.create(entry.getKey()),
-                        entry.getValue() == JsonValue.TRUE,
-                        new ServiceLoaderLazyVocabulariesSupplier()
-                    )
-            );
+        return vocabularies.entrySet().stream().map(LazyNonOfficalVocabularyDefinition::new);
+    }
+
+    private final class LazyNonOfficalVocabularyDefinition implements VocabularyDefinition {
+
+        private final URI id;
+        private final JsonValue required;
+
+        public LazyNonOfficalVocabularyDefinition(final Map.Entry<String, JsonValue> property) {
+            this(URI.create(property.getKey()), property.getValue());
+        }
+
+        public LazyNonOfficalVocabularyDefinition(final URI id, final JsonValue required) {
+            this.id = Objects.requireNonNull(id);
+            this.required = required;
+        }
+
+        @Override
+        public Optional<Vocabulary> findVocabulary() {
+            return new OfficialVocabularies()
+                .loadVocabularyWithId(id)
+                .or(() -> new LazyVocabularyDefinition(id, isRequired(), lazyVocabulariesSupplier).findVocabulary());
+        }
+
+        @Override
+        public boolean hasid(final URI id) {
+            return Objects.equals(this.id, id);
+        }
+
+        @Override
+        public boolean isRequired() {
+            return JsonValue.TRUE.equals(required);
+        }
     }
 }
