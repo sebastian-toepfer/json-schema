@@ -30,12 +30,11 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SchemaArrayKeywordType;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import java.util.List;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
@@ -43,9 +42,7 @@ class AnyOfKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword items = createKeywordFrom(
-            Json.createObjectBuilder().add("anyOf", Json.createArrayBuilder().add(JsonValue.TRUE)).build()
-        );
+        final Keyword items = new AnyOfKeyword(List.of(JsonSchemas.load(JsonValue.TRUE)));
 
         assertThat(items.hasName("anyOf"), is(true));
         assertThat(items.hasName("test"), is(false));
@@ -54,20 +51,17 @@ class AnyOfKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add(
-                        "anyOf",
-                        Json.createArrayBuilder()
+            new AnyOfKeyword(
+                List.of(
+                    JsonSchemas.load(
+                        Json.createObjectBuilder()
                             .add(
-                                Json.createObjectBuilder()
-                                    .add(
-                                        "allOf",
-                                        Json.createArrayBuilder().add(Json.createObjectBuilder().add("type", "number"))
-                                    )
+                                "allOf",
+                                Json.createArrayBuilder().add(Json.createObjectBuilder().add("type", "number"))
                             )
+                            .build()
                     )
-                    .build()
+                )
             ).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("anyOf"), hasItem((hasKey("allOf"))))
         );
@@ -76,13 +70,15 @@ class AnyOfKeywordTest {
     @Test
     void should_be_valid_if_any_schemas_applies() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add(
-                        "anyOf",
-                        Json.createArrayBuilder().add(JsonValue.FALSE).add(JsonValue.TRUE).add(JsonValue.FALSE)
-                    )
+            new AnyOfKeyword(
+                Json.createArrayBuilder()
+                    .add(JsonValue.FALSE)
+                    .add(JsonValue.TRUE)
+                    .add(JsonValue.FALSE)
                     .build()
+                    .stream()
+                    .map(JsonSchemas::load)
+                    .toList()
             )
                 .asApplicator()
                 .applyTo(Json.createValue(25)),
@@ -93,20 +89,18 @@ class AnyOfKeywordTest {
     @Test
     void should_be_invalid_if_no_schemas_apply() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("anyOf", Json.createArrayBuilder().add(JsonValue.FALSE).add(JsonValue.FALSE))
+            new AnyOfKeyword(
+                Json.createArrayBuilder()
+                    .add(JsonValue.FALSE)
+                    .add(JsonValue.FALSE)
                     .build()
+                    .stream()
+                    .map(JsonSchemas::load)
+                    .toList()
             )
                 .asApplicator()
                 .applyTo(Json.createValue(10)),
             is(false)
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new SchemaArrayKeywordType("anyOf", AnyOfKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

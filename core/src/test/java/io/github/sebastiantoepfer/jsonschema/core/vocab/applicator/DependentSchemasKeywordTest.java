@@ -29,12 +29,12 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NamedJsonSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NamedJsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import java.util.Map;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
@@ -42,9 +42,7 @@ class DependentSchemasKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword keyword = createKeywordFrom(
-            Json.createObjectBuilder().add("dependentSchemas", JsonValue.EMPTY_JSON_OBJECT).build()
-        );
+        final Keyword keyword = new DependentSchemasKeyword(new NamedJsonSchemas(Map.of()));
 
         assertThat(keyword.hasName("dependentSchemas"), is(true));
         assertThat(keyword.hasName("test"), is(false));
@@ -53,11 +51,9 @@ class DependentSchemasKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("dependentSchemas", Json.createObjectBuilder().add("foo", JsonValue.TRUE))
-                    .build()
-            ).printOn(new HashMapMedia()),
+            new DependentSchemasKeyword(new NamedJsonSchemas(Map.of("foo", JsonSchemas.load(JsonValue.TRUE)))).printOn(
+                new HashMapMedia()
+            ),
             (Matcher) hasEntry(is("dependentSchemas"), hasEntry(is("foo"), anEmptyMap()))
         );
     }
@@ -65,9 +61,7 @@ class DependentSchemasKeywordTest {
     @Test
     void should_be_valid_for_non_object() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("dependentSchemas", JsonValue.EMPTY_JSON_OBJECT).build())
-                .asApplicator()
-                .applyTo(JsonValue.FALSE),
+            new DependentSchemasKeyword(new NamedJsonSchemas(Map.of())).asApplicator().applyTo(JsonValue.FALSE),
             is(true)
         );
     }
@@ -75,7 +69,7 @@ class DependentSchemasKeywordTest {
     @Test
     void should_be_valid_for_empty_object() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("dependentSchemas", JsonValue.EMPTY_JSON_OBJECT).build())
+            new DependentSchemasKeyword(new NamedJsonSchemas(Map.of()))
                 .asApplicator()
                 .applyTo(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
@@ -85,11 +79,7 @@ class DependentSchemasKeywordTest {
     @Test
     void should_be_valid_if_property_not_present() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("dependentSchemas", Json.createObjectBuilder().add("test", JsonValue.FALSE))
-                    .build()
-            )
+            new DependentSchemasKeyword(new NamedJsonSchemas(Map.of("test", JsonSchemas.load(JsonValue.FALSE))))
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("foo", 1).build()),
             is(true)
@@ -99,11 +89,7 @@ class DependentSchemasKeywordTest {
     @Test
     void should_be_valid_if_property_is_present_and_schema_apply() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("dependentSchemas", Json.createObjectBuilder().add("test", JsonValue.TRUE))
-                    .build()
-            )
+            new DependentSchemasKeyword(new NamedJsonSchemas(Map.of("test", JsonSchemas.load(JsonValue.TRUE))))
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("true", 1).build()),
             is(true)
@@ -113,20 +99,10 @@ class DependentSchemasKeywordTest {
     @Test
     void should_be_invalid_if_property_is_present_and_schema_not_apply() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("dependentSchemas", Json.createObjectBuilder().add("test", JsonValue.FALSE))
-                    .build()
-            )
+            new DependentSchemasKeyword(new NamedJsonSchemas(Map.of("test", JsonSchemas.load(JsonValue.FALSE))))
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("true", 1).build()),
             is(true)
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new NamedJsonSchemaKeywordType("dependentSchemas", DependentSchemasKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

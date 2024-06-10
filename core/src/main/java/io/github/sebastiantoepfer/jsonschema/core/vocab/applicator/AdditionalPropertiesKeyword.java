@@ -23,9 +23,11 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
+import static java.util.function.Predicate.not;
+
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
-import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Annotation;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
@@ -38,8 +40,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -61,10 +61,15 @@ import java.util.stream.Stream;
 final class AdditionalPropertiesKeyword implements Applicator, Annotation {
 
     static final String NAME = "additionalProperties";
-    private final JsonSubSchema additionalPropertiesSchema;
+    private final Collection<Annotation> affectedBy;
+    private final JsonSchema additionalPropertiesSchema;
 
-    public AdditionalPropertiesKeyword(final JsonSubSchema additionalPropertiesSchema) {
+    public AdditionalPropertiesKeyword(
+        final Collection<Annotation> affectedBy,
+        final JsonSchema additionalPropertiesSchema
+    ) {
         this.additionalPropertiesSchema = additionalPropertiesSchema;
+        this.affectedBy = List.copyOf(affectedBy);
     }
 
     @Override
@@ -93,16 +98,12 @@ final class AdditionalPropertiesKeyword implements Applicator, Annotation {
 
     private Stream<Map.Entry<String, JsonValue>> findPropertiesForValidation(final JsonObject instance) {
         final Collection<String> ignoredProperties = findPropertyNamesAlreadyConveredByOthersIn(instance);
-        return instance.entrySet().stream().filter(Predicate.not(e -> ignoredProperties.contains(e.getKey())));
+        return instance.entrySet().stream().filter(not(e -> ignoredProperties.contains(e.getKey())));
     }
 
     private Collection<String> findPropertyNamesAlreadyConveredByOthersIn(final JsonValue instance) {
-        return Stream.of(
-            additionalPropertiesSchema.owner().keywordByName("properties"),
-            additionalPropertiesSchema.owner().keywordByName("patternProperties")
-        )
-            .flatMap(Optional::stream)
-            .map(Keyword::asAnnotation)
+        return affectedBy
+            .stream()
             .map(anno -> anno.valueFor(instance))
             .map(JsonValue::asJsonArray)
             .flatMap(Collection::stream)

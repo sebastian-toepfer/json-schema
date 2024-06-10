@@ -34,9 +34,11 @@ import java.util.Objects;
 final class RefKeywordType implements KeywordType {
 
     private final JsonProvider jsonContext;
+    private final SchemaRegistry schemaRegistry;
 
     public RefKeywordType(final JsonProvider jsonContext) {
         this.jsonContext = Objects.requireNonNull(jsonContext);
+        this.schemaRegistry = new SchemaRegistry.RemoteSchemaRegistry();
     }
 
     @Override
@@ -49,7 +51,7 @@ final class RefKeywordType implements KeywordType {
         return new StringKeywordType(
             jsonContext,
             RefKeyword.NAME,
-            s -> new RefKeyword(schema, URI.create(s))
+            s -> new RefKeyword(schema, URI.create(s), schemaRegistry)
         ).createKeyword(schema);
     }
 }

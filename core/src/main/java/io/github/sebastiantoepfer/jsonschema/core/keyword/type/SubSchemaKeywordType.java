@@ -47,6 +47,6 @@ public final class SubSchemaKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        return schema.asSubSchema(name).map(keywordCreator).orElseThrow(IllegalArgumentException::new);
+        return schema.asSubSchema(name()).map(keywordCreator).orElseThrow(IllegalArgumentException::new);
     }
 }

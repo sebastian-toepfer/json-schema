@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,36 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.format;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
-import io.github.sebastiantoepfer.jsonschema.Vocabulary;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.ListVocabulary;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+import jakarta.json.JsonValue;
 import java.net.URI;
-import java.util.Optional;
+import org.junit.jupiter.api.Test;
 
-/**
- * <b>Format Annotation</b>
- * Dialect: 2020-12
- * uri: https://json-schema.org/draft/2020-12/vocab/format-annotation
- * source: https://www.learnjsonschema.com/2020-12/format-annotation/
- * spec: https://json-schema.org/draft/2020-12/json-schema-validation.html#section-7.2.1
- */
-public final class FormatAnnotationVocabulary implements Vocabulary {
+class SchemaRegistryTest {
 
-    private final Vocabulary vocab;
-
-    public FormatAnnotationVocabulary() {
-        this.vocab = new ListVocabulary(URI.create("https://json-schema.org/draft/2020-12/vocab/format-annotation"));
-    }
-
-    @Override
-    public URI id() {
-        return vocab.id();
-    }
-
-    @Override
-    public Optional<KeywordType> findKeywordTypeByName(final String name) {
-        return Optional.empty();
+    @Test
+    void should_return_false_schema() throws Exception {
+        assertThat(
+            new SchemaRegistry.DefaultSchemaRegistry().schemaForUrl(URI.create("test")).getValueType(),
+            is(JsonValue.ValueType.FALSE)
+        );
     }
 }

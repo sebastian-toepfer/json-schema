@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,38 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
-import io.github.sebastiantoepfer.jsonschema.Vocabulary;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
+import jakarta.json.Json;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
+import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
-public final class DefaultVocabulary implements Vocabulary {
+interface SchemaRegistry {
+    JsonSchema schemaForUrl(URI uri) throws IOException;
 
-    private final URI id;
-    private final List<KeywordType> keywords;
+    class DefaultSchemaRegistry implements SchemaRegistry {
 
-    public DefaultVocabulary(final URI id, final KeywordType... keywortds) {
-        this(id, Arrays.asList(keywortds));
+        private JsonSchema schema;
+
+        public DefaultSchemaRegistry() {
+            schema = JsonSchemas.load(JsonValue.FALSE);
+        }
+
+        @Override
+        public JsonSchema schemaForUrl(final URI uri) throws IOException {
+            return schema;
+        }
     }
 
-    public DefaultVocabulary(final URI id, final Collection<KeywordType> keywords) {
-        this.id = Objects.requireNonNull(id);
-        this.keywords = List.copyOf(keywords);
-    }
+    class RemoteSchemaRegistry implements SchemaRegistry {
 
-    @Override
-    public URI id() {
-        return id;
-    }
-
-    @Override
-    public Optional<KeywordType> findKeywordTypeByName(final String name) {
-        return keywords.stream().filter(keywordType -> keywordType.hasName(name)).findFirst();
+        @Override
+        public JsonSchema schemaForUrl(final URI uri) throws IOException {
+            try (JsonReader reader = Json.createReader(uri.toURL().openStream())) {
+                return JsonSchemas.load(reader.readValue());
+            }
+        }
     }
 }

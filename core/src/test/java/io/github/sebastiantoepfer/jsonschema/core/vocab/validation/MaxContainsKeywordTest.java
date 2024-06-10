@@ -28,16 +28,10 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.Affects;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectsKeywordType;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.IntegerKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.StaticAnnotation;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
 import java.math.BigInteger;
 import java.util.List;
 import org.hamcrest.Matcher;
@@ -47,10 +41,7 @@ class MaxContainsKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword enumKeyword = new MaxContainsKeyword(
-            List.of(new StaticAnnotation("", JsonValue.NULL)),
-            BigInteger.ONE
-        );
+        final Keyword enumKeyword = new MaxContainsKeyword(List.of(), BigInteger.ONE);
         assertThat(enumKeyword.hasName("maxContains"), is(true));
         assertThat(enumKeyword.hasName("test"), is(false));
     }
@@ -58,7 +49,7 @@ class MaxContainsKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("maxContains", 2).build()).printOn(new HashMapMedia()),
+            new MaxContainsKeyword(List.of(), BigInteger.valueOf(2)).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("maxContains"), is(BigInteger.valueOf(2)))
         );
     }
@@ -66,12 +57,7 @@ class MaxContainsKeywordTest {
     @Test
     void should_be_valid_for_non_arrays() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("contains", Json.createObjectBuilder().add("type", "string"))
-                    .add("maxContains", 2)
-                    .build()
-            )
+            new MaxContainsKeyword(List.of(), BigInteger.valueOf(2))
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
@@ -81,11 +67,9 @@ class MaxContainsKeywordTest {
     @Test
     void should_be_valid_if_contains_applies_to_exact_count() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("contains", Json.createObjectBuilder().add("type", "string"))
-                    .add("maxContains", 2)
-                    .build()
+            new MaxContainsKeyword(
+                List.of(new StaticAnnotation("contains", Json.createArrayBuilder().add(0).add(1).build())),
+                BigInteger.valueOf(2)
             )
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("foo").add("bar").add(1).build()),
@@ -96,11 +80,9 @@ class MaxContainsKeywordTest {
     @Test
     void should_be_valid_if_contains_applies_to_less_items() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("contains", Json.createObjectBuilder().add("type", "string"))
-                    .add("maxContains", 2)
-                    .build()
+            new MaxContainsKeyword(
+                List.of(new StaticAnnotation("contains", Json.createArrayBuilder().add(0).build())),
+                BigInteger.valueOf(2)
             )
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("foo").add(2).add(3).build()),
@@ -111,11 +93,9 @@ class MaxContainsKeywordTest {
     @Test
     void should_be_valid_for_empty_arrays() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("contains", Json.createObjectBuilder().add("type", "string"))
-                    .add("maxContains", 2)
-                    .build()
+            new MaxContainsKeyword(
+                List.of(new StaticAnnotation("contains", JsonValue.EMPTY_JSON_ARRAY)),
+                BigInteger.valueOf(2)
             )
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_ARRAY),
@@ -126,11 +106,9 @@ class MaxContainsKeywordTest {
     @Test
     void should_be_invalid_if_contains_applies_to_more_items() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("contains", Json.createObjectBuilder().add("type", "string"))
-                    .add("maxContains", 2)
-                    .build()
+            new MaxContainsKeyword(
+                List.of(new StaticAnnotation("contains", Json.createArrayBuilder().add(0).add(1).add(3).build())),
+                BigInteger.valueOf(2)
             )
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("foo").add("bar").add(1).add("baz").build()),
@@ -141,12 +119,7 @@ class MaxContainsKeywordTest {
     @Test
     void should_be_valid_if_contains_applies_to_all_and_less_items_in_array() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("contains", Json.createObjectBuilder().add("type", "string"))
-                    .add("maxContains", 2)
-                    .build()
-            )
+            new MaxContainsKeyword(List.of(new StaticAnnotation("contains", JsonValue.TRUE)), BigInteger.valueOf(2))
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("foo").build()),
             is(true)
@@ -156,12 +129,7 @@ class MaxContainsKeywordTest {
     @Test
     void should_be_valid_if_contains_applies_to_all_and_exact_items_count_in_array() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("contains", Json.createObjectBuilder().add("type", "string"))
-                    .add("maxContains", 2)
-                    .build()
-            )
+            new MaxContainsKeyword(List.of(new StaticAnnotation("contains", JsonValue.TRUE)), BigInteger.valueOf(2))
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("foo").add("bar").build()),
             is(true)
@@ -171,28 +139,10 @@ class MaxContainsKeywordTest {
     @Test
     void should_be_invalid_if_contains_applies_to_all_and_more_items_in_array() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("contains", Json.createObjectBuilder().add("type", "string"))
-                    .add("maxContains", 2)
-                    .build()
-            )
+            new MaxContainsKeyword(List.of(new StaticAnnotation("contains", JsonValue.TRUE)), BigInteger.valueOf(2))
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("foo").add("bar").add("baz").build()),
             is(false)
         );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new AffectsKeywordType(
-            "maxContains",
-            List.of(new Affects("contains", new Affects.ReplaceKeyword())),
-            (a, s) ->
-                new IntegerKeywordType(
-                    JsonProvider.provider(),
-                    "maxContains",
-                    value -> new MaxContainsKeyword(a, value)
-                ).createKeyword(s)
-        ).createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

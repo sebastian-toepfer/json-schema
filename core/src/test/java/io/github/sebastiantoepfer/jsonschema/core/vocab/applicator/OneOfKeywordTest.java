@@ -30,12 +30,11 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SchemaArrayKeywordType;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import java.util.List;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
@@ -43,9 +42,7 @@ class OneOfKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword items = createKeywordFrom(
-            Json.createObjectBuilder().add("oneOf", Json.createArrayBuilder().add(JsonValue.TRUE)).build()
-        );
+        final Keyword items = new OneOfKeyword(List.of(JsonSchemas.load(JsonValue.TRUE)));
 
         assertThat(items.hasName("oneOf"), is(true));
         assertThat(items.hasName("test"), is(false));
@@ -54,31 +51,28 @@ class OneOfKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
+            new OneOfKeyword(
+                Json.createArrayBuilder()
                     .add(
-                        "oneOf",
-                        Json.createArrayBuilder()
+                        Json.createObjectBuilder()
                             .add(
-                                Json.createObjectBuilder()
-                                    .add(
-                                        "properties",
-                                        Json.createObjectBuilder()
-                                            .add("foo", Json.createObjectBuilder().add("type", "string"))
-                                    )
-                                    .add("required", Json.createArrayBuilder().add("foo"))
+                                "properties",
+                                Json.createObjectBuilder().add("foo", Json.createObjectBuilder().add("type", "string"))
                             )
+                            .add("required", Json.createArrayBuilder().add("foo"))
+                    )
+                    .add(
+                        Json.createObjectBuilder()
                             .add(
-                                Json.createObjectBuilder()
-                                    .add(
-                                        "properties",
-                                        Json.createObjectBuilder()
-                                            .add("bar", Json.createObjectBuilder().add("type", "number"))
-                                    )
-                                    .add("required", Json.createArrayBuilder().add("bar"))
+                                "properties",
+                                Json.createObjectBuilder().add("bar", Json.createObjectBuilder().add("type", "number"))
                             )
+                            .add("required", Json.createArrayBuilder().add("bar"))
                     )
                     .build()
+                    .stream()
+                    .map(JsonSchemas::load)
+                    .toList()
             ).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("oneOf"), hasItem((hasKey("properties"))))
         );
@@ -87,31 +81,28 @@ class OneOfKeywordTest {
     @Test
     void should_be_valid_if_exactly_one_schema_applies() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
+            new OneOfKeyword(
+                Json.createArrayBuilder()
                     .add(
-                        "oneOf",
-                        Json.createArrayBuilder()
+                        Json.createObjectBuilder()
                             .add(
-                                Json.createObjectBuilder()
-                                    .add(
-                                        "properties",
-                                        Json.createObjectBuilder()
-                                            .add("foo", Json.createObjectBuilder().add("type", "string"))
-                                    )
-                                    .add("required", Json.createArrayBuilder().add("foo"))
+                                "properties",
+                                Json.createObjectBuilder().add("foo", Json.createObjectBuilder().add("type", "string"))
                             )
+                            .add("required", Json.createArrayBuilder().add("foo"))
+                    )
+                    .add(
+                        Json.createObjectBuilder()
                             .add(
-                                Json.createObjectBuilder()
-                                    .add(
-                                        "properties",
-                                        Json.createObjectBuilder()
-                                            .add("bar", Json.createObjectBuilder().add("type", "number"))
-                                    )
-                                    .add("required", Json.createArrayBuilder().add("bar"))
+                                "properties",
+                                Json.createObjectBuilder().add("bar", Json.createObjectBuilder().add("type", "number"))
                             )
+                            .add("required", Json.createArrayBuilder().add("bar"))
                     )
                     .build()
+                    .stream()
+                    .map(JsonSchemas::load)
+                    .toList()
             )
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("foo", "foo").build()),
@@ -122,31 +113,28 @@ class OneOfKeywordTest {
     @Test
     void should_be_invalid_if_none_schema_not_apply() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
+            new OneOfKeyword(
+                Json.createArrayBuilder()
                     .add(
-                        "oneOf",
-                        Json.createArrayBuilder()
+                        Json.createObjectBuilder()
                             .add(
-                                Json.createObjectBuilder()
-                                    .add(
-                                        "properties",
-                                        Json.createObjectBuilder()
-                                            .add("foo", Json.createObjectBuilder().add("type", "string"))
-                                    )
-                                    .add("required", Json.createArrayBuilder().add("foo"))
+                                "properties",
+                                Json.createObjectBuilder().add("foo", Json.createObjectBuilder().add("type", "string"))
                             )
+                            .add("required", Json.createArrayBuilder().add("foo"))
+                    )
+                    .add(
+                        Json.createObjectBuilder()
                             .add(
-                                Json.createObjectBuilder()
-                                    .add(
-                                        "properties",
-                                        Json.createObjectBuilder()
-                                            .add("bar", Json.createObjectBuilder().add("type", "number"))
-                                    )
-                                    .add("required", Json.createArrayBuilder().add("bar"))
+                                "properties",
+                                Json.createObjectBuilder().add("bar", Json.createObjectBuilder().add("type", "number"))
                             )
+                            .add("required", Json.createArrayBuilder().add("bar"))
                     )
                     .build()
+                    .stream()
+                    .map(JsonSchemas::load)
+                    .toList()
             )
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("foo", 3).add("bar", "bar").build()),
@@ -157,41 +145,32 @@ class OneOfKeywordTest {
     @Test
     void should_be_invalid_if_more_than_one_schema_apply() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
+            new OneOfKeyword(
+                Json.createArrayBuilder()
                     .add(
-                        "oneOf",
-                        Json.createArrayBuilder()
+                        Json.createObjectBuilder()
                             .add(
-                                Json.createObjectBuilder()
-                                    .add(
-                                        "properties",
-                                        Json.createObjectBuilder()
-                                            .add("foo", Json.createObjectBuilder().add("type", "string"))
-                                    )
-                                    .add("required", Json.createArrayBuilder().add("foo"))
+                                "properties",
+                                Json.createObjectBuilder().add("foo", Json.createObjectBuilder().add("type", "string"))
                             )
+                            .add("required", Json.createArrayBuilder().add("foo"))
+                    )
+                    .add(
+                        Json.createObjectBuilder()
                             .add(
-                                Json.createObjectBuilder()
-                                    .add(
-                                        "properties",
-                                        Json.createObjectBuilder()
-                                            .add("bar", Json.createObjectBuilder().add("type", "number"))
-                                    )
-                                    .add("required", Json.createArrayBuilder().add("bar"))
+                                "properties",
+                                Json.createObjectBuilder().add("bar", Json.createObjectBuilder().add("type", "number"))
                             )
+                            .add("required", Json.createArrayBuilder().add("bar"))
                     )
                     .build()
+                    .stream()
+                    .map(JsonSchemas::load)
+                    .toList()
             )
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("foo", "foo").add("bar", 33).build()),
             is(false)
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new SchemaArrayKeywordType("oneOf", OneOfKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

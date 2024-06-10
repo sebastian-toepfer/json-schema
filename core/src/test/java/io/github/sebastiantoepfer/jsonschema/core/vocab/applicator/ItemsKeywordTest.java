@@ -27,22 +27,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SubSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import io.github.sebastiantoepfer.jsonschema.keyword.StaticAnnotation;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class ItemsKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword items = createKeywordFrom(
-            Json.createObjectBuilder().add("items", JsonValue.EMPTY_JSON_OBJECT).build()
-        );
-
+        final Keyword items = new ItemsKeyword(List.of(), JsonSchemas.load(JsonValue.TRUE));
         assertThat(items.hasName("items"), is(true));
         assertThat(items.hasName("test"), is(false));
     }
@@ -50,9 +47,7 @@ class ItemsKeywordTest {
     @Test
     void should_be_invalid_if_items_does_not_match_schema() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("items", Json.createObjectBuilder().add("type", "number")).build()
-            )
+            new ItemsKeyword(List.of(), JsonSchemas.load(Json.createObjectBuilder().add("type", "number").build()))
                 .asApplicator()
                 .applyTo(Json.createArrayBuilder().add(1).add("invalid").add(2).build()),
             is(false)
@@ -62,9 +57,7 @@ class ItemsKeywordTest {
     @Test
     void should_be_valid_if_all_items_match_schema() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("items", Json.createObjectBuilder().add("type", "number")).build()
-            )
+            new ItemsKeyword(List.of(), JsonSchemas.load(Json.createObjectBuilder().add("type", "number").build()))
                 .asApplicator()
                 .applyTo(Json.createArrayBuilder().add(1).add(2).build()),
             is(true)
@@ -74,9 +67,7 @@ class ItemsKeywordTest {
     @Test
     void should_be_applicator_and_annotation() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("items", JsonValue.EMPTY_JSON_OBJECT).build()
-            ).categories(),
+            new ItemsKeyword(List.of(), JsonSchemas.load(JsonValue.EMPTY_JSON_OBJECT)).categories(),
             contains(Keyword.KeywordCategory.APPLICATOR, Keyword.KeywordCategory.ANNOTATION)
         );
     }
@@ -84,7 +75,7 @@ class ItemsKeywordTest {
     @Test
     void should_produces_true_if_is_applied_to_any_instance() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("items", JsonValue.EMPTY_JSON_OBJECT).build())
+            new ItemsKeyword(List.of(), JsonSchemas.load(JsonValue.TRUE))
                 .asAnnotation()
                 .valueFor(Json.createArrayBuilder().add(1).build()),
             is(JsonValue.TRUE)
@@ -94,11 +85,9 @@ class ItemsKeywordTest {
     @Test
     void should_return_false_if_not_applies_to_any_item() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("prefixItems", Json.createArrayBuilder().add(true))
-                    .add("items", JsonValue.FALSE)
-                    .build()
+            new ItemsKeyword(
+                List.of(new StaticAnnotation("prefixItems", JsonValue.TRUE)),
+                JsonSchemas.load(JsonValue.FALSE)
             )
                 .asAnnotation()
                 .valueFor(Json.createArrayBuilder().add(1).build()),
@@ -109,11 +98,9 @@ class ItemsKeywordTest {
     @Test
     void should_be_valid_if_invaliditem_is_already_checked_by_prefixItems() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("prefixItems", Json.createArrayBuilder().add(true).add(true))
-                    .add("items", Json.createObjectBuilder().add("type", "integer"))
-                    .build()
+            new ItemsKeyword(
+                List.of(new StaticAnnotation("prefixItems", JsonValue.TRUE)),
+                JsonSchemas.load(Json.createObjectBuilder().add("type", "integer").build())
             )
                 .asApplicator()
                 .applyTo(Json.createArrayBuilder().add("1").add("2").add(1).build()),
@@ -124,21 +111,13 @@ class ItemsKeywordTest {
     @Test
     void should_be_invalid_if_invaliditem_is_not_already_checked_by_prefixItems() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("prefixItems", Json.createArrayBuilder().add(true))
-                    .add("items", Json.createObjectBuilder().add("type", "integer"))
-                    .build()
+            new ItemsKeyword(
+                List.of(new StaticAnnotation("prefixItems", Json.createValue(0))),
+                JsonSchemas.load(Json.createObjectBuilder().add("type", "integer").build())
             )
                 .asApplicator()
                 .applyTo(Json.createArrayBuilder().add("1").add("2").add(1).build()),
             is(false)
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new SubSchemaKeywordType("items", ItemsKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

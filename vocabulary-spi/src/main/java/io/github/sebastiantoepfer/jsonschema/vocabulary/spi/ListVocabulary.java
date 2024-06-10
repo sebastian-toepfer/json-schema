@@ -23,38 +23,36 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
 
-import static com.github.npathai.hamcrestopt.OptionalMatchers.isEmpty;
-import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresentAndIs;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
+import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import java.net.URI;
-import org.junit.jupiter.api.Test;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-class VocabularyDefinitionTest {
+public final class ListVocabulary implements Vocabulary {
 
-    @Test
-    void should_throw_illegal_state_if_a_required_vocabulary_can_not_be_loaded() {
-        final VocabularyDefinition vocabDef = new VocabularyDefinition(URI.create("https://invalid"), true);
-        assertThrows(IllegalStateException.class, () -> vocabDef.findVocabulary());
+    private final URI id;
+    private final List<KeywordType> keywords;
+
+    public ListVocabulary(final URI id, final KeywordType... keywortds) {
+        this(id, Arrays.asList(keywortds));
     }
 
-    @Test
-    void should_find_mandatory_core_vocabulary() {
-        assertThat(
-            new VocabularyDefinition(URI.create("https://json-schema.org/draft/2020-12/vocab/core"), true)
-                .findVocabulary()
-                .map(Vocabulary::id),
-            isPresentAndIs(URI.create("https://json-schema.org/draft/2020-12/vocab/core"))
-        );
+    public ListVocabulary(final URI id, final Collection<KeywordType> keywords) {
+        this.id = Objects.requireNonNull(id);
+        this.keywords = List.copyOf(keywords);
     }
 
-    @Test
-    void should_retrun_empty_for_optional_vocabulary_which_can_not_be_loaded() {
-        assertThat(
-            new VocabularyDefinition(URI.create("https://invalid"), false).findVocabulary().map(Vocabulary::id),
-            isEmpty()
-        );
+    @Override
+    public URI id() {
+        return id;
+    }
+
+    @Override
+    public Optional<KeywordType> findKeywordTypeByName(final String name) {
+        return keywords.stream().filter(keywordType -> keywordType.hasName(name)).findFirst();
     }
 }

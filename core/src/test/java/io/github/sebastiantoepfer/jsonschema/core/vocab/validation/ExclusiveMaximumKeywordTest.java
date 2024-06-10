@@ -28,13 +28,9 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NumberKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
 import java.math.BigDecimal;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
@@ -43,9 +39,7 @@ class ExclusiveMaximumKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword maximum = createKeywordFrom(
-            Json.createObjectBuilder().add("exclusiveMaximum", Json.createValue(1)).build()
-        );
+        final Keyword maximum = new ExclusiveMaximumKeyword(BigDecimal.valueOf(1));
 
         assertThat(maximum.hasName("exclusiveMaximum"), is(true));
         assertThat(maximum.hasName("test"), is(false));
@@ -54,9 +48,7 @@ class ExclusiveMaximumKeywordTest {
     @Test
     void should_be_valid_for_non_number_values() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("exclusiveMaximum", Json.createValue(1)).build())
-                .asAssertion()
-                .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
+            new ExclusiveMaximumKeyword(BigDecimal.valueOf(1)).asAssertion().isValidFor(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
         );
     }
@@ -64,9 +56,7 @@ class ExclusiveMaximumKeywordTest {
     @Test
     void should_be_invalid_for_greater_numbers() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("exclusiveMaximum", Json.createValue(10)).build())
-                .asAssertion()
-                .isValidFor(Json.createValue(11)),
+            new ExclusiveMaximumKeyword(BigDecimal.valueOf(10)).asAssertion().isValidFor(Json.createValue(11)),
             is(false)
         );
     }
@@ -74,9 +64,7 @@ class ExclusiveMaximumKeywordTest {
     @Test
     void should_be_invalid_for_equals_numbers() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("exclusiveMaximum", Json.createValue(10)).build())
-                .asAssertion()
-                .isValidFor(Json.createValue(10)),
+            new ExclusiveMaximumKeyword(BigDecimal.valueOf(10)).asAssertion().isValidFor(Json.createValue(10)),
             is(false)
         );
     }
@@ -84,9 +72,7 @@ class ExclusiveMaximumKeywordTest {
     @Test
     void shhould_be_valid_for_smaller_numbers() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("exclusiveMaximum", Json.createValue(10)).build())
-                .asAssertion()
-                .isValidFor(Json.createValue(9)),
+            new ExclusiveMaximumKeyword(BigDecimal.valueOf(10)).asAssertion().isValidFor(Json.createValue(9)),
             is(true)
         );
     }
@@ -94,18 +80,8 @@ class ExclusiveMaximumKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("exclusiveMaximum", Json.createValue(10)).build()).printOn(
-                new HashMapMedia()
-            ),
+            new ExclusiveMaximumKeyword(BigDecimal.valueOf(10)).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("exclusiveMaximum"), is(BigDecimal.valueOf(10)))
         );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new NumberKeywordType(
-            JsonProvider.provider(),
-            "exclusiveMaximum",
-            ExclusiveMaximumKeyword::new
-        ).createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }
