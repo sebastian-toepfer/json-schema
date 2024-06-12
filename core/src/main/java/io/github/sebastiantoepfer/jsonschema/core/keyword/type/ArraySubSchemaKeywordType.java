@@ -27,7 +27,6 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import java.util.List;
@@ -51,11 +50,6 @@ public final class ArraySubSchemaKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        return schema
-            .asJsonObject()
-            .getJsonArray(name)
-            .stream()
-            .map(new DefaultJsonSchemaFactory()::create)
-            .collect(collectingAndThen(toList(), keywordCreator));
+        return schema.subSchemas(name).collect(collectingAndThen(toList(), keywordCreator));
     }
 }

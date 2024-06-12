@@ -26,8 +26,10 @@ package io.github.sebastiantoepfer.jsonschema;
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.spi.JsonSchemaFactory;
+import jakarta.json.JsonPointer;
 import jakarta.json.JsonValue;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public final class FakeJsonSchemaFactory implements JsonSchemaFactory {
 
@@ -54,7 +56,17 @@ public final class FakeJsonSchemaFactory implements JsonSchemaFactory {
         }
 
         @Override
-        public Optional<JsonSubSchema> asSubSchema(String name) {
+        public Optional<JsonSubSchema> subSchema(String name) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Stream<JsonSubSchema> subSchemas(String name) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Optional<JsonSubSchema> subSchema(JsonPointer pointer) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 

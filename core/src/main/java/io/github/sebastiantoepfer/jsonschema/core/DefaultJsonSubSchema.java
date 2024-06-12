@@ -32,6 +32,7 @@ import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonPointer;
 import jakarta.json.JsonValue;
 import java.util.Objects;
 import java.util.Optional;
@@ -92,10 +93,18 @@ final class DefaultJsonSubSchema implements JsonSubSchema {
     }
 
     @Override
-    public Optional<JsonSubSchema> asSubSchema(final String name) {
-        return Optional.ofNullable(asJsonObject().get(name))
-            .flatMap(new DefaultJsonSchemaFactory()::tryToCreateSchemaFrom)
-            .map(subSchema -> new DefaultJsonSubSchema(this, subSchema));
+    public Optional<JsonSubSchema> subSchema(final String name) {
+        return schema.subSchema(name).map(sub -> new DefaultJsonSubSchema(this, sub));
+    }
+
+    @Override
+    public Stream<JsonSubSchema> subSchemas(final String name) {
+        return schema.subSchemas(name).map(sub -> new DefaultJsonSubSchema(this, sub));
+    }
+
+    @Override
+    public Optional<JsonSubSchema> subSchema(final JsonPointer pointer) {
+        return schema.subSchema(pointer).map(sub -> new DefaultJsonSubSchema(this, sub));
     }
 
     @Override

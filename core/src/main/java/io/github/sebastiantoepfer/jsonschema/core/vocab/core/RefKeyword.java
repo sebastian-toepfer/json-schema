@@ -30,7 +30,6 @@ import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import jakarta.json.Json;
 import jakarta.json.JsonPointer;
 import jakarta.json.JsonReader;
-import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import java.io.IOException;
 import java.net.URI;
@@ -74,30 +73,21 @@ final class RefKeyword implements Applicator {
     }
 
     private JsonSchema retrieveJsonSchema() {
-        final JsonValue json;
+        final JsonSchema json;
         try {
             if (isRemote()) {
                 json = retrieveValueFromRemoteLocation();
             } else {
                 json = retrieveValueFromLocalSchema();
             }
-            return JsonSchemas.load(json);
+            return json;
         } catch (IOException ex) {
             throw new IllegalStateException("can not load schema!", ex);
         }
     }
 
-    private JsonValue retrieveValueFromLocalSchema() throws IOException {
-        final JsonPointer pointer = createPointer();
-        if (pointer.containsValue(searchAnchor())) {
-            return pointer.getValue(searchAnchor());
-        } else {
-            throw new IOException("can not find referenced value.");
-        }
-    }
-
-    private JsonStructure searchAnchor() {
-        return schema.rootSchema().asJsonObject();
+    private JsonSchema retrieveValueFromLocalSchema() throws IOException {
+        return schema.rootSchema().subSchema(createPointer()).orElseThrow();
     }
 
     private JsonPointer createPointer() {
@@ -111,9 +101,9 @@ final class RefKeyword implements Applicator {
         return pointer;
     }
 
-    private JsonValue retrieveValueFromRemoteLocation() throws IOException {
+    private JsonSchema retrieveValueFromRemoteLocation() throws IOException {
         try (final JsonReader reader = Json.createReader(uri.toURL().openStream())) {
-            return reader.readValue();
+            return JsonSchemas.load(reader.readValue());
         }
     }
 

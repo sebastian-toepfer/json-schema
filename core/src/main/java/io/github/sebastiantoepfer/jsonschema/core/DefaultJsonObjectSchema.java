@@ -31,6 +31,7 @@ import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonPointer;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -61,9 +62,32 @@ public final class DefaultJsonObjectSchema extends AbstractJsonValueSchema {
     }
 
     @Override
-    public Optional<JsonSubSchema> asSubSchema(final String name) {
+    public Optional<JsonSubSchema> subSchema(final String name) {
         return Optional.ofNullable(asJsonObject().get(name))
             .flatMap(new DefaultJsonSchemaFactory()::tryToCreateSchemaFrom)
             .map(subSchema -> new DefaultJsonSubSchema(this, subSchema));
+    }
+
+    @Override
+    public Stream<JsonSubSchema> subSchemas(final String name) {
+        return asJsonObject()
+            .getJsonArray(name)
+            .stream()
+            .map(new DefaultJsonSchemaFactory()::tryToCreateSchemaFrom)
+            .flatMap(Optional::stream)
+            .map(subSchema -> new DefaultJsonSubSchema(this, subSchema));
+    }
+
+    @Override
+    public Optional<JsonSubSchema> subSchema(final JsonPointer pointer) {
+        final Optional<JsonSubSchema> result;
+        if (pointer.containsValue(asJsonObject())) {
+            result = new DefaultJsonSchemaFactory()
+                .tryToCreateSchemaFrom(pointer.getValue(asJsonObject()))
+                .map(subSchema -> new DefaultJsonSubSchema(this, subSchema));
+        } else {
+            result = Optional.empty();
+        }
+        return result;
     }
 }

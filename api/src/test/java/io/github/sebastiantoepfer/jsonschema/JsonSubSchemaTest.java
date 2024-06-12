@@ -29,8 +29,10 @@ import static org.hamcrest.Matchers.sameInstance;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import jakarta.json.JsonPointer;
 import jakarta.json.JsonValue;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 class JsonSubSchemaTest {
@@ -61,7 +63,17 @@ class JsonSubSchemaTest {
                 }
 
                 @Override
-                public Optional<JsonSubSchema> asSubSchema(final String name) {
+                public Optional<JsonSubSchema> subSchema(final String name) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+
+                @Override
+                public Stream<JsonSubSchema> subSchemas(String name) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+
+                @Override
+                public Optional<JsonSubSchema> subSchema(JsonPointer pointer) {
                     throw new UnsupportedOperationException("Not supported yet.");
                 }
 

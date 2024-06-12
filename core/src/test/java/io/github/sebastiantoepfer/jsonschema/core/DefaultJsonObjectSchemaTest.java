@@ -114,7 +114,7 @@ class DefaultJsonObjectSchemaTest {
     @Test
     void should_return_empty_if_non_subschema_exists_under_the_given_name() {
         assertThat(
-            new DefaultJsonObjectSchema(Json.createObjectBuilder().add("test", "hallo").build()).asSubSchema(
+            new DefaultJsonObjectSchema(Json.createObjectBuilder().add("test", "hallo").build()).subSchema(
                 "properties"
             ),
             isEmpty()
@@ -124,7 +124,7 @@ class DefaultJsonObjectSchemaTest {
     @Test
     void should_return_subschema_if_subschema_exists_under_the_given_name() {
         assertThat(
-            new DefaultJsonObjectSchema(Json.createObjectBuilder().add("test", JsonValue.FALSE).build()).asSubSchema(
+            new DefaultJsonObjectSchema(Json.createObjectBuilder().add("test", JsonValue.FALSE).build()).subSchema(
                 "test"
             ),
             isPresent()
@@ -136,7 +136,7 @@ class DefaultJsonObjectSchemaTest {
         assertThat(
             new DefaultJsonObjectSchema(
                 Json.createObjectBuilder().add("test", JsonValue.EMPTY_JSON_ARRAY).build()
-            ).asSubSchema("test"),
+            ).subSchema("test"),
             isEmpty()
         );
     }

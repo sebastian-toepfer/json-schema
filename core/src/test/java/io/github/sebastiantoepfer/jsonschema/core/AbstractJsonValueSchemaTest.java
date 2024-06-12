@@ -33,8 +33,10 @@ import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonPointer;
 import jakarta.json.JsonValue;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 class AbstractJsonValueSchemaTest {
@@ -81,7 +83,17 @@ class AbstractJsonValueSchemaTest {
         }
 
         @Override
-        public Optional<JsonSubSchema> asSubSchema(final String name) {
+        public Optional<JsonSubSchema> subSchema(final String name) {
+            return Optional.empty();
+        }
+
+        @Override
+        public Stream<JsonSubSchema> subSchemas(final String name) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Optional<JsonSubSchema> subSchema(final JsonPointer pointer) {
             return Optional.empty();
         }
     }
