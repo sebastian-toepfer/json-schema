@@ -29,12 +29,9 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NamedJsonSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NamedJsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
+import java.util.Map;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
@@ -42,9 +39,7 @@ class DefsKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword defs = createKeywordFrom(
-            Json.createObjectBuilder().add("$defs", JsonValue.EMPTY_JSON_OBJECT).build()
-        );
+        final Keyword defs = new DefsKeyword(new NamedJsonSchemas(Map.of()));
 
         assertThat(defs.hasName("$defs"), is(true));
         assertThat(defs.hasName("test"), is(false));
@@ -53,16 +48,8 @@ class DefsKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("$defs", JsonValue.EMPTY_JSON_OBJECT).build()).printOn(
-                new HashMapMedia()
-            ),
+            new DefsKeyword(new NamedJsonSchemas(Map.of())).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("$defs"), anEmptyMap())
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new NamedJsonSchemaKeywordType(DefsKeyword.NAME, DefsKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

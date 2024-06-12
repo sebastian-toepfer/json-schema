@@ -27,18 +27,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NamedJsonSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NamedJsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import java.math.BigDecimal;
+import java.util.Map;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
@@ -46,9 +45,7 @@ class PatternPropertiesKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword keyword = createKeywordFrom(
-            Json.createObjectBuilder().add("patternProperties", JsonValue.EMPTY_JSON_OBJECT).build()
-        );
+        final Keyword keyword = new PatternPropertiesKeyword(new NamedJsonSchemas(Map.of()));
 
         assertThat(keyword.hasName("patternProperties"), is(true));
         assertThat(keyword.hasName("test"), is(false));
@@ -57,9 +54,7 @@ class PatternPropertiesKeywordTest {
     @Test
     void should_be_an_applicator_and_an_annotation() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("patternProperties", JsonValue.EMPTY_JSON_OBJECT).build()
-            ).categories(),
+            new PatternPropertiesKeyword(new NamedJsonSchemas(Map.of())).categories(),
             containsInAnyOrder(Keyword.KeywordCategory.APPLICATOR, Keyword.KeywordCategory.ANNOTATION)
         );
     }
@@ -67,9 +62,7 @@ class PatternPropertiesKeywordTest {
     @Test
     void should_be_valid_for_non_object() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("patternProperties", JsonValue.EMPTY_JSON_OBJECT).build())
-                .asApplicator()
-                .applyTo(JsonValue.FALSE),
+            new PatternPropertiesKeyword(new NamedJsonSchemas(Map.of())).asApplicator().applyTo(JsonValue.FALSE),
             is(true)
         );
     }
@@ -77,7 +70,7 @@ class PatternPropertiesKeywordTest {
     @Test
     void should_be_valid_for_empty_object() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("patternProperties", JsonValue.EMPTY_JSON_OBJECT).build())
+            new PatternPropertiesKeyword(new NamedJsonSchemas(Map.of()))
                 .asApplicator()
                 .applyTo(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
@@ -87,11 +80,7 @@ class PatternPropertiesKeywordTest {
     @Test
     void should_be_valid_if_properties_applies_to_his_schema() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("patternProperties", Json.createObjectBuilder().add("t.st", JsonValue.TRUE))
-                    .build()
-            )
+            new PatternPropertiesKeyword(new NamedJsonSchemas(Map.of("t.st", JsonSchemas.load(JsonValue.TRUE))))
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("test", 1).build()),
             is(true)
@@ -101,32 +90,20 @@ class PatternPropertiesKeywordTest {
     @Test
     void should_be_invalid_if_properties_not_applies_to_his_schema() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("patternProperties", Json.createObjectBuilder().add("t.st", JsonValue.FALSE))
-                    .build()
-            )
+            new PatternPropertiesKeyword(new NamedJsonSchemas(Map.of("t.st", JsonSchemas.load(JsonValue.FALSE))))
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("test", 1).build()),
             is(false)
         );
     }
 
-    /*
-        Attention can be falky.
-        JsonObject is a map, so the properties occurred in random order.
-        This means for this test it could be green without using all assertions.
-    */
     @Test
-    void should_be_invalid_if_one_schema_doesn_apply() {
+    void should_be_invalid_if_one_schema_does_not_apply() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add(
-                        "patternProperties",
-                        Json.createObjectBuilder().add("t.st", JsonValue.TRUE).add("t.*", JsonValue.FALSE)
-                    )
-                    .build()
+            new PatternPropertiesKeyword(
+                new NamedJsonSchemas(
+                    Map.of("t.st", JsonSchemas.load(JsonValue.TRUE), "t.*", JsonSchemas.load(JsonValue.FALSE))
+                )
             )
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("test", 1).build()),
@@ -137,11 +114,7 @@ class PatternPropertiesKeywordTest {
     @Test
     void should_be_valid_if_properties_not_covered() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("patternProperties", Json.createObjectBuilder().add("t.st", JsonValue.FALSE))
-                    .build()
-            )
+            new PatternPropertiesKeyword(new NamedJsonSchemas(Map.of("t.st", JsonSchemas.load(JsonValue.FALSE))))
                 .asApplicator()
                 .applyTo(Json.createObjectBuilder().add("foo", 1).build()),
             is(true)
@@ -151,11 +124,7 @@ class PatternPropertiesKeywordTest {
     @Test
     void should_return_the_matching_property_names() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("patternProperties", Json.createObjectBuilder().add("f.o", JsonValue.TRUE))
-                    .build()
-            )
+            new PatternPropertiesKeyword(new NamedJsonSchemas(Map.of("f.o", JsonSchemas.load(JsonValue.TRUE))))
                 .asAnnotation()
                 .valueFor(
                     Json.createObjectBuilder()
@@ -176,18 +145,10 @@ class PatternPropertiesKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("patternProperties", Json.createObjectBuilder().add("f.o", JsonValue.TRUE))
-                    .build()
-            ).printOn(new HashMapMedia()),
+            new PatternPropertiesKeyword(new NamedJsonSchemas(Map.of("f.o", JsonSchemas.load(JsonValue.TRUE)))).printOn(
+                new HashMapMedia()
+            ),
             (Matcher) hasEntry(is("patternProperties"), hasEntry(is("f.o"), anEmptyMap()))
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new NamedJsonSchemaKeywordType("patternProperties", PatternPropertiesKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

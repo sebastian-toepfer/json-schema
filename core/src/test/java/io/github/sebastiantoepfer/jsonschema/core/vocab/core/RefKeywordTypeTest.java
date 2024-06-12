@@ -25,8 +25,16 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
+import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.Json;
+import jakarta.json.JsonValue;
 import jakarta.json.spi.JsonProvider;
 import org.junit.jupiter.api.Test;
 
@@ -39,5 +47,25 @@ class RefKeywordTypeTest {
         assertThat(refKeywordType.hasName("$ref"), is(true));
         assertThat(refKeywordType.hasName("ref"), is(false));
         assertThat(refKeywordType.hasName("test"), is(false));
+    }
+
+    @Test
+    void should_be_not_createable_from_non_string() {
+        final RefKeywordType keywordType = new RefKeywordType(JsonProvider.provider());
+        final JsonSchema schema = new DefaultJsonSchemaFactory()
+            .create(Json.createObjectBuilder().add("$ref", JsonValue.TRUE).build());
+        assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
+    }
+
+    @Test
+    void should_create_refkeyword() {
+        assertThat(
+            new RefKeywordType(JsonProvider.provider()).createKeyword(
+                JsonSchemas.load(
+                    Json.createObjectBuilder().add("$ref", Json.createValue("#/$defs/positiveInteger")).build()
+                )
+            ),
+            is(not(nullValue()))
+        );
     }
 }

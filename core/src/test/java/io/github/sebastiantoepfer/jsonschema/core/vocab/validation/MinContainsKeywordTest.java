@@ -28,16 +28,12 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectsKeywordType;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.IntegerKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.StaticAnnotation;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
 import java.math.BigInteger;
+import java.util.List;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +41,7 @@ class MinContainsKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword enumKeyword = new MinContainsKeyword(new StaticAnnotation("", JsonValue.NULL), BigInteger.ONE);
+        final Keyword enumKeyword = new MinContainsKeyword(List.of(), BigInteger.ONE);
 
         assertThat(enumKeyword.hasName("minContains"), is(true));
         assertThat(enumKeyword.hasName("test"), is(false));
@@ -54,7 +50,7 @@ class MinContainsKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minContains", 2).build()).printOn(new HashMapMedia()),
+            new MinContainsKeyword(List.of(), BigInteger.valueOf(2)).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("minContains"), is(BigInteger.valueOf(2)))
         );
     }
@@ -62,7 +58,7 @@ class MinContainsKeywordTest {
     @Test
     void should_be_valid_for_non_arrays() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minContains", 2).build())
+            new MinContainsKeyword(List.of(), BigInteger.valueOf(2))
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
@@ -70,23 +66,11 @@ class MinContainsKeywordTest {
     }
 
     @Test
-    void should_be_valid_if_no_contains_is_present() {
-        assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("minContains", 2).build())
-                .asAssertion()
-                .isValidFor(Json.createArrayBuilder().add("foo").build()),
-            is(true)
-        );
-    }
-
-    @Test
     void should_be_valid_if_contains_applies_to_exact_count() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("contains", Json.createObjectBuilder().add("type", "string"))
-                    .add("minContains", 2)
-                    .build()
+            new MinContainsKeyword(
+                List.of(new StaticAnnotation("contains", Json.createArrayBuilder().add(0).add(1).build())),
+                BigInteger.valueOf(2)
             )
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("foo").add("bar").add(1).build()),
@@ -97,11 +81,9 @@ class MinContainsKeywordTest {
     @Test
     void should_be_valid_if_contains_applies_to_more_items() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("contains", Json.createObjectBuilder().add("type", "string"))
-                    .add("minContains", 2)
-                    .build()
+            new MinContainsKeyword(
+                List.of(new StaticAnnotation("contains", Json.createArrayBuilder().add(0).add(3).add(4).build())),
+                BigInteger.valueOf(2)
             )
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("foo").add(2).add(3).add("bar").add("baz").build()),
@@ -112,11 +94,9 @@ class MinContainsKeywordTest {
     @Test
     void should_be_valid_for_empty_arrays() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("contains", Json.createObjectBuilder().add("const", 1))
-                    .add("minContains", 0)
-                    .build()
+            new MinContainsKeyword(
+                List.of(new StaticAnnotation("contains", Json.createArrayBuilder().build())),
+                BigInteger.valueOf(0)
             )
                 .asAssertion()
                 .isValidFor(JsonValue.EMPTY_JSON_ARRAY),
@@ -127,11 +107,9 @@ class MinContainsKeywordTest {
     @Test
     void should_be_invalid_if_contains_applies_to_less_items() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("contains", Json.createObjectBuilder().add("type", "string"))
-                    .add("minContains", 2)
-                    .build()
+            new MinContainsKeyword(
+                List.of(new StaticAnnotation("contains", Json.createArrayBuilder().add(0).build())),
+                BigInteger.valueOf(2)
             )
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("foo").add(1).build()),
@@ -142,12 +120,7 @@ class MinContainsKeywordTest {
     @Test
     void should_be_valid_if_contains_applies_to_all_and_more_items_in_array() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("contains", Json.createObjectBuilder().add("type", "string"))
-                    .add("minContains", 2)
-                    .build()
-            )
+            new MinContainsKeyword(List.of(new StaticAnnotation("contains", JsonValue.TRUE)), BigInteger.valueOf(2))
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("foo").add("bar").add("baz").build()),
             is(true)
@@ -157,12 +130,7 @@ class MinContainsKeywordTest {
     @Test
     void should_be_valid_if_contains_applies_to_all_and_exact_items_count_in_array() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("contains", Json.createObjectBuilder().add("type", "string"))
-                    .add("minContains", 2)
-                    .build()
-            )
+            new MinContainsKeyword(List.of(new StaticAnnotation("contains", JsonValue.TRUE)), BigInteger.valueOf(2))
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("foo").add("bar").build()),
             is(true)
@@ -172,28 +140,10 @@ class MinContainsKeywordTest {
     @Test
     void should_be_invalid_if_contains_applies_to_all_and_less_items_in_array() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("contains", Json.createObjectBuilder().add("type", "string"))
-                    .add("minContains", 2)
-                    .build()
-            )
+            new MinContainsKeyword(List.of(new StaticAnnotation("contains", JsonValue.TRUE)), BigInteger.valueOf(2))
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add("foo").build()),
             is(false)
         );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new AffectsKeywordType(
-            "minContains",
-            "contains",
-            (a, s) ->
-                new IntegerKeywordType(
-                    JsonProvider.provider(),
-                    "minContains",
-                    value -> new MinContainsKeyword(a, value)
-                ).createKeyword(s)
-        ).createKeyword(new DefaultJsonSchemaFactory().create(json));
     }
 }

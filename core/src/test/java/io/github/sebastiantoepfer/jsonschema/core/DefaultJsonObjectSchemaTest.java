@@ -145,4 +145,12 @@ class DefaultJsonObjectSchemaTest {
     void should_be_printable() {
         assertThat(schema.printOn(new HashMapMedia()), allOf(hasEntry("type", "array"), hasKey("items")));
     }
+
+    @Test
+    void should_has_a_nice_to_string() {
+        assertThat(
+            new DefaultJsonObjectSchema(Json.createObjectBuilder().add("type", "string").build()).toString(),
+            is("{\"type\":\"string\"}")
+        );
+    }
 }

@@ -30,7 +30,6 @@ import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Annotation;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
 import java.util.Collection;
@@ -54,10 +53,8 @@ final class ContainsKeyword implements Applicator, Annotation {
 
     static final String NAME = "contains";
     private final JsonSchema contains;
-    private final List<Keyword> affectedBy;
 
-    public ContainsKeyword(final List<Keyword> affectedBy, final JsonSchema contains) {
-        this.affectedBy = List.copyOf(affectedBy);
+    public ContainsKeyword(final JsonSchema contains) {
         this.contains = Objects.requireNonNull(contains);
     }
 
@@ -82,7 +79,7 @@ final class ContainsKeyword implements Applicator, Annotation {
     }
 
     private boolean contains(final JsonArray array) {
-        return !affectedBy.isEmpty() || matchingValues(array).findAny().isPresent();
+        return matchingValues(array).findAny().isPresent();
     }
 
     @Override

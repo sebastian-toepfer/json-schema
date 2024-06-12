@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.github.sebastian-toepfer.json-schema</groupId>
         <artifactId>json-schema</artifactId>
-        <version>0.2.1</version>
+        <version>0.3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>json-schema-core</artifactId>
@@ -81,14 +81,7 @@
             <groupId>com.google.errorprone</groupId>
             <artifactId>error_prone_annotations</artifactId>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>jakarta.json</groupId>
-            <artifactId>jakarta.json-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
+                        </dependency>
         <dependency>
             <groupId>org.eclipse.parsson</groupId>
             <artifactId>parsson</artifactId>
@@ -98,6 +91,17 @@
             <groupId>io.github.sebastian-toepfer.ddd</groupId>
             <artifactId>media-core</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>nl.jqno.equalsverifier</groupId>
+            <artifactId>equalsverifier</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.json</groupId>
+            <artifactId>jakarta.json-api</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -117,10 +121,14 @@
                         <include>**/tests/draft2019-09/additionalItems.json</include>
                     -->
                     <include>**/tests/draft2020-12/additionalProperties.json</include>
+                    <include>**/tests/draft2020-12/allOf.json</include>
+                    <include>**/tests/draft2020-12/anyOf.json</include>
+                    <include>**/tests/draft2020-12/oneOf.json</include>
                     <include>**/tests/draft2020-12/boolean_schema.json</include>
                     <include>**/tests/draft2020-12/const.json</include>
                     <include>**/tests/draft2020-12/contains.json</include>
                     <include>**/tests/draft2020-12/dependentRequired.json</include>
+                    <include>**/tests/draft2020-12/dependentSchemas.json</include>
                     <include>**/tests/draft2020-12/enum.json</include>
                     <include>**/tests/draft2020-12/exclusiveMaximum.json</include>
                     <include>**/tests/draft2020-12/exclusiveMinimum.json</include>
@@ -139,6 +147,9 @@
                     <include>**/tests/draft2020-12/minLength.json</include>
                     <include>**/tests/draft2020-12/minimum.json</include>
                     <include>**/tests/draft2020-12/minProperties.json</include>
+                    <!-- more than not -> unevaluatedProperties :(
+                    <include>**/tests/draft2020-12/not.json</include>
+                    -->
                     <include>**/tests/draft2020-12/multipleOf.json</include>
                     <include>**/tests/draft2020-12/pattern.json</include>
                     <include>**/tests/draft2020-12/patternProperties.json</include>

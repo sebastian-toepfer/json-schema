@@ -25,11 +25,9 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import jakarta.json.Json;
 import jakarta.json.JsonPointer;
-import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
 import java.io.IOException;
 import java.net.URI;
@@ -51,10 +49,12 @@ final class RefKeyword implements Applicator {
     static final String NAME = "$ref";
     private final JsonSchema schema;
     private final URI uri;
+    private final SchemaRegistry schemaRegistry;
 
-    public RefKeyword(final JsonSchema schema, final URI uri) {
+    public RefKeyword(final JsonSchema schema, final URI uri, final SchemaRegistry schemaRegistry) {
         this.schema = Objects.requireNonNull(schema);
         this.uri = Objects.requireNonNull(uri);
+        this.schemaRegistry = Objects.requireNonNull(schemaRegistry);
     }
 
     @Override
@@ -76,9 +76,9 @@ final class RefKeyword implements Applicator {
         final JsonSchema json;
         try {
             if (isRemote()) {
-                json = retrieveValueFromRemoteLocation();
+                json = retrieveSchemaFromRegistry();
             } else {
-                json = retrieveValueFromLocalSchema();
+                json = retrieveSchemaFromLocalSchema();
             }
             return json;
         } catch (IOException ex) {
@@ -86,7 +86,7 @@ final class RefKeyword implements Applicator {
         }
     }
 
-    private JsonSchema retrieveValueFromLocalSchema() throws IOException {
+    private JsonSchema retrieveSchemaFromLocalSchema() throws IOException {
         return schema.rootSchema().subSchema(createPointer()).orElseThrow();
     }
 
@@ -101,10 +101,8 @@ final class RefKeyword implements Applicator {
         return pointer;
     }
 
-    private JsonSchema retrieveValueFromRemoteLocation() throws IOException {
-        try (final JsonReader reader = Json.createReader(uri.toURL().openStream())) {
-            return JsonSchemas.load(reader.readValue());
-        }
+    private JsonSchema retrieveSchemaFromRegistry() throws IOException {
+        return schemaRegistry.schemaForUrl(uri);
     }
 
     private boolean isRemote() {

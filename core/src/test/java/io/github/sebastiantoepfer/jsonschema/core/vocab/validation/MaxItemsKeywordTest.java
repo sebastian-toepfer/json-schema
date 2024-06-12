@@ -28,13 +28,9 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.IntegerKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
 import java.math.BigInteger;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
@@ -43,9 +39,7 @@ class MaxItemsKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword keyword = createKeywordFrom(
-            Json.createObjectBuilder().add("maxItems", Json.createValue(1)).build()
-        );
+        final Keyword keyword = new MaxItemsKeyword(BigInteger.valueOf(1));
 
         assertThat(keyword.hasName("maxItems"), is(true));
         assertThat(keyword.hasName("test"), is(false));
@@ -54,9 +48,7 @@ class MaxItemsKeywordTest {
     @Test
     void should_be_valid_for_non_arrays() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("maxItems", Json.createValue(2)).build())
-                .asAssertion()
-                .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
+            new MaxItemsKeyword(BigInteger.valueOf(2)).asAssertion().isValidFor(JsonValue.EMPTY_JSON_OBJECT),
             is(true)
         );
     }
@@ -64,7 +56,7 @@ class MaxItemsKeywordTest {
     @Test
     void should_be_valid_for_array_with_same_size() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("maxItems", Json.createValue(2)).build())
+            new MaxItemsKeyword(BigInteger.valueOf(2))
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add(1).add(2).build()),
             is(true)
@@ -74,7 +66,7 @@ class MaxItemsKeywordTest {
     @Test
     void should_be_valid_for_array_with_smaller_size() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("maxItems", Json.createValue(2)).build())
+            new MaxItemsKeyword(BigInteger.valueOf(2))
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add(1).build()),
             is(true)
@@ -84,7 +76,7 @@ class MaxItemsKeywordTest {
     @Test
     void should_be_invalid_for_array_with_greather_size() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("maxItems", Json.createValue(2)).build())
+            new MaxItemsKeyword(BigInteger.valueOf(2))
                 .asAssertion()
                 .isValidFor(Json.createArrayBuilder().add(1).add(2).add(3).build()),
             is(false)
@@ -94,16 +86,8 @@ class MaxItemsKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("maxItems", Json.createValue(2)).build()).printOn(
-                new HashMapMedia()
-            ),
+            new MaxItemsKeyword(BigInteger.valueOf(2)).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("maxItems"), is(BigInteger.valueOf(2)))
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new IntegerKeywordType(JsonProvider.provider(), "maxItems", MaxItemsKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

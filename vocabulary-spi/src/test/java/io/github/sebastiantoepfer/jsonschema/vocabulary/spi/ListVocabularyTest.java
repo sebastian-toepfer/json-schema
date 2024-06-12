@@ -34,12 +34,12 @@ import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import java.net.URI;
 import org.junit.jupiter.api.Test;
 
-class DefaultVocabularyTest {
+class ListVocabularyTest {
 
     @Test
     void should_return_the_id() {
         assertThat(
-            new DefaultVocabulary(URI.create("http::/localhots/vocab")).id(),
+            new ListVocabulary(URI.create("http::/localhots/vocab")).id(),
             is(URI.create("http::/localhots/vocab"))
         );
     }
@@ -47,10 +47,9 @@ class DefaultVocabularyTest {
     @Test
     void should_return_empty_if_requested_keyword_is_unknown() {
         assertThat(
-            new DefaultVocabulary(
-                URI.create("http://localhost"),
-                new SimpleTestKeywordType("name")
-            ).findKeywordTypeByName("test"),
+            new ListVocabulary(URI.create("http://localhost"), new SimpleTestKeywordType("name")).findKeywordTypeByName(
+                "test"
+            ),
             isEmpty()
         );
     }
@@ -59,7 +58,7 @@ class DefaultVocabularyTest {
     void should_return_requested_keyword_if_is_it_known() {
         final KeywordType testKeywordType = new SimpleTestKeywordType("test");
         assertThat(
-            new DefaultVocabulary(URI.create("http://localhost"), testKeywordType).findKeywordTypeByName("test"),
+            new ListVocabulary(URI.create("http://localhost"), testKeywordType).findKeywordTypeByName("test"),
             isPresentAndIs(testKeywordType)
         );
     }

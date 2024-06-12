@@ -29,12 +29,15 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.sebastiantoepfer.jsonschema.Vocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreVocabulary;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
 import jakarta.json.spi.JsonProvider;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class KeywordsTest {
@@ -42,7 +45,7 @@ class KeywordsTest {
     @Test
     void should_not_be_createbale_without_mandantory_core_vocabulary() {
         final Collection<VocabularyDefinition> vocabDefs = List.of(
-            new VocabularyDefinition(new CoreVocabulary(JsonProvider.provider()).id(), false)
+            new TestVocabularyDefinition(new CoreVocabulary(JsonProvider.provider()).id(), false)
         );
         assertThrows(IllegalArgumentException.class, () -> new Keywords(vocabDefs));
     }
@@ -50,7 +53,7 @@ class KeywordsTest {
     @Test
     void should_not_be_createbale_without_mandantory_base_vocabulary() {
         final Collection<VocabularyDefinition> vocabDefs = List.of(
-            new VocabularyDefinition(new BasicVocabulary().id(), false)
+            new TestVocabularyDefinition(new BasicVocabulary().id(), false)
         );
         assertThrows(IllegalArgumentException.class, () -> new Keywords(vocabDefs));
     }
@@ -58,8 +61,38 @@ class KeywordsTest {
     @Test
     void should_be_createbale_with_optional_vocabularies() {
         assertThat(
-            new Keywords(List.of(new VocabularyDefinition(URI.create("http://optinal"), false))),
+            new Keywords(List.of(new TestVocabularyDefinition(URI.create("http://optinal"), false))),
             is(not(nullValue()))
         );
+    }
+
+    private static final class TestVocabularyDefinition implements VocabularyDefinition {
+
+        private final URI id;
+        private final boolean required;
+
+        public TestVocabularyDefinition(final URI id) {
+            this(id, false);
+        }
+
+        public TestVocabularyDefinition(final URI id, final boolean required) {
+            this.id = id;
+            this.required = required;
+        }
+
+        @Override
+        public Optional<Vocabulary> findVocabulary() {
+            return Optional.empty();
+        }
+
+        @Override
+        public boolean hasid(URI id) {
+            return Objects.equals(this.id, id);
+        }
+
+        @Override
+        public boolean isRequired() {
+            return required;
+        }
     }
 }

@@ -23,33 +23,67 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.keyword.type;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
-
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
-public final class ArraySubSchemaKeywordType implements KeywordType {
+public final class AffectedBy implements Comparable<AffectedBy> {
 
+    private final AffectByType type;
     private final String name;
-    private final Function<List<JsonSchema>, Keyword> keywordCreator;
 
-    public ArraySubSchemaKeywordType(final String name, final Function<List<JsonSchema>, Keyword> keywordCreator) {
+    public AffectedBy(final AffectByType type, final String name) {
+        this.type = Objects.requireNonNull(type);
         this.name = Objects.requireNonNull(name);
-        this.keywordCreator = Objects.requireNonNull(keywordCreator);
     }
 
     @Override
-    public String name() {
-        return name;
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + Objects.hashCode(this.type);
+        hash = 83 * hash + Objects.hashCode(this.name);
+        return hash;
     }
 
     @Override
-    public Keyword createKeyword(final JsonSchema schema) {
-        return schema.subSchemas(name).collect(collectingAndThen(toList(), keywordCreator));
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        return compareTo((AffectedBy) obj) == 0;
+    }
+
+    @Override
+    public int compareTo(final AffectedBy other) {
+        final int result;
+        if (type.compareTo(other.type) == 0) {
+            result = name.compareTo(other.name);
+        } else {
+            result = type.compareTo(other.type);
+        }
+        return result;
+    }
+
+    Function<Keyword, Keyword> findAffectedByKeywordIn(final JsonSchema schema) {
+        final UnaryOperator<Keyword> result;
+        if (schema.keywordByName(name).isPresent()) {
+            result = type::affect;
+        } else {
+            result = k -> k;
+        }
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "AffectedBy{" + "type=" + type + ", name=" + name + '}';
     }
 }

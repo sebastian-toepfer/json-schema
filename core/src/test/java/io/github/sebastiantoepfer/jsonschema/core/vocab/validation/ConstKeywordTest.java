@@ -29,11 +29,8 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AnyKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import jakarta.json.spi.JsonProvider;
 import org.hamcrest.Matcher;
@@ -43,9 +40,7 @@ class ConstKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword enumKeyword = createKeywordFrom(
-            Json.createObjectBuilder().add("const", JsonValue.EMPTY_JSON_ARRAY).build()
-        );
+        final Keyword enumKeyword = new ConstKeyword(JsonProvider.provider(), JsonValue.EMPTY_JSON_ARRAY);
 
         assertThat(enumKeyword.hasName("const"), is(true));
         assertThat(enumKeyword.hasName("test"), is(false));
@@ -54,7 +49,7 @@ class ConstKeywordTest {
     @Test
     void should_be_valid_for_same_string_value() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("const", Json.createValue("hello")).build())
+            new ConstKeyword(JsonProvider.provider(), Json.createValue("hello"))
                 .asAssertion()
                 .isValidFor(Json.createValue("hello")),
             is(true)
@@ -64,7 +59,7 @@ class ConstKeywordTest {
     @Test
     void should_be_invalid_for_different_string_value() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("const", Json.createValue("hello")).build())
+            new ConstKeyword(JsonProvider.provider(), Json.createValue("hello"))
                 .asAssertion()
                 .isValidFor(Json.createValue("world")),
             is(false)
@@ -74,7 +69,7 @@ class ConstKeywordTest {
     @Test
     void should_be_valid_for_same_number_value() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("const", Json.createValue(3.14159)).build())
+            new ConstKeyword(JsonProvider.provider(), Json.createValue(3.14159))
                 .asAssertion()
                 .isValidFor(Json.createValue(3.14159)),
             is(true)
@@ -84,7 +79,7 @@ class ConstKeywordTest {
     @Test
     void should_be_invalid_for_value_with_different_type() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("const", Json.createValue(3.14159)).build())
+            new ConstKeyword(JsonProvider.provider(), Json.createValue(3.14159))
                 .asAssertion()
                 .isValidFor(Json.createValue("pi")),
             is(false)
@@ -94,10 +89,9 @@ class ConstKeywordTest {
     @Test
     void should_be_valid_for_exact_object_structure() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("const", Json.createObjectBuilder().add("name", "John Doe").add("age", 31))
-                    .build()
+            new ConstKeyword(
+                JsonProvider.provider(),
+                Json.createObjectBuilder().add("name", "John Doe").add("age", 31).build()
             )
                 .asAssertion()
                 .isValidFor(Json.createObjectBuilder().add("name", "John Doe").add("age", 31).build()),
@@ -108,10 +102,9 @@ class ConstKeywordTest {
     @Test
     void should_be_invalid_for_not_exact_object_structure() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("const", Json.createObjectBuilder().add("name", "John Doe").add("age", 31))
-                    .build()
+            new ConstKeyword(
+                JsonProvider.provider(),
+                Json.createObjectBuilder().add("name", "John Doe").add("age", 31).build()
             )
                 .asAssertion()
                 .isValidFor(Json.createObjectBuilder().add("name", "Robert").add("age", 31).build()),
@@ -122,7 +115,7 @@ class ConstKeywordTest {
     @Test
     void should_be_valid_for_decimal_without_scale_if_number_is_valid() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("const", 1).build())
+            new ConstKeyword(JsonProvider.provider(), Json.createValue(1))
                 .asAssertion()
                 .isValidFor(Json.createValue(1.0)),
             is(true)
@@ -132,16 +125,11 @@ class ConstKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("const", Json.createArrayBuilder().add("TEST").add("VALID")).build()
+            new ConstKeyword(
+                JsonProvider.provider(),
+                Json.createArrayBuilder().add("TEST").add("VALID").build()
             ).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("const"), containsInAnyOrder("TEST", "VALID"))
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new AnyKeywordType(JsonProvider.provider(), "const", ConstKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

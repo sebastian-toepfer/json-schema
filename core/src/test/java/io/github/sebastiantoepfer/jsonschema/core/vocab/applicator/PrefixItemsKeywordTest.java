@@ -31,12 +31,11 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ArraySubSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import java.util.List;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
@@ -44,9 +43,7 @@ class PrefixItemsKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword items = createKeywordFrom(
-            Json.createObjectBuilder().add("prefixItems", Json.createArrayBuilder().add(JsonValue.TRUE)).build()
-        );
+        final Keyword items = new PrefixItemsKeyword(List.of(JsonSchemas.load(JsonValue.TRUE)));
 
         assertThat(items.hasName("prefixItems"), is(true));
         assertThat(items.hasName("test"), is(false));
@@ -55,9 +52,7 @@ class PrefixItemsKeywordTest {
     @Test
     void should_return_zero_as_value() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("prefixItems", Json.createArrayBuilder().add(JsonValue.TRUE)).build()
-            )
+            new PrefixItemsKeyword(List.of(JsonSchemas.load(JsonValue.TRUE)))
                 .asAnnotation()
                 .valueFor(Json.createArrayBuilder().add(1).add(2).build()),
             is(Json.createValue(0))
@@ -67,10 +62,14 @@ class PrefixItemsKeywordTest {
     @Test
     void should_retrun_true_if_is_applies_to_all_values() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("prefixItems", Json.createArrayBuilder().add(JsonValue.TRUE).add(JsonValue.TRUE))
+            new PrefixItemsKeyword(
+                Json.createArrayBuilder()
+                    .add(JsonValue.TRUE)
+                    .add(JsonValue.TRUE)
                     .build()
+                    .stream()
+                    .map(JsonSchemas::load)
+                    .toList()
             )
                 .asAnnotation()
                 .valueFor(Json.createArrayBuilder().add(1).add(2).build()),
@@ -81,9 +80,7 @@ class PrefixItemsKeywordTest {
     @Test
     void should_be_valid_for_non_arrays() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("prefixItems", Json.createArrayBuilder().add(JsonValue.FALSE)).build()
-            )
+            new PrefixItemsKeyword(List.of(JsonSchemas.load(JsonValue.FALSE)))
                 .asApplicator()
                 .applyTo(Json.createValue(1)),
             is(true)
@@ -93,9 +90,7 @@ class PrefixItemsKeywordTest {
     @Test
     void should_be_valid_if_first_item_match_schema() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("prefixItems", Json.createArrayBuilder().add(JsonValue.TRUE)).build()
-            )
+            new PrefixItemsKeyword(List.of(JsonSchemas.load(JsonValue.TRUE)))
                 .asApplicator()
                 .applyTo(Json.createArrayBuilder().add(1).build()),
             is(true)
@@ -105,10 +100,14 @@ class PrefixItemsKeywordTest {
     @Test
     void should_be_invalid_if_second_item_does_not_match_schema() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("prefixItems", Json.createArrayBuilder().add(JsonValue.TRUE).add(JsonValue.FALSE))
+            new PrefixItemsKeyword(
+                Json.createArrayBuilder()
+                    .add(JsonValue.TRUE)
+                    .add(JsonValue.FALSE)
                     .build()
+                    .stream()
+                    .map(JsonSchemas::load)
+                    .toList()
             )
                 .asApplicator()
                 .applyTo(Json.createArrayBuilder().add(1).add(3).build()),
@@ -119,9 +118,7 @@ class PrefixItemsKeywordTest {
     @Test
     void should_be_applicator_and_annotation() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("prefixItems", JsonValue.EMPTY_JSON_ARRAY).build()
-            ).categories(),
+            new PrefixItemsKeyword(List.of(JsonSchemas.load(JsonValue.TRUE))).categories(),
             containsInAnyOrder(Keyword.KeywordCategory.APPLICATOR, Keyword.KeywordCategory.ANNOTATION)
         );
     }
@@ -129,16 +126,8 @@ class PrefixItemsKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder().add("prefixItems", Json.createArrayBuilder().add(JsonValue.TRUE)).build()
-            ).printOn(new HashMapMedia()),
+            new PrefixItemsKeyword(List.of(JsonSchemas.load(JsonValue.TRUE))).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("prefixItems"), contains(anEmptyMap()))
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new ArraySubSchemaKeywordType("prefixItems", PrefixItemsKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

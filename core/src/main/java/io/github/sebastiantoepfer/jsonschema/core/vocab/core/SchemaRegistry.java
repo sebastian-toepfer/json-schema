@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,36 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.core.vocab.format;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
-import io.github.sebastiantoepfer.jsonschema.Vocabulary;
-import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
+import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
+import jakarta.json.Json;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
+import java.io.IOException;
 import java.net.URI;
-import java.util.Optional;
 
-/**
- * <b>Format Annotation</b>
- * Dialect: 2020-12
- * uri: https://json-schema.org/draft/2020-12/vocab/format-annotation
- * source: https://www.learnjsonschema.com/2020-12/format-annotation/
- * spec: https://json-schema.org/draft/2020-12/json-schema-validation.html#section-7.2.1
- */
-public final class FormatVocabulary implements Vocabulary {
+interface SchemaRegistry {
+    JsonSchema schemaForUrl(URI uri) throws IOException;
 
-    private final Vocabulary vocab;
+    class DefaultSchemaRegistry implements SchemaRegistry {
 
-    public FormatVocabulary() {
-        this.vocab = new DefaultVocabulary(URI.create("https://json-schema.org/draft/2020-12/vocab/format-annotation"));
+        private JsonSchema schema;
+
+        public DefaultSchemaRegistry() {
+            schema = JsonSchemas.load(JsonValue.FALSE);
+        }
+
+        @Override
+        public JsonSchema schemaForUrl(final URI uri) throws IOException {
+            return schema;
+        }
     }
 
-    @Override
-    public URI id() {
-        return vocab.id();
-    }
+    class RemoteSchemaRegistry implements SchemaRegistry {
 
-    @Override
-    public Optional<KeywordType> findKeywordTypeByName(final String name) {
-        return Optional.empty();
+        @Override
+        public JsonSchema schemaForUrl(final URI uri) throws IOException {
+            try (JsonReader reader = Json.createReader(uri.toURL().openStream())) {
+                return JsonSchemas.load(reader.readValue());
+            }
+        }
     }
 }

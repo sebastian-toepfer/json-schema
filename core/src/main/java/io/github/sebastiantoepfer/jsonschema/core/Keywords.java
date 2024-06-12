@@ -29,7 +29,11 @@ import static java.util.stream.Collectors.toMap;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.applicator.ApplicatorVocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.content.ContentVocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.core.CoreVocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.format.FormatAnnotationVocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.meta.MetaDataVocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.vocab.unevaluated.UnevaluatedVocabulary;
 import io.github.sebastiantoepfer.jsonschema.core.vocab.validation.ValidationVocabulary;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.VocabularyDefinition;
@@ -54,7 +58,14 @@ final class Keywords {
             .stream()
             .collect(toMap(Vocabulary::id, Function.identity()));
 
-        DEFAULT_VOCABS = List.of(new ValidationVocabulary(JsonProvider.provider()), new ApplicatorVocabulary());
+        DEFAULT_VOCABS = List.of(
+            new ApplicatorVocabulary(),
+            new ValidationVocabulary(JsonProvider.provider()),
+            new MetaDataVocabulary(),
+            new FormatAnnotationVocabulary(),
+            new UnevaluatedVocabulary(),
+            new ContentVocabulary()
+        );
     }
 
     private final Collection<Vocabulary> vocabularies;
@@ -63,8 +74,8 @@ final class Keywords {
         if (
             vocabDefs
                 .stream()
-                .filter(vocabDef -> MANDANTORY_VOCABS.containsKey(vocabDef.id()))
-                .anyMatch(not(VocabularyDefinition::required))
+                .filter(vocabDef -> MANDANTORY_VOCABS.keySet().stream().anyMatch(vocabDef::hasid))
+                .anyMatch(not(VocabularyDefinition::isRequired))
         ) {
             throw new IllegalArgumentException("can not be created without core vocabulary is requiered!");
         }

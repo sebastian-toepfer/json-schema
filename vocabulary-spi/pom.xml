@@ -8,7 +8,7 @@
     <parent>
         <groupId>io.github.sebastian-toepfer.json-schema</groupId>
         <artifactId>json-schema</artifactId>
-        <version>0.2.1</version>
+        <version>0.3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>json-schema-vocabulary-spi</artifactId>
@@ -40,6 +40,11 @@
         <dependency>
             <groupId>com.github.npathai</groupId>
             <artifactId>hamcrest-optional</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>nl.jqno.equalsverifier</groupId>
+            <artifactId>equalsverifier</artifactId>
             <scope>test</scope>
         </dependency>
 

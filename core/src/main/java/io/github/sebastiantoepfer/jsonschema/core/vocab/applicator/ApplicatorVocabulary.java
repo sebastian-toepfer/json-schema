@@ -24,12 +24,18 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectByType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectedBy;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectedByKeywordType;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ArraySubSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.Affects;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectsKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NamedJsonSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SchemaArrayKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SubSchemaKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.DefaultVocabulary;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.ListVocabulary;
+import jakarta.json.Json;
+import jakarta.json.JsonValue;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -46,19 +52,55 @@ public final class ApplicatorVocabulary implements Vocabulary {
     private final Vocabulary vocab;
 
     public ApplicatorVocabulary() {
-        this.vocab = new DefaultVocabulary(
+        this.vocab = new ListVocabulary(
             URI.create("https://json-schema.org/draft/2020-12/vocab/applicator"),
+            new SchemaArrayKeywordType(AllOfKeyword.NAME, AllOfKeyword::new),
+            new SchemaArrayKeywordType(AnyOfKeyword.NAME, AnyOfKeyword::new),
+            new SchemaArrayKeywordType(OneOfKeyword.NAME, OneOfKeyword::new),
+            new SubSchemaKeywordType(NotKeyword.NAME, NotKeyword::new),
             new NamedJsonSchemaKeywordType(PropertiesKeyword.NAME, PropertiesKeyword::new),
-            new SubSchemaKeywordType(AdditionalPropertiesKeyword.NAME, AdditionalPropertiesKeyword::new),
+            //nomally affectedBy ... but we had the needed function only in affects :(
+            new AffectsKeywordType(
+                AdditionalPropertiesKeyword.NAME,
+                List.of(
+                    new Affects("properties", JsonValue.EMPTY_JSON_ARRAY),
+                    new Affects("patternProperties", JsonValue.EMPTY_JSON_ARRAY)
+                ),
+                (affects, schema) ->
+                    new SubSchemaKeywordType(
+                        AdditionalPropertiesKeyword.NAME,
+                        s -> new AdditionalPropertiesKeyword(affects, s)
+                    ).createKeyword(schema)
+            ),
             new NamedJsonSchemaKeywordType(PatternPropertiesKeyword.NAME, PatternPropertiesKeyword::new),
-            new SubSchemaKeywordType(ItemsKeyword.NAME, ItemsKeyword::new),
-            new ArraySubSchemaKeywordType(PrefixItemsKeyword.NAME, PrefixItemsKeyword::new),
-            //normally affeced by minContains and maxContains, but only min has a direct effect!
+            new NamedJsonSchemaKeywordType(DependentSchemasKeyword.NAME, DependentSchemasKeyword::new),
+            //this example shows my missunderstanding from affects, affectedBy and keywordtypes :(
+            new AffectedByKeywordType(
+                ItemsKeyword.NAME,
+                List.of(
+                    new AffectedBy(AffectByType.EXTENDS, "minItems"),
+                    new AffectedBy(AffectByType.EXTENDS, "maxItems")
+                ),
+                //nomally affectedBy too ... but we had the needed function only in affects :(
+                schema ->
+                    new AffectsKeywordType(
+                        ItemsKeyword.NAME,
+                        List.of(new Affects("prefixItems", Json.createValue(-1))),
+                        (affects, subSchema) ->
+                            new SubSchemaKeywordType(
+                                ItemsKeyword.NAME,
+                                s -> new ItemsKeyword(affects, s)
+                            ).createKeyword(subSchema)
+                    ).createKeyword(schema)
+            ),
+            new SchemaArrayKeywordType(PrefixItemsKeyword.NAME, PrefixItemsKeyword::new),
             new AffectedByKeywordType(
                 ContainsKeyword.NAME,
-                List.of("minContains"),
-                (a, schema) ->
-                    new SubSchemaKeywordType(ContainsKeyword.NAME, s -> new ContainsKeyword(a, s)).createKeyword(schema)
+                List.of(
+                    new AffectedBy(AffectByType.REPLACE, "minContains"),
+                    new AffectedBy(AffectByType.EXTENDS, "maxContains")
+                ),
+                new SubSchemaKeywordType(ContainsKeyword.NAME, ContainsKeyword::new)::createKeyword
             )
         );
     }

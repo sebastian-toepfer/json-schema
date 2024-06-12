@@ -28,13 +28,9 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.BooleanKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import org.hamcrest.Matcher;
@@ -44,9 +40,7 @@ class UniqueItemsKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword keyword = createKeywordFrom(
-            Json.createObjectBuilder().add("uniqueItems", JsonValue.FALSE).build()
-        );
+        final Keyword keyword = new UniqueItemsKeyword(false);
 
         assertThat(keyword.hasName("uniqueItems"), is(true));
         assertThat(keyword.hasName("test"), is(false));
@@ -55,9 +49,7 @@ class UniqueItemsKeywordTest {
     @Test
     void should_be_valid_for_uniqueItems() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build())
-                .asAssertion()
-                .isValidFor(Json.createArrayBuilder().add("1").add("2").build()),
+            new UniqueItemsKeyword(true).asAssertion().isValidFor(Json.createArrayBuilder().add("1").add("2").build()),
             is(true)
         );
     }
@@ -65,9 +57,7 @@ class UniqueItemsKeywordTest {
     @Test
     void should_be_valid_for_non_uniqueItems_if_false() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("uniqueItems", JsonValue.FALSE).build())
-                .asAssertion()
-                .isValidFor(Json.createArrayBuilder().add("1").add("1").build()),
+            new UniqueItemsKeyword(false).asAssertion().isValidFor(Json.createArrayBuilder().add("1").add("1").build()),
             is(true)
         );
     }
@@ -75,27 +65,20 @@ class UniqueItemsKeywordTest {
     @Test
     void should_be_invalid_for_non_uniqueItems() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build())
-                .asAssertion()
-                .isValidFor(Json.createArrayBuilder().add("1").add("1").build()),
+            new UniqueItemsKeyword(true).asAssertion().isValidFor(Json.createArrayBuilder().add("1").add("1").build()),
             is(false)
         );
     }
 
     @Test
     void should_be_valid_for_non_arrays() {
-        assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("uniqueItems", JsonValue.FALSE).build())
-                .asAssertion()
-                .isValidFor(JsonValue.EMPTY_JSON_OBJECT),
-            is(true)
-        );
+        assertThat(new UniqueItemsKeyword(false).asAssertion().isValidFor(JsonValue.EMPTY_JSON_OBJECT), is(true));
     }
 
     @Test
     void should_be_invalid_if_numbers_mathematically_unequal() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build())
+            new UniqueItemsKeyword(true)
                 .asAssertion()
                 .isValidFor(Json.createReader(new StringReader("[1.0,1.00,1]")).readArray()),
             is(false)
@@ -126,16 +109,8 @@ class UniqueItemsKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(Json.createObjectBuilder().add("uniqueItems", JsonValue.TRUE).build()).printOn(
-                new HashMapMedia()
-            ),
+            new UniqueItemsKeyword(true).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("uniqueItems"), is(true))
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new BooleanKeywordType(JsonProvider.provider(), "uniqueItems", UniqueItemsKeyword::new).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

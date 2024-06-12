@@ -28,12 +28,7 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
-import io.github.sebastiantoepfer.jsonschema.core.DefaultJsonSchemaFactory;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.StringKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.spi.JsonProvider;
 import java.net.URI;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
@@ -42,7 +37,7 @@ class IdKeywordTest {
 
     @Test
     void should_know_his_name() {
-        final Keyword id = createKeywordFrom(Json.createObjectBuilder().add("$id", Json.createValue("/test")).build());
+        final Keyword id = new IdKeyword(URI.create("/test"));
 
         assertThat(id.hasName("$id"), is(true));
         assertThat(id.hasName("test"), is(false));
@@ -51,13 +46,7 @@ class IdKeywordTest {
     @Test
     void should_retun_his_uri() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("$id", Json.createValue("https://json-schema.org/draft/2020-12/schema"))
-                    .build()
-            )
-                .asIdentifier()
-                .asUri(),
+            new IdKeyword(URI.create("https://json-schema.org/draft/2020-12/schema")).asIdentifier().asUri(),
             is(URI.create("https://json-schema.org/draft/2020-12/schema"))
         );
     }
@@ -65,18 +54,8 @@ class IdKeywordTest {
     @Test
     void should_be_printable() {
         assertThat(
-            createKeywordFrom(
-                Json.createObjectBuilder()
-                    .add("$id", Json.createValue("https://json-schema.org/draft/2020-12/schema"))
-                    .build()
-            ).printOn(new HashMapMedia()),
+            new IdKeyword(URI.create("https://json-schema.org/draft/2020-12/schema")).printOn(new HashMapMedia()),
             (Matcher) hasEntry(is("$id"), is("https://json-schema.org/draft/2020-12/schema"))
-        );
-    }
-
-    private static Keyword createKeywordFrom(final JsonObject json) {
-        return new StringKeywordType(JsonProvider.provider(), "$id", s -> new IdKeyword(URI.create(s))).createKeyword(
-            new DefaultJsonSchemaFactory().create(json)
         );
     }
 }

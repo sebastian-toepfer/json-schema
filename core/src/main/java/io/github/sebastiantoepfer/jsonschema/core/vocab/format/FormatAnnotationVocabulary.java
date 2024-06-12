@@ -21,38 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
+package io.github.sebastiantoepfer.jsonschema.core.vocab.format;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.ListVocabulary;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-public final class DefaultVocabulary implements Vocabulary {
+/**
+ * <b>Format Annotation</b>
+ * Dialect: 2020-12
+ * uri: https://json-schema.org/draft/2020-12/vocab/format-annotation
+ * source: https://www.learnjsonschema.com/2020-12/format-annotation/
+ * spec: https://json-schema.org/draft/2020-12/json-schema-validation.html#section-7.2.1
+ */
+public final class FormatAnnotationVocabulary implements Vocabulary {
 
-    private final URI id;
-    private final List<KeywordType> keywords;
+    private final Vocabulary vocab;
 
-    public DefaultVocabulary(final URI id, final KeywordType... keywortds) {
-        this(id, Arrays.asList(keywortds));
-    }
-
-    public DefaultVocabulary(final URI id, final Collection<KeywordType> keywords) {
-        this.id = Objects.requireNonNull(id);
-        this.keywords = List.copyOf(keywords);
+    public FormatAnnotationVocabulary() {
+        this.vocab = new ListVocabulary(URI.create("https://json-schema.org/draft/2020-12/vocab/format-annotation"));
     }
 
     @Override
     public URI id() {
-        return id;
+        return vocab.id();
     }
 
     @Override
     public Optional<KeywordType> findKeywordTypeByName(final String name) {
-        return keywords.stream().filter(keywordType -> keywordType.hasName(name)).findFirst();
+        return Optional.empty();
     }
 }

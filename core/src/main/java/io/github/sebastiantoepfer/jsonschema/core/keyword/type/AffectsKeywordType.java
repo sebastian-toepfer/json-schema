@@ -27,24 +27,27 @@ import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Annotation;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
-import io.github.sebastiantoepfer.jsonschema.keyword.StaticAnnotation;
-import jakarta.json.JsonValue;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class AffectsKeywordType implements KeywordType {
 
     private final String name;
-    private final String affects;
-    private final BiFunction<Annotation, JsonSchema, Keyword> keywordCreator;
+    private final Collection<Affects> affects;
+    private final BiFunction<Collection<Annotation>, JsonSchema, Keyword> keywordCreator;
 
     public AffectsKeywordType(
         final String name,
-        final String affects,
-        final BiFunction<Annotation, JsonSchema, Keyword> keywordCreator
+        final Collection<Affects> affects,
+        final BiFunction<Collection<Annotation>, JsonSchema, Keyword> keywordCreator
     ) {
-        this.name = name;
-        this.affects = affects;
+        this.name = Objects.requireNonNull(name);
+        this.affects = List.copyOf(affects);
         this.keywordCreator = keywordCreator;
     }
 
@@ -55,36 +58,46 @@ public class AffectsKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        return new AffectsKeyword(schema, name, affects, keywordCreator);
+        return new AffectsKeyword(schema, name, List.copyOf(affects), keywordCreator);
     }
 
     static final class AffectsKeyword extends KeywordRelationship {
 
         private final JsonSchema schema;
-        private final String affects;
-        private final BiFunction<Annotation, JsonSchema, Keyword> keywordCreator;
+        private final Collection<Affects> affects;
+        private final BiFunction<Collection<Annotation>, JsonSchema, Keyword> keywordCreator;
 
         public AffectsKeyword(
             final JsonSchema schema,
             final String name,
-            final String affects,
-            final BiFunction<Annotation, JsonSchema, Keyword> keywordCreator
+            final List<Affects> affects,
+            final BiFunction<Collection<Annotation>, JsonSchema, Keyword> keywordCreator
         ) {
             super(name);
             this.schema = Objects.requireNonNull(schema);
-            this.affects = affects;
+            this.affects = List.copyOf(affects);
             this.keywordCreator = Objects.requireNonNull(keywordCreator);
         }
 
         @Override
         protected Keyword delegate() {
-            return keywordCreator.apply(
-                schema
-                    .keywordByName(affects)
-                    .map(Keyword::asAnnotation)
-                    .orElseGet(() -> new StaticAnnotation(affects, JsonValue.NULL)),
-                schema
-            );
+            //ugly ... map.entry is not the right structure ...
+            final Map.Entry<List<Annotation>, Function<Keyword, Keyword>> p = affects
+                .stream()
+                .map(a -> a.findAffectsKeywordIn(schema))
+                .reduce(
+                    Map.entry(List.of(), k -> k),
+                    (
+                        Map.Entry<List<Annotation>, Function<Keyword, Keyword>> t,
+                        Map.Entry<Annotation, Function<Keyword, Keyword>> u
+                    ) -> {
+                        final ArrayList<Annotation> newAnnotations = new ArrayList<>(t.getKey());
+                        newAnnotations.add(u.getKey());
+                        return Map.entry(newAnnotations, t.getValue().andThen(u.getValue()));
+                    },
+                    (l, r) -> null
+                );
+            return p.getValue().apply(keywordCreator.apply(p.getKey(), schema));
         }
     }
 }
