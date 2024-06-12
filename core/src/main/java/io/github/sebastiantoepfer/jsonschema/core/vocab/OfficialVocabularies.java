@@ -46,7 +46,7 @@ public final class OfficialVocabularies implements LazyVocabularies {
     static {
         OFFICEAL_VOCABS = List.of(
             new CoreVocabulary(JSONP),
-            new ApplicatorVocabulary(),
+            new ApplicatorVocabulary(JSONP),
             new ValidationVocabulary(JSONP),
             new MetaDataVocabulary(),
             new FormatAnnotationVocabulary(),
