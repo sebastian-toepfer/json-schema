@@ -59,7 +59,7 @@ final class Keywords {
             .collect(toMap(Vocabulary::id, Function.identity()));
 
         DEFAULT_VOCABS = List.of(
-            new ApplicatorVocabulary(),
+            new ApplicatorVocabulary(JsonProvider.provider()),
             new ValidationVocabulary(JsonProvider.provider()),
             new MetaDataVocabulary(),
             new FormatAnnotationVocabulary(),

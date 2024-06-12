@@ -27,6 +27,7 @@ import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresentAndIs;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
+import jakarta.json.spi.JsonProvider;
 import org.junit.jupiter.api.Test;
 
 class ApplicatorVocabularyTest {
@@ -34,7 +35,7 @@ class ApplicatorVocabularyTest {
     @Test
     void should_find_items_keyword() {
         assertThat(
-            new ApplicatorVocabulary().findKeywordTypeByName("items").map(KeywordType::name),
+            new ApplicatorVocabulary(JsonProvider.provider()).findKeywordTypeByName("items").map(KeywordType::name),
             isPresentAndIs("items")
         );
     }
