@@ -25,15 +25,21 @@ package io.github.sebastiantoepfer.jsonschema;
 
 import io.github.sebastiantoepfer.ddd.common.Printable;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import jakarta.json.JsonPointer;
 import jakarta.json.JsonValue;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface JsonSchema extends JsonValue, Printable {
     Validator validator();
 
     Optional<Keyword> keywordByName(String name);
 
-    Optional<JsonSubSchema> asSubSchema(String name);
+    Optional<JsonSubSchema> subSchema(String name);
+
+    Stream<JsonSubSchema> subSchemas(String name);
+
+    Optional<JsonSubSchema> subSchema(JsonPointer pointer);
 
     default JsonSchema rootSchema() {
         return this;

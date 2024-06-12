@@ -25,11 +25,9 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import jakarta.json.Json;
 import jakarta.json.JsonPointer;
-import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import java.io.IOException;
 import java.net.URI;
@@ -82,23 +80,14 @@ final class RefKeyword implements Applicator {
             } else {
                 json = retrieveSchemaFromLocalSchema();
             }
-            return JsonSchemas.load(json);
+            return json;
         } catch (IOException ex) {
             throw new IllegalStateException("can not load schema!", ex);
         }
     }
 
     private JsonSchema retrieveSchemaFromLocalSchema() throws IOException {
-        final JsonPointer pointer = createPointer();
-        if (pointer.containsValue(searchAnchor())) {
-            return JsonSchemas.load(pointer.getValue(searchAnchor()));
-        } else {
-            throw new IOException("can not find referenced value.");
-        }
-    }
-
-    private JsonStructure searchAnchor() {
-        return schema.rootSchema().asJsonObject();
+        return schema.rootSchema().subSchema(createPointer()).orElseThrow();
     }
 
     private JsonPointer createPointer() {

@@ -51,12 +51,12 @@ public final class NamedJsonSchemaKeywordType implements KeywordType {
 
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
-        final JsonSubSchema pseudoSchema = schema.asSubSchema(name).orElseThrow(IllegalArgumentException::new);
+        final JsonSubSchema pseudoSchema = schema.subSchema(name).orElseThrow(IllegalArgumentException::new);
         return pseudoSchema
             .asJsonObject()
             .keySet()
             .stream()
-            .map(n -> Map.entry(n, pseudoSchema.asSubSchema(n).orElseThrow(IllegalArgumentException::new)))
+            .map(n -> Map.entry(n, pseudoSchema.subSchema(n).orElseThrow(IllegalArgumentException::new)))
             .collect(
                 collectingAndThen(
                     toMap(Map.Entry::getKey, Map.Entry::getValue),

@@ -27,6 +27,7 @@ import static com.github.npathai.hamcrestopt.OptionalMatchers.isEmpty;
 import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import io.github.sebastiantoepfer.ddd.media.core.HashMapMedia;
@@ -48,7 +49,7 @@ class DefaultJsonSubSchemaTest {
     }
 
     @Test
-    void should_return_subschema() {
+    void should_return_subschema_by_name() {
         final JsonSchema owner = new DefaultJsonSchemaFactory()
             .create(
                 Json.createObjectBuilder().add("test", Json.createObjectBuilder().add("sub", JsonValue.TRUE)).build()
@@ -57,7 +58,44 @@ class DefaultJsonSubSchemaTest {
             new DefaultJsonSubSchema(
                 owner,
                 new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("sub", JsonValue.TRUE).build())
-            ).asSubSchema("sub"),
+            ).subSchema("sub"),
+            isPresent()
+        );
+    }
+
+    @Test
+    void should_return_subschemas() {
+        final JsonSchema owner = new DefaultJsonSchemaFactory()
+            .create(
+                Json.createObjectBuilder()
+                    .add("test", Json.createObjectBuilder().add("subs", Json.createArrayBuilder().add(JsonValue.TRUE)))
+                    .build()
+            );
+        assertThat(
+            new DefaultJsonSubSchema(
+                owner,
+                new DefaultJsonSchemaFactory()
+                    .create(
+                        Json.createObjectBuilder().add("subs", Json.createArrayBuilder().add(JsonValue.TRUE)).build()
+                    )
+            )
+                .subSchemas("subs")
+                .toList(),
+            hasSize(1)
+        );
+    }
+
+    @Test
+    void should_return_subschema_by_pointer() {
+        final JsonSchema owner = new DefaultJsonSchemaFactory()
+            .create(
+                Json.createObjectBuilder().add("test", Json.createObjectBuilder().add("sub", JsonValue.TRUE)).build()
+            );
+        assertThat(
+            new DefaultJsonSubSchema(
+                owner,
+                new DefaultJsonSchemaFactory().create(Json.createObjectBuilder().add("sub", JsonValue.TRUE).build())
+            ).subSchema(Json.createPointer("/sub")),
             isPresent()
         );
     }

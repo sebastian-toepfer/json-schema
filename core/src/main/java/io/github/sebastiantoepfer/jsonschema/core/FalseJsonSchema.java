@@ -28,8 +28,10 @@ import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
 import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import jakarta.json.JsonPointer;
 import jakarta.json.JsonValue;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 final class FalseJsonSchema extends AbstractJsonValueSchema {
 
@@ -53,7 +55,17 @@ final class FalseJsonSchema extends AbstractJsonValueSchema {
     }
 
     @Override
-    public Optional<JsonSubSchema> asSubSchema(final String name) {
+    public Optional<JsonSubSchema> subSchema(final String name) {
         return Optional.empty();
+    }
+
+    @Override
+    public Stream<JsonSubSchema> subSchemas(final String name) {
+        return Stream.empty();
+    }
+
+    @Override
+    public Optional<JsonSubSchema> subSchema(final JsonPointer pointer) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
