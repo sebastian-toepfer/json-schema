@@ -23,38 +23,13 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.keyword.type;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-
-import java.util.List;
-import java.util.TreeSet;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
-class AffectedByTest {
+class ExtendedByTest {
 
     @Test
-    void should_fullfil_equals_contract() {
-        EqualsVerifier.forClass(AffectedBy.class).withNonnullFields("type", "name").verify();
-    }
-
-    @Test
-    void should_be_sorted_correctly() {
-        assertThat(
-            new TreeSet<>(
-                List.of(
-                    new AffectedBy(AffectByType.REPLACE, "d"),
-                    new AffectedBy(AffectByType.EXTENDS, "c"),
-                    new AffectedBy(AffectByType.EXTENDS, "b"),
-                    new AffectedBy(AffectByType.REPLACE, "a")
-                )
-            ),
-            contains(
-                new AffectedBy(AffectByType.EXTENDS, "b"),
-                new AffectedBy(AffectByType.EXTENDS, "c"),
-                new AffectedBy(AffectByType.REPLACE, "a"),
-                new AffectedBy(AffectByType.REPLACE, "d")
-            )
-        );
+    void equalsContract() {
+        EqualsVerifier.forClass(ExtendedBy.class).verify();
     }
 }

@@ -25,8 +25,46 @@ package io.github.sebastiantoepfer.jsonschema.core.keyword.type;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import java.util.Objects;
 import java.util.function.Function;
 
-public interface AffectedBy {
-    Function<Keyword, Keyword> findAffectedByKeywordIn(JsonSchema schema);
+public final class ExtendedBy implements AffectedBy {
+
+    private final String name;
+
+    public ExtendedBy(final String name) {
+        this.name = name;
+    }
+
+    @Override
+    public Function<Keyword, Keyword> findAffectedByKeywordIn(final JsonSchema schema) {
+        return k -> k;
+    }
+
+    @Override
+    public String toString() {
+        return "Extends{" + "name=" + name + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 89 * hash + Objects.hashCode(this.name);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ExtendedBy other = (ExtendedBy) obj;
+        return Objects.equals(this.name, other.name);
+    }
 }

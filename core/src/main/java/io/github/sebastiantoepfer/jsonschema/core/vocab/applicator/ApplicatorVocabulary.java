@@ -24,12 +24,12 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectByType;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectedBy;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectedByKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.Affects;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectsKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ExtendedBy;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NamedJsonSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ReplacedBy;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SchemaArrayKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SubSchemaKeywordType;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
@@ -79,10 +79,7 @@ public final class ApplicatorVocabulary implements Vocabulary {
             //this example shows my missunderstanding from affects, affectedBy and keywordtypes :(
             new AffectedByKeywordType(
                 ItemsKeyword.NAME,
-                List.of(
-                    new AffectedBy(AffectByType.EXTENDS, "minItems"),
-                    new AffectedBy(AffectByType.EXTENDS, "maxItems")
-                ),
+                List.of(new ExtendedBy("minItems"), new ExtendedBy("maxItems")),
                 //nomally affectedBy too ... but we had the needed function only in affects :(
                 schema ->
                     new AffectsKeywordType(
@@ -98,10 +95,7 @@ public final class ApplicatorVocabulary implements Vocabulary {
             new SchemaArrayKeywordType(PrefixItemsKeyword.NAME, PrefixItemsKeyword::new),
             new AffectedByKeywordType(
                 ContainsKeyword.NAME,
-                List.of(
-                    new AffectedBy(AffectByType.REPLACE, "minContains"),
-                    new AffectedBy(AffectByType.EXTENDS, "maxContains")
-                ),
+                List.of(new ReplacedBy("minContains"), new ExtendedBy("maxContains")),
                 new SubSchemaKeywordType(ContainsKeyword.NAME, ContainsKeyword::new)::createKeyword
             )
         );
