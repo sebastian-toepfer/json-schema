@@ -28,16 +28,21 @@ import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectedByKeyword
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.Affects;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectsKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ExtendedBy;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.LINKTYPE;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.LinkedWith;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NamedJsonSchemaKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ReplacedBy;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ReplacingKeyword;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SchemaArrayKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SubSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.ListVocabulary;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import jakarta.json.spi.JsonProvider;
 import java.net.URI;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,6 +63,21 @@ public final class ApplicatorVocabulary implements Vocabulary {
             new SchemaArrayKeywordType(AllOfKeyword.NAME, AllOfKeyword::new),
             new SchemaArrayKeywordType(AnyOfKeyword.NAME, AnyOfKeyword::new),
             new SchemaArrayKeywordType(OneOfKeyword.NAME, OneOfKeyword::new),
+            new AffectedByKeywordType(
+                ThenKeyword.NAME,
+                List.of(new LinkedWith(IfKeyword.NAME, IfKeyword::new, LINKTYPE.VALID)),
+                new SubSchemaKeywordType(ThenKeyword.NAME, ThenKeyword::new)::createKeyword
+            ),
+            //if keyword as no meanings without then or else -> needs a better affects keywordtype
+            new SubSchemaKeywordType(
+                IfKeyword.NAME,
+                schema -> new ReplacingKeyword(new IfKeyword(schema), EnumSet.allOf(Keyword.KeywordCategory.class))
+            ),
+            new AffectedByKeywordType(
+                ElseKeyword.NAME,
+                List.of(new LinkedWith(IfKeyword.NAME, IfKeyword::new, LINKTYPE.INVALID)),
+                new SubSchemaKeywordType(ElseKeyword.NAME, ElseKeyword::new)::createKeyword
+            ),
             new SubSchemaKeywordType(NotKeyword.NAME, NotKeyword::new),
             new NamedJsonSchemaKeywordType(PropertiesKeyword.NAME, PropertiesKeyword::new),
             //nomally affectedBy ... but we had the needed function only in affects :(

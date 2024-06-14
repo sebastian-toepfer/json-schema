@@ -38,7 +38,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
-final class ReplacingKeyword implements Keyword {
+public final class ReplacingKeyword implements Keyword {
 
     private final Keyword keywordToReplace;
     private final Collection<KeywordCategory> categoriesToReplace;
