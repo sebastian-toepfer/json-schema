@@ -36,6 +36,7 @@ import jakarta.json.JsonPointer;
 import jakarta.json.JsonValue;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 final class DefaultJsonSubSchema implements JsonSubSchema {
@@ -56,6 +57,23 @@ final class DefaultJsonSubSchema implements JsonSubSchema {
     @Override
     public JsonSchema owner() {
         return owner;
+    }
+
+    @Override
+    public boolean applyTo(final JsonValue instance) {
+        final Stream<Predicate<JsonValue>> predicates;
+        if (isJsonObject()) {
+            predicates = keywords()
+                .filter(
+                    k ->
+                        k.hasCategory(Keyword.KeywordCategory.ASSERTION) ||
+                        k.hasCategory(Keyword.KeywordCategory.APPLICATOR)
+                )
+                .map(KeywordPredicate::new);
+        } else {
+            predicates = Stream.of(schema::applyTo);
+        }
+        return predicates.allMatch(prdct -> prdct.test(instance));
     }
 
     @Override

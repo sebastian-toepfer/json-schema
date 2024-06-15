@@ -110,7 +110,7 @@ class PatternPropertiesKeyword implements Applicator, Annotation {
             .stream()
             .filter(e -> e.getKey().matcher(property.getKey()).find())
             .map(Map.Entry::getValue)
-            .allMatch(schema -> schema.validator().isValid(property.getValue()));
+            .allMatch(schema -> schema.applyTo(property.getValue()));
     }
 
     @Override

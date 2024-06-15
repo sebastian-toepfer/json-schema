@@ -32,6 +32,7 @@ import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonPointer;
+import jakarta.json.JsonValue;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -49,6 +50,11 @@ public final class DefaultJsonObjectSchema extends AbstractJsonValueSchema {
     @Override
     public Validator validator() {
         return keywords().collect(collectingAndThen(toList(), KeywordBasedValidator::new));
+    }
+
+    @Override
+    public boolean applyTo(final JsonValue instance) {
+        return keywords().map(KeywordPredicate::new).allMatch(prdct -> prdct.test(instance));
     }
 
     @Override

@@ -46,6 +46,11 @@ public final class FakeJsonSchemaFactory implements JsonSchemaFactory {
         }
 
         @Override
+        public boolean applyTo(JsonValue instance) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
         public Optional<Keyword> keywordByName(String name) {
             throw new UnsupportedOperationException("Not supported yet.");
         }

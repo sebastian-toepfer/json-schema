@@ -85,7 +85,7 @@ final class AdditionalPropertiesKeyword implements Applicator, Annotation {
     private boolean additionalPropertiesMatches(final JsonObject instance) {
         return findPropertiesForValidation(instance)
             .map(Map.Entry::getValue)
-            .allMatch(value -> additionalPropertiesSchema.validator().isValid(value));
+            .allMatch(additionalPropertiesSchema::applyTo);
     }
 
     @Override

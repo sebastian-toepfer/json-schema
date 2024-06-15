@@ -53,6 +53,11 @@ class JsonSubSchemaTest {
                 }
 
                 @Override
+                public boolean applyTo(JsonValue instance) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+
+                @Override
                 public Optional<Keyword> keywordByName(final String name) {
                     throw new UnsupportedOperationException("Not supported yet.");
                 }
