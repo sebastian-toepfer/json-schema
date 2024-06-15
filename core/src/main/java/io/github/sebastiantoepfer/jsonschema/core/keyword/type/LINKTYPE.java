@@ -23,10 +23,22 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.keyword.type;
 
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import java.util.function.Function;
+import jakarta.json.JsonValue;
+import java.util.function.Predicate;
 
-public interface AffectedBy {
-    Function<Keyword, Keyword> findAffectedByKeywordIn(JsonSchema schema);
+public enum LINKTYPE {
+    VALID {
+        @Override
+        Predicate<JsonValue> connect(final Predicate<JsonValue> first, final Predicate<JsonValue> second) {
+            return first.negate().or(second);
+        }
+    },
+    INVALID {
+        @Override
+        Predicate<JsonValue> connect(final Predicate<JsonValue> first, final Predicate<JsonValue> second) {
+            return first.or(second);
+        }
+    };
+
+    abstract Predicate<JsonValue> connect(Predicate<JsonValue> first, Predicate<JsonValue> second);
 }

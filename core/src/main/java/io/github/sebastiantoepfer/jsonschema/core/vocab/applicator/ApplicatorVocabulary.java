@@ -24,20 +24,25 @@
 package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 
 import io.github.sebastiantoepfer.jsonschema.Vocabulary;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectByType;
-import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectedBy;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectedByKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.Affects;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.AffectsKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ExtendedBy;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.LINKTYPE;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.LinkedWith;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.NamedJsonSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ReplacedBy;
+import io.github.sebastiantoepfer.jsonschema.core.keyword.type.ReplacingKeyword;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SchemaArrayKeywordType;
 import io.github.sebastiantoepfer.jsonschema.core.keyword.type.SubSchemaKeywordType;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.spi.ListVocabulary;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 import jakarta.json.spi.JsonProvider;
 import java.net.URI;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,6 +63,21 @@ public final class ApplicatorVocabulary implements Vocabulary {
             new SchemaArrayKeywordType(AllOfKeyword.NAME, AllOfKeyword::new),
             new SchemaArrayKeywordType(AnyOfKeyword.NAME, AnyOfKeyword::new),
             new SchemaArrayKeywordType(OneOfKeyword.NAME, OneOfKeyword::new),
+            new AffectedByKeywordType(
+                ThenKeyword.NAME,
+                List.of(new LinkedWith(IfKeyword.NAME, IfKeyword::new, LINKTYPE.VALID)),
+                new SubSchemaKeywordType(ThenKeyword.NAME, ThenKeyword::new)::createKeyword
+            ),
+            //if keyword as no meanings without then or else -> needs a better affects keywordtype
+            new SubSchemaKeywordType(
+                IfKeyword.NAME,
+                schema -> new ReplacingKeyword(new IfKeyword(schema), EnumSet.allOf(Keyword.KeywordCategory.class))
+            ),
+            new AffectedByKeywordType(
+                ElseKeyword.NAME,
+                List.of(new LinkedWith(IfKeyword.NAME, IfKeyword::new, LINKTYPE.INVALID)),
+                new SubSchemaKeywordType(ElseKeyword.NAME, ElseKeyword::new)::createKeyword
+            ),
             new SubSchemaKeywordType(NotKeyword.NAME, NotKeyword::new),
             new NamedJsonSchemaKeywordType(PropertiesKeyword.NAME, PropertiesKeyword::new),
             //nomally affectedBy ... but we had the needed function only in affects :(
@@ -79,10 +99,7 @@ public final class ApplicatorVocabulary implements Vocabulary {
             //this example shows my missunderstanding from affects, affectedBy and keywordtypes :(
             new AffectedByKeywordType(
                 ItemsKeyword.NAME,
-                List.of(
-                    new AffectedBy(AffectByType.EXTENDS, "minItems"),
-                    new AffectedBy(AffectByType.EXTENDS, "maxItems")
-                ),
+                List.of(new ExtendedBy("minItems"), new ExtendedBy("maxItems")),
                 //nomally affectedBy too ... but we had the needed function only in affects :(
                 schema ->
                     new AffectsKeywordType(
@@ -98,10 +115,7 @@ public final class ApplicatorVocabulary implements Vocabulary {
             new SchemaArrayKeywordType(PrefixItemsKeyword.NAME, PrefixItemsKeyword::new),
             new AffectedByKeywordType(
                 ContainsKeyword.NAME,
-                List.of(
-                    new AffectedBy(AffectByType.REPLACE, "minContains"),
-                    new AffectedBy(AffectByType.EXTENDS, "maxContains")
-                ),
+                List.of(new ReplacedBy("minContains"), new ExtendedBy("maxContains")),
                 new SubSchemaKeywordType(ContainsKeyword.NAME, ContainsKeyword::new)::createKeyword
             )
         );

@@ -29,8 +29,7 @@ import io.github.sebastiantoepfer.jsonschema.keyword.KeywordType;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Set;
 import java.util.function.Function;
 
 public final class AffectedByKeywordType implements KeywordType {
@@ -65,7 +64,7 @@ public final class AffectedByKeywordType implements KeywordType {
     static final class AffectedKeyword extends KeywordRelationship {
 
         private final JsonSchema schema;
-        private final SortedSet<AffectedBy> affectedBy;
+        private final Set<AffectedBy> affectedBy;
         private final Function<JsonSchema, Keyword> keywordCreator;
 
         public AffectedKeyword(
@@ -76,7 +75,7 @@ public final class AffectedByKeywordType implements KeywordType {
         ) {
             super(name);
             this.schema = Objects.requireNonNull(schema);
-            this.affectedBy = new TreeSet<>(affectedBy);
+            this.affectedBy = Set.copyOf(affectedBy);
             this.keywordCreator = Objects.requireNonNull(keywordCreator);
         }
 

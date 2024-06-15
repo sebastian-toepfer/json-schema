@@ -23,21 +23,55 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.keyword.type;
 
+import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
-public enum AffectByType {
-    EXTENDS {
-        @Override
-        Keyword affect(final Keyword affectedKeyword) {
-            return affectedKeyword;
-        }
-    },
-    REPLACE {
-        @Override
-        Keyword affect(final Keyword affectedKeyword) {
-            return new ReplacingKeyword(affectedKeyword);
-        }
-    };
+public final class ReplacedBy implements AffectedBy {
 
-    abstract Keyword affect(final Keyword affectedKeyword);
+    private final String name;
+
+    public ReplacedBy(final String name) {
+        this.name = name;
+    }
+
+    @Override
+    public Function<Keyword, Keyword> findAffectedByKeywordIn(final JsonSchema schema) {
+        final UnaryOperator<Keyword> result;
+        if (schema.keywordByName(name).isPresent()) {
+            result = ReplacingKeyword::new;
+        } else {
+            result = k -> k;
+        }
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Replace{" + "name=" + name + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.name);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ReplacedBy other = (ReplacedBy) obj;
+        return Objects.equals(this.name, other.name);
+    }
 }

@@ -24,63 +24,47 @@
 package io.github.sebastiantoepfer.jsonschema.core.keyword.type;
 
 import io.github.sebastiantoepfer.ddd.common.Media;
-import io.github.sebastiantoepfer.jsonschema.keyword.Annotation;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
-import io.github.sebastiantoepfer.jsonschema.keyword.Assertion;
-import io.github.sebastiantoepfer.jsonschema.keyword.Identifier;
-import io.github.sebastiantoepfer.jsonschema.keyword.ReservedLocation;
+import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
 import jakarta.json.JsonValue;
-import java.net.URI;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Set;
 
-final class MockKeyword implements Identifier, Assertion, Annotation, Applicator, ReservedLocation {
+final class LinkedKeyword implements Applicator {
 
-    private final String name;
-    private final Collection<KeywordCategory> categories;
+    private final Keyword firstChainLink;
+    private final LINKTYPE linkType;
+    private final Keyword secondChanLink;
 
-    public MockKeyword(final String name) {
-        this(name, EnumSet.allOf(KeywordCategory.class));
-    }
-
-    public MockKeyword(final String name, final Collection<KeywordCategory> categories) {
-        this.name = name;
-        this.categories = EnumSet.copyOf(categories);
-    }
-
-    @Override
-    public URI asUri() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public boolean isValidFor(final JsonValue instance) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public JsonValue valueFor(final JsonValue value) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public boolean applyTo(final JsonValue instance) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public LinkedKeyword(final Keyword firstChainLink, final LINKTYPE linkType, final Keyword secondChanLink) {
+        this.firstChainLink = Objects.requireNonNull(firstChainLink);
+        this.linkType = Objects.requireNonNull(linkType);
+        this.secondChanLink = Objects.requireNonNull(secondChanLink);
     }
 
     @Override
     public Collection<KeywordCategory> categories() {
-        return EnumSet.copyOf(categories);
+        final Set<KeywordCategory> result = EnumSet.copyOf(firstChainLink.categories());
+        result.addAll(secondChanLink.categories());
+        return result;
+    }
+
+    @Override
+    public boolean applyTo(final JsonValue instance) {
+        return linkType
+            .connect(firstChainLink.asApplicator()::applyTo, secondChanLink.asApplicator()::applyTo)
+            .test(instance);
     }
 
     @Override
     public boolean hasName(final String name) {
-        return Objects.equals(this.name, name);
+        return secondChanLink.hasName(name);
     }
 
     @Override
     public <T extends Media<T>> T printOn(final T media) {
-        return media.withValue(name, name);
+        return secondChanLink.printOn(media);
     }
 }

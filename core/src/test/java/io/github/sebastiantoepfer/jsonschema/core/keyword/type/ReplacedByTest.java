@@ -23,10 +23,13 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core.keyword.type;
 
-import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import java.util.function.Function;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.jupiter.api.Test;
 
-public interface AffectedBy {
-    Function<Keyword, Keyword> findAffectedByKeywordIn(JsonSchema schema);
+class ReplacedByTest {
+
+    @Test
+    void equalsContract() {
+        EqualsVerifier.forClass(ReplacedBy.class).verify();
+    }
 }
