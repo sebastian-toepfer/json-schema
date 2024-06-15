@@ -90,7 +90,7 @@ final class ItemsKeyword implements Applicator, Annotation {
     }
 
     private boolean appliesToAnyFor(final JsonArray value) {
-        return itemsForValidation(value).anyMatch(schema.validator()::isValid);
+        return itemsForValidation(value).anyMatch(schema::applyTo);
     }
 
     @Override
@@ -99,7 +99,7 @@ final class ItemsKeyword implements Applicator, Annotation {
     }
 
     private boolean applyTo(final JsonArray items) {
-        return itemsForValidation(items).allMatch(schema.validator()::isValid);
+        return itemsForValidation(items).allMatch(schema::applyTo);
     }
 
     private Stream<JsonValue> itemsForValidation(final JsonArray items) {

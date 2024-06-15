@@ -68,6 +68,11 @@ class AbstractJsonValueSchemaTest {
         }
 
         @Override
+        public boolean applyTo(final JsonValue instance) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
         public Validator validator() {
             throw new UnsupportedOperationException("Not supported yet.");
         }

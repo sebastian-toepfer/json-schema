@@ -30,7 +30,8 @@ import jakarta.json.JsonValue;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public interface JsonSchema extends JsonValue, Printable {
+public interface JsonSchema extends JsonValue, Applicable, Printable {
+    @Deprecated(forRemoval = true)
     Validator validator();
 
     Optional<Keyword> keywordByName(String name);

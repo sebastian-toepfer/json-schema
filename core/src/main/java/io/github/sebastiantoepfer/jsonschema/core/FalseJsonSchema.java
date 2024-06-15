@@ -45,6 +45,11 @@ final class FalseJsonSchema extends AbstractJsonValueSchema {
     }
 
     @Override
+    public boolean applyTo(final JsonValue instance) {
+        return false;
+    }
+
+    @Override
     public Validator validator() {
         return new DefaultValidator(new UnfulfillableCondition<>());
     }

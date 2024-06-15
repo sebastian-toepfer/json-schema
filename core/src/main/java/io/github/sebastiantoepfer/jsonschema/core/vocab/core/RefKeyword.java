@@ -64,7 +64,7 @@ final class RefKeyword implements Applicator {
 
     @Override
     public boolean applyTo(final JsonValue instance) {
-        return retrieveJsonSchema().validator().isValid(instance);
+        return retrieveJsonSchema().applyTo(instance);
     }
 
     @Override

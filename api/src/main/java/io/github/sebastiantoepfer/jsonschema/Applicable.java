@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,23 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.keyword;
+package io.github.sebastiantoepfer.jsonschema;
 
-import io.github.sebastiantoepfer.jsonschema.Applicable;
-import java.util.Collection;
-import java.util.Set;
+import jakarta.json.JsonValue;
 
-/**
- * apply one or more subschemas to a particular location in the instance, and combine or modify their results.
- *
- * applicators SHOULD only produce assertion results based on their subschemas' results. They should not define
- * additional constraints independent of their subschemas
- *
- * see: http://json-schema.org/draft/2020-12/json-schema-core.html#name-root-schema-and-subschemas-
- **/
-public interface Applicator extends Keyword, Applicable {
-    @Override
-    default Collection<KeywordCategory> categories() {
-        return Set.of(KeywordCategory.APPLICATOR);
-    }
+public interface Applicable {
+    boolean applyTo(JsonValue instance);
 }

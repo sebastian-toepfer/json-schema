@@ -39,6 +39,7 @@ class EmptyJsonSchemaTest {
     @ArgumentsSource(JsonValuesArguments.class)
     void should_be_valid_for_everything(final JsonValue value) {
         assertThat(new EmptyJsonSchema().validator().isValid(value), is(true));
+        assertThat(new EmptyJsonSchema().applyTo(value), is(true));
     }
 
     @Test

@@ -94,7 +94,7 @@ class PrefixItemsKeyword implements Annotation, Applicator {
     private boolean matchesSchemas(final JsonArray instance) {
         boolean result = true;
         for (int i = 0; i < Math.min(schemas.size(), instance.size()); i++) {
-            result &= schemas.get(i).validator().isValid(instance.get(i));
+            result &= schemas.get(i).applyTo(instance.get(i));
             if (!result) {
                 break;
             }

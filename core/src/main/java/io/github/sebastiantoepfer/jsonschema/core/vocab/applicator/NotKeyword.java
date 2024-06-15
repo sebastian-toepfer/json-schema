@@ -53,7 +53,7 @@ final class NotKeyword implements Applicator {
 
     @Override
     public boolean applyTo(final JsonValue instance) {
-        return !schema.validator().isValid(instance);
+        return !schema.applyTo(instance);
     }
 
     @Override

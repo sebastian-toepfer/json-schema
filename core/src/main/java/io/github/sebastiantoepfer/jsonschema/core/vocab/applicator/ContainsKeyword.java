@@ -105,6 +105,6 @@ final class ContainsKeyword implements Applicator, Annotation {
     }
 
     Stream<JsonValue> matchingValues(final JsonArray values) {
-        return values.stream().filter(contains.validator()::isValid);
+        return values.stream().filter(contains::applyTo);
     }
 }

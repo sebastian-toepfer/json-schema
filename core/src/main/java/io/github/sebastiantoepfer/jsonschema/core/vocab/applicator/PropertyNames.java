@@ -26,7 +26,6 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.applicator;
 import io.github.sebastiantoepfer.ddd.common.Media;
 import io.github.sebastiantoepfer.jsonschema.InstanceType;
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
-import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Applicator;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
@@ -73,7 +72,6 @@ final class PropertyNames implements Applicator {
     }
 
     private boolean allProperyNamesMatchesSchema(final JsonObject obj) {
-        final Validator validator = names.validator();
-        return obj.keySet().stream().map(provider::createValue).allMatch(validator::isValid);
+        return obj.keySet().stream().map(provider::createValue).allMatch(names::applyTo);
     }
 }

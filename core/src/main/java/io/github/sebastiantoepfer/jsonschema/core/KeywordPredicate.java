@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2024 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,54 +23,26 @@
  */
 package io.github.sebastiantoepfer.jsonschema.core;
 
-import io.github.sebastiantoepfer.common.condition4j.core.NoCondition;
-import io.github.sebastiantoepfer.ddd.common.Media;
-import io.github.sebastiantoepfer.jsonschema.JsonSubSchema;
-import io.github.sebastiantoepfer.jsonschema.Validator;
 import io.github.sebastiantoepfer.jsonschema.keyword.Keyword;
-import jakarta.json.JsonPointer;
 import jakarta.json.JsonValue;
-import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.function.Predicate;
 
-final class EmptyJsonSchema extends AbstractJsonValueSchema {
+final class KeywordPredicate implements Predicate<JsonValue> {
 
-    public EmptyJsonSchema() {
-        super(JsonValue.EMPTY_JSON_OBJECT);
+    private final Predicate<JsonValue> predicate;
+
+    public KeywordPredicate(final Keyword keyword) {
+        if (keyword.hasCategory(Keyword.KeywordCategory.ASSERTION)) {
+            predicate = keyword.asAssertion()::isValidFor;
+        } else if (keyword.hasCategory(Keyword.KeywordCategory.APPLICATOR)) {
+            predicate = keyword.asApplicator()::applyTo;
+        } else {
+            throw new IllegalArgumentException("keyword must be an assertion or an applicator!");
+        }
     }
 
     @Override
-    public boolean applyTo(final JsonValue instance) {
-        return true;
-    }
-
-    @Override
-    public Validator validator() {
-        return new DefaultValidator(new NoCondition<>());
-    }
-
-    @Override
-    public Optional<Keyword> keywordByName(final String name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<JsonSubSchema> subSchema(final String name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Stream<JsonSubSchema> subSchemas(final String name) {
-        return Stream.empty();
-    }
-
-    @Override
-    public Optional<JsonSubSchema> subSchema(final JsonPointer pointer) {
-        return Optional.empty();
-    }
-
-    @Override
-    public <T extends Media<T>> T printOn(final T media) {
-        return media;
+    public boolean test(final JsonValue t) {
+        return predicate.test(t);
     }
 }
