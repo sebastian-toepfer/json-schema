@@ -45,10 +45,8 @@ class LazyVocabularyDefinitionTest {
 
     @Test
     void should_throw_illegal_state_if_a_required_vocabulary_can_not_be_loaded() {
-        final VocabularyDefinition vocabDef = new LazyVocabularyDefinition(
-            URI.create("https://invalid"),
-            true,
-            () -> Stream.empty()
+        final VocabularyDefinition vocabDef = new LazyVocabularyDefinition(URI.create("https://invalid"), true, () ->
+            Stream.empty()
         );
         assertThrows(IllegalStateException.class, () -> vocabDef.findVocabulary());
     }

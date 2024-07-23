@@ -56,12 +56,11 @@ class BasicVocabularyTest {
         assertThat(
             new BasicVocabulary()
                 .findKeywordTypeByName("unknow")
-                .map(
-                    keywordType ->
-                        keywordType.createKeyword(
-                            new DefaultJsonSchemaFactory()
-                                .create(Json.createObjectBuilder().add("unknow", JsonValue.FALSE).build())
-                        )
+                .map(keywordType ->
+                    keywordType.createKeyword(
+                        new DefaultJsonSchemaFactory()
+                            .create(Json.createObjectBuilder().add("unknow", JsonValue.FALSE).build())
+                    )
                 )
                 .map(keyword -> keyword.hasName("unknow")),
             OptionalMatchers.isPresentAndIs(true)
