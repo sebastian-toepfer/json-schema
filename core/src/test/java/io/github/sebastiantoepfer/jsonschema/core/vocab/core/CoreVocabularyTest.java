@@ -68,11 +68,8 @@ class CoreVocabularyTest {
         assertThat(
             coreVocabulary
                 .findKeywordTypeByName("$dynamicRef")
-                .map(
-                    kt ->
-                        kt.createKeyword(
-                            JsonSchemas.load(Json.createObjectBuilder().add("$dynamicRef", "test").build())
-                        )
+                .map(kt ->
+                    kt.createKeyword(JsonSchemas.load(Json.createObjectBuilder().add("$dynamicRef", "test").build()))
                 ),
             isPresentAnd(isA(DynamicRefKeyword.class))
         );

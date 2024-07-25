@@ -69,20 +69,16 @@ public final class ValidationVocabulary implements Vocabulary {
                 MaxContainsKeyword.NAME,
                 List.of(new Affects("contains", new Affects.ReplaceKeyword())),
                 (affects, schema) ->
-                    new IntegerKeywordType(
-                        JsonProvider.provider(),
-                        MaxContainsKeyword.NAME,
-                        value -> new MaxContainsKeyword(affects, value)
+                    new IntegerKeywordType(JsonProvider.provider(), MaxContainsKeyword.NAME, value ->
+                        new MaxContainsKeyword(affects, value)
                     ).createKeyword(schema)
             ),
             new AffectsKeywordType(
                 MinContainsKeyword.NAME,
                 List.of(new Affects("contains", new Affects.ReplaceKeyword())),
                 (affects, schema) ->
-                    new IntegerKeywordType(
-                        JsonProvider.provider(),
-                        MinContainsKeyword.NAME,
-                        value -> new MinContainsKeyword(affects, value)
+                    new IntegerKeywordType(JsonProvider.provider(), MinContainsKeyword.NAME, value ->
+                        new MinContainsKeyword(affects, value)
                     ).createKeyword(schema)
             ),
             new BooleanKeywordType(jsonContext, UniqueItemsKeyword.NAME, UniqueItemsKeyword::new)

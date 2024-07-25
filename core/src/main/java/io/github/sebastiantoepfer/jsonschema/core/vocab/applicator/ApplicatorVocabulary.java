@@ -69,9 +69,8 @@ public final class ApplicatorVocabulary implements Vocabulary {
                 new SubSchemaKeywordType(ThenKeyword.NAME, ThenKeyword::new)::createKeyword
             ),
             //if keyword as no meanings without then or else -> needs a better affects keywordtype
-            new SubSchemaKeywordType(
-                IfKeyword.NAME,
-                schema -> new ReplacingKeyword(new IfKeyword(schema), EnumSet.allOf(Keyword.KeywordCategory.class))
+            new SubSchemaKeywordType(IfKeyword.NAME, schema ->
+                new ReplacingKeyword(new IfKeyword(schema), EnumSet.allOf(Keyword.KeywordCategory.class))
             ),
             new AffectedByKeywordType(
                 ElseKeyword.NAME,
@@ -88,9 +87,8 @@ public final class ApplicatorVocabulary implements Vocabulary {
                     new Affects("patternProperties", JsonValue.EMPTY_JSON_ARRAY)
                 ),
                 (affects, schema) ->
-                    new SubSchemaKeywordType(
-                        AdditionalPropertiesKeyword.NAME,
-                        s -> new AdditionalPropertiesKeyword(affects, s)
+                    new SubSchemaKeywordType(AdditionalPropertiesKeyword.NAME, s ->
+                        new AdditionalPropertiesKeyword(affects, s)
                     ).createKeyword(schema)
             ),
             new NamedJsonSchemaKeywordType(PatternPropertiesKeyword.NAME, PatternPropertiesKeyword::new),
@@ -106,9 +104,7 @@ public final class ApplicatorVocabulary implements Vocabulary {
                         ItemsKeyword.NAME,
                         List.of(new Affects("prefixItems", Json.createValue(-1))),
                         (affects, subSchema) ->
-                            new SubSchemaKeywordType(
-                                ItemsKeyword.NAME,
-                                s -> new ItemsKeyword(affects, s)
+                            new SubSchemaKeywordType(ItemsKeyword.NAME, s -> new ItemsKeyword(affects, s)
                             ).createKeyword(subSchema)
                     ).createKeyword(schema)
             ),

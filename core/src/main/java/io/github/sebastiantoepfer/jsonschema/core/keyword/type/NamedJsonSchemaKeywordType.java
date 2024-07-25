@@ -58,9 +58,8 @@ public final class NamedJsonSchemaKeywordType implements KeywordType {
             .stream()
             .map(n -> Map.entry(n, pseudoSchema.subSchema(n).orElseThrow(IllegalArgumentException::new)))
             .collect(
-                collectingAndThen(
-                    toMap(Map.Entry::getKey, Map.Entry::getValue),
-                    map -> keywordCreator.apply(new NamedJsonSchemas(map))
+                collectingAndThen(toMap(Map.Entry::getKey, Map.Entry::getValue), map ->
+                    keywordCreator.apply(new NamedJsonSchemas(map))
                 )
             );
     }

@@ -45,10 +45,7 @@ public final class CoreVocabulary implements Vocabulary {
             new NamedJsonSchemaKeywordType(DefsKeyword.NAME, DefsKeyword::new),
             new StringKeywordType(jsonContext, CommentKeyword.NAME, CommentKeyword::new),
             new VocabularyKeywordType(),
-            new StringKeywordType(
-                jsonContext,
-                DynamicRefKeyword.NAME,
-                value -> new DynamicRefKeyword(URI.create(value))
+            new StringKeywordType(jsonContext, DynamicRefKeyword.NAME, value -> new DynamicRefKeyword(URI.create(value))
             )
         );
     }
