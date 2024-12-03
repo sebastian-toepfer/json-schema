@@ -23,13 +23,13 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion;
 
-import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfc;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfcs;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 final class Formats {
+
+    private static final Map<String, Format> CUSTOM_FORMAT = Map.of("regex", new RegExFormat());
 
     private static final Map<String, Map.Entry<Integer, String>> RFCS = Map.ofEntries(
         Map.entry("hostname", Map.entry(1123, "hostname")),
@@ -49,60 +49,12 @@ final class Formats {
 
     Format findByName(final String name) {
         return Optional.ofNullable(RFCS.get(name))
-            .stream()
-            .map(entry ->
+            .flatMap(entry ->
                 Rfcs.findRfcByNumber(entry.getKey()).map(rfc -> new RfcBasedFormat(name, rfc, entry.getValue()))
             )
-            .flatMap(Optional::stream)
             .map(Format.class::cast)
-            .findFirst()
+            .or(() -> Optional.ofNullable(CUSTOM_FORMAT.get(name)))
+            .map(Format.class::cast)
             .orElseGet(() -> new UnknownFormat(name));
-    }
-
-    private static class RfcBasedFormat implements Format {
-
-        private final String formatName;
-        private final Rfc rfc;
-        private final String ruleName;
-
-        public RfcBasedFormat(final String formatName, final Rfc rfc, final String ruleName) {
-            this.formatName = Objects.requireNonNull(formatName);
-            this.rfc = Objects.requireNonNull(rfc);
-            this.ruleName = Objects.requireNonNull(ruleName);
-        }
-
-        @Override
-        public boolean applyTo(final String value) {
-            return rfc.findRuleByName(ruleName).map(r -> r.applyTo(value)).orElse(Boolean.FALSE);
-        }
-
-        @Override
-        public String name() {
-            return formatName;
-        }
-    }
-
-    interface Format {
-        boolean applyTo(String value);
-        String name();
-    }
-
-    private static class UnknownFormat implements Format {
-
-        private final String name;
-
-        public UnknownFormat(final String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String name() {
-            return name;
-        }
-
-        @Override
-        public boolean applyTo(final String value) {
-            return false;
-        }
     }
 }
