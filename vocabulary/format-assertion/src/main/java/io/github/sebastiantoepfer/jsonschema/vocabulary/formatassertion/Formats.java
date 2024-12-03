@@ -42,7 +42,8 @@ final class Formats {
         Map.entry("email", Map.entry(5321, "mailbox")),
         Map.entry("ipv4", Map.entry(2673, "dotted-quad")),
         Map.entry("uuid", Map.entry(4122, "UUID")),
-        Map.entry("ipv6", Map.entry(4291, "IPv6address"))
+        Map.entry("ipv6", Map.entry(4291, "IPv6address")),
+        Map.entry("json-pointer", Map.entry(6901, "json-pointer"))
     );
 
     Format findByName(final String name) {

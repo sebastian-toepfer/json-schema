@@ -258,6 +258,10 @@ public final class Rfcs {
                     )
                 )
             )
+        ),
+        Map.entry(
+            6901,
+            Map.of("json-pointer", new RegExRule(Pattern.compile("^(/([\\x00-.0-}\\x7f-\\u010ffff]|\\~[01])*)*$")))
         )
     );
 
