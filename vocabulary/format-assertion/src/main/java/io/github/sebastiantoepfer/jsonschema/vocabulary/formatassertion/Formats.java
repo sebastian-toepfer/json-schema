@@ -25,21 +25,26 @@ package io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion;
 
 import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfc;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfc3339;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfc5321;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 final class Formats {
 
-    private static final List<Format> RFCS = Map.ofEntries(
-        Map.entry("date-time", "date-time"),
-        Map.entry("date", "full-date"),
-        Map.entry("time", "full-time"),
-        Map.entry("duration", "duration")
+    private static final List<Format> RFCS = Stream.concat(
+        Map.ofEntries(
+            Map.entry("date-time", "date-time"),
+            Map.entry("date", "full-date"),
+            Map.entry("time", "full-time"),
+            Map.entry("duration", "duration")
+        )
+            .entrySet()
+            .stream()
+            .map(entry -> new RfcBasedFormat(entry.getKey(), new Rfc3339(), entry.getValue())),
+        Stream.of(new RfcBasedFormat("email", new Rfc5321(), "mailbox"))
     )
-        .entrySet()
-        .stream()
-        .map(entry -> new RfcBasedFormat(entry.getKey(), new Rfc3339(), entry.getValue()))
         .map(Format.class::cast)
         .toList();
 

@@ -59,4 +59,13 @@ class FormatsTest {
         assertThat(new Formats().findByName("duration").applyTo("PT1H10M"), is(true));
         assertThat(new Formats().findByName("duration").applyTo("noDuration"), is(false));
     }
+
+    @Test
+    void should_found_emailFormat() {
+        assertThat(
+            new Formats().findByName("email").applyTo("61313468+sebastian-toepfer@users.noreply.github.com"),
+            is(true)
+        );
+        assertThat(new Formats().findByName("email").applyTo("noEmail"), is(false));
+    }
 }
