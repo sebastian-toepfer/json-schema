@@ -68,4 +68,10 @@ class FormatsTest {
         );
         assertThat(new Formats().findByName("email").applyTo("noEmail"), is(false));
     }
+
+    @Test
+    void should_found_ipv4Format() {
+        assertThat(new Formats().findByName("ipv4").applyTo("161.111.26.9"), is(true));
+        assertThat(new Formats().findByName("ipv4").applyTo("125.158.4589.1"), is(false));
+    }
 }
