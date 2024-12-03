@@ -33,6 +33,8 @@ import java.util.Set;
 final class Formats {
 
     private static final Map<String, Map<Integer, String>> RFCS = Map.of(
+        "hostname",
+        Map.of(1123, "hostname"),
         "date-time",
         Map.of(3339, "date-time"),
         "date",

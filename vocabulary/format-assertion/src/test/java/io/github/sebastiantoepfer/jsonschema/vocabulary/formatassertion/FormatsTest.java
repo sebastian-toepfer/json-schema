@@ -96,4 +96,10 @@ class FormatsTest {
         //ipv4 only -> invalid!
         assertThat(new Formats().findByName("ipv6").applyTo("125.158.4589.1"), is(false));
     }
+
+    @Test
+    void should_found_hostname() {
+        assertThat(new Formats().findByName("hostname").applyTo("www"), is(true));
+        assertThat(new Formats().findByName("hostname").applyTo("bar_baz"), is(false));
+    }
 }
