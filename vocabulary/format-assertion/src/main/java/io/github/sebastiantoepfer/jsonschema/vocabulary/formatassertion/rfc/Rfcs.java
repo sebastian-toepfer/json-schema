@@ -34,7 +34,6 @@ public final class Rfcs {
     private static final String TIMEZONE = "([Zz]|([+-]\\d{2}\\:\\d{2}))";
     private static final String TIME = "\\d{2}\\:\\d{2}\\:\\d{2}(\\.\\d+)?" + TIMEZONE;
 
-    //create regex with: https://abnf.msweet.org/index.php
     private static final Map<Integer, Map<String, Rule>> RULES = Map.ofEntries(
         Map.entry(
             1123,
@@ -255,6 +254,20 @@ public final class Rfcs {
                             "(\\:[0-9A-Fa-f]{1,4}){0,3})?\\:\\:([0-9A-Fa-f]{1,4}(\\:[0-9A-Fa-f]{1,4}){0,3}\\:)?" +
                             "\\d{1,3}(\\.\\d{1,3}){3})|([-A-Za-z0-9]*[A-Za-z0-9])\\:[\\!-Z\\^-~]+)\\])))$"
                         )
+                    )
+                )
+            )
+        ),
+        Map.entry(
+            6570,
+            Map.of(
+                "URI-Template",
+                new RegExRule(
+                    Pattern.compile(
+                        "(([!#-$&-;=?-\\[\\]_a-z~\\xa0-\\ud7ff\\uf900-\\ufdcf\\ufdf0-\\uffef\\ue000-\\uf8ff]|%[0-9A-F" +
+                        "a-f][0-9A-Fa-f])|\\{[+#./;?&=,!@|]?(\\w|%[0-9A-Fa-f][0-9A-Fa-f])((\\.)?([a-zA-Z0-9_]|%[0-9A-" +
+                        "Fa-f][0-9A-Fa-f]))*(:[1-9]\\d{0,3}|\\*)?(,(\\w|%[0-9A-Fa-f][0-9A-Fa-f])((\\.)?(\\w|%[0-9A-Fa" +
+                        "-f][0-9A-Fa-f]))*(:[1-9]\\d{0,3}|\\*)?)*\\})*"
                     )
                 )
             )
