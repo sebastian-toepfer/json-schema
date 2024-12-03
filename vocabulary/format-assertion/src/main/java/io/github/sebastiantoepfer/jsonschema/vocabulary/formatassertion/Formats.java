@@ -44,7 +44,9 @@ final class Formats {
         Map.entry("ipv4", Map.entry(2673, "dotted-quad")),
         Map.entry("uuid", Map.entry(4122, "UUID")),
         Map.entry("ipv6", Map.entry(4291, "IPv6address")),
-        Map.entry("json-pointer", Map.entry(6901, "json-pointer"))
+        Map.entry("json-pointer", Map.entry(6901, "json-pointer")),
+        Map.entry("iri", Map.entry(3987, "IRI")),
+        Map.entry("iri-reference", Map.entry(3987, "IRI-reference"))
     );
 
     Format findByName(final String name) {
@@ -54,7 +56,6 @@ final class Formats {
             )
             .map(Format.class::cast)
             .or(() -> Optional.ofNullable(CUSTOM_FORMAT.get(name)))
-            .map(Format.class::cast)
             .orElseGet(() -> new UnknownFormat(name));
     }
 }

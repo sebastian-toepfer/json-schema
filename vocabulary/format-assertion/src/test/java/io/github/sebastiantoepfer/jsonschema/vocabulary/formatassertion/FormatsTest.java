@@ -142,4 +142,19 @@ class FormatsTest {
         assertThat(new Formats().findByName("regex").applyTo("^[0-9]*"), is(true));
         assertThat(new Formats().findByName("regex").applyTo("({"), is(false));
     }
+
+    @Test
+    void should_found_iriformat() {
+        //α -> only looks like an a, but is not one
+        assertThat(new Formats().findByName("iri").applyTo("http://www.myfictionαlbank.com"), is(true));
+        assertThat(new Formats().findByName("iri").applyTo("mailto:somebody@google.com"), is(true));
+        assertThat(new Formats().findByName("iri").applyTo("1://noIri"), is(false));
+    }
+
+    @Test
+    void should_found_irireferenceformat() {
+        //α -> only looks like an a, but is not one
+        assertThat(new Formats().findByName("iri-reference").applyTo("http://www.myfictionαlbank.com"), is(true));
+        assertThat(new Formats().findByName("iri-reference").applyTo("1://noIri"), is(false));
+    }
 }
