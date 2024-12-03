@@ -74,4 +74,26 @@ class FormatsTest {
         assertThat(new Formats().findByName("ipv4").applyTo("161.111.26.9"), is(true));
         assertThat(new Formats().findByName("ipv4").applyTo("125.158.4589.1"), is(false));
     }
+
+    @Test
+    void should_found_ipv6Format() {
+        assertThat(new Formats().findByName("ipv6").applyTo("ABCD:EF01:2345:6789:ABCD:EF01:2345:6789"), is(true));
+        assertThat(new Formats().findByName("ipv6").applyTo("2001:DB8:0:0:8:800:200C:417A"), is(true));
+        assertThat(new Formats().findByName("ipv6").applyTo("FF01:0:0:0:0:0:0:101"), is(true));
+        assertThat(new Formats().findByName("ipv6").applyTo("0:0:0:0:0:0:0:1"), is(true));
+        assertThat(new Formats().findByName("ipv6").applyTo("0:0:0:0:0:0:0:0"), is(true));
+        //compressed
+        assertThat(new Formats().findByName("ipv6").applyTo("2001:DB8::8:800:200C:417A"), is(true));
+        assertThat(new Formats().findByName("ipv6").applyTo("FF01::101"), is(true));
+        assertThat(new Formats().findByName("ipv6").applyTo("::1"), is(true));
+        assertThat(new Formats().findByName("ipv6").applyTo("::"), is(true));
+        //ipv4 representation
+        assertThat(new Formats().findByName("ipv6").applyTo("0:0:0:0:0:0:13.1.68.3"), is(true));
+        assertThat(new Formats().findByName("ipv6").applyTo("0:0:0:0:0:FFFF:129.144.52.38"), is(true));
+        //ipv4 representation compressed
+        assertThat(new Formats().findByName("ipv6").applyTo("::13.1.68.3"), is(true));
+        assertThat(new Formats().findByName("ipv6").applyTo("::FFFF:129.144.52.38"), is(true));
+        //ipv4 only -> invalid!
+        assertThat(new Formats().findByName("ipv6").applyTo("125.158.4589.1"), is(false));
+    }
 }
