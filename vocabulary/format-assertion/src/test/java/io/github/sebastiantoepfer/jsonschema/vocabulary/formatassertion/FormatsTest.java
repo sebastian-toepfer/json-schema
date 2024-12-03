@@ -115,4 +115,10 @@ class FormatsTest {
         assertThat(new Formats().findByName("uri-reference").applyTo("/json-schema"), is(true));
         assertThat(new Formats().findByName("uri-reference").applyTo("1://noUri"), is(false));
     }
+
+    @Test
+    void should_found_uuidformat() {
+        assertThat(new Formats().findByName("uuid").applyTo("b7128c5b-eafc-4b6b-9b35-1c9e3dbaabb1"), is(true));
+        assertThat(new Formats().findByName("uuid").applyTo("b7128c5b-eafc-4b6b-9b35"), is(false));
+    }
 }

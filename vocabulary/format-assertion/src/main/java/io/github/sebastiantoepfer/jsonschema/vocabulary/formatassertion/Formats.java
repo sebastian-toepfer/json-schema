@@ -31,27 +31,18 @@ import java.util.Optional;
 
 final class Formats {
 
-    private static final Map<String, Map.Entry<Integer, String>> RFCS = Map.of(
-        "hostname",
-        Map.entry(1123, "hostname"),
-        "date-time",
-        Map.entry(3339, "date-time"),
-        "date",
-        Map.entry(3339, "full-date"),
-        "time",
-        Map.entry(3339, "full-time"),
-        "duration",
-        Map.entry(3339, "duration"),
-        "uri",
-        Map.entry(3986, "URI"),
-        "uri-reference",
-        Map.entry(3986, "URI-reference"),
-        "email",
-        Map.entry(5321, "mailbox"),
-        "ipv4",
-        Map.entry(2673, "dotted-quad"),
-        "ipv6",
-        Map.entry(4291, "IPv6address")
+    private static final Map<String, Map.Entry<Integer, String>> RFCS = Map.ofEntries(
+        Map.entry("hostname", Map.entry(1123, "hostname")),
+        Map.entry("date-time", Map.entry(3339, "date-time")),
+        Map.entry("date", Map.entry(3339, "full-date")),
+        Map.entry("time", Map.entry(3339, "full-time")),
+        Map.entry("duration", Map.entry(3339, "duration")),
+        Map.entry("uri", Map.entry(3986, "URI")),
+        Map.entry("uri-reference", Map.entry(3986, "URI-reference")),
+        Map.entry("email", Map.entry(5321, "mailbox")),
+        Map.entry("ipv4", Map.entry(2673, "dotted-quad")),
+        Map.entry("uuid", Map.entry(4122, "UUID")),
+        Map.entry("ipv6", Map.entry(4291, "IPv6address"))
     );
 
     Format findByName(final String name) {
