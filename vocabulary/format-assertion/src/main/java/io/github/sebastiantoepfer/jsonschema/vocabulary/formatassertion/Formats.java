@@ -44,6 +44,8 @@ final class Formats {
         Map.entry(3339, "duration"),
         "uri",
         Map.entry(3986, "URI"),
+        "uri-reference",
+        Map.entry(3986, "URI-reference"),
         "email",
         Map.entry(5321, "mailbox"),
         "ipv4",
