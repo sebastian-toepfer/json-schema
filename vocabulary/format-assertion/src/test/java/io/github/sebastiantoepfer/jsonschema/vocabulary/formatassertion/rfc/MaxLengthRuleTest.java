@@ -23,29 +23,21 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc;
 
-import java.util.Map;
-import java.util.Optional;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.util.regex.Pattern;
+import org.junit.jupiter.api.Test;
 
-public final class Rfc5321 implements Rfc {
+class MaxLengthRuleTest {
 
-    private static final Map<String, Pattern> RULES = Map.of(
-        "mailbox",
-        Pattern.compile(
-            "^(([A-Za-z0-9!#$%&'*+-/=?\\^_`{|}~]+" +
-            "(\\.[A-Za-z0-9!#$%&'*+-/=?\\^_`{|}~]+)*|\"" +
-            "(([ -\\!#-\\[]|[\\]-~])|\\\\[ -~])*\")@([A-Za-z0-9](([-A-Za-z0-9]*[A-Za-z0-9]))?" +
-            "(\\.[A-Za-z0-9](([-A-Za-z0-9]*[A-Za-z0-9]))?)*|(\\[(\\d{1,3}(\\.\\d{1,3}){3}|[Ii][Pp][Vv]6\\:" +
-            "([0-9A-Fa-f]{1,4}(\\:[0-9A-Fa-f]{1,4}){7}|([0-9A-Fa-f]{1,4}(\\:[0-9A-Fa-f]{1,4}){0,5})?\\:\\:" +
-            "([0-9A-Fa-f]{1,4}(\\:[0-9A-Fa-f]{1,4}){0,5})?|[0-9A-Fa-f]{1,4}(\\:[0-9A-Fa-f]{1,4}){5}\\:\\d{1,3}" +
-            "(\\.\\d{1,3}){3}|([0-9A-Fa-f]{1,4}(\\:[0-9A-Fa-f]{1,4}){0,3})?\\:\\:([0-9A-Fa-f]{1,4}" +
-            "(\\:[0-9A-Fa-f]{1,4}){0,3}\\:)?\\d{1,3}(\\.\\d{1,3}){3})|([-A-Za-z0-9]*[A-Za-z0-9])" +
-            "\\:[\\!-Z\\^-~]+)\\])))$"
-        )
-    );
+    @Test
+    void should_not_apply_to_longer_value() {
+        assertThat(new MaxLengthRule(9, new RegExRule(Pattern.compile("^\\d+$"))).applyTo("1234567890"), is(false));
+    }
 
-    @Override
-    public Optional<Rule> findRuleByName(final String ruleName) {
-        return Optional.ofNullable(RULES.get(ruleName)).map(RegExRule::new).map(rule -> new MaxLengthRule(256, rule));
+    @Test
+    void should_apply_to_shorter_value() {
+        assertThat(new MaxLengthRule(9, new RegExRule(Pattern.compile("^\\d+$"))).applyTo("123456789"), is(true));
     }
 }

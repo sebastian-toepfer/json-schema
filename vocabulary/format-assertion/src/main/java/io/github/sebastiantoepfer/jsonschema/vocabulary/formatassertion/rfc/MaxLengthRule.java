@@ -23,29 +23,20 @@
  */
 package io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.regex.Pattern;
+import java.util.Objects;
 
-public final class Rfc5321 implements Rfc {
+class MaxLengthRule implements Rule {
 
-    private static final Map<String, Pattern> RULES = Map.of(
-        "mailbox",
-        Pattern.compile(
-            "^(([A-Za-z0-9!#$%&'*+-/=?\\^_`{|}~]+" +
-            "(\\.[A-Za-z0-9!#$%&'*+-/=?\\^_`{|}~]+)*|\"" +
-            "(([ -\\!#-\\[]|[\\]-~])|\\\\[ -~])*\")@([A-Za-z0-9](([-A-Za-z0-9]*[A-Za-z0-9]))?" +
-            "(\\.[A-Za-z0-9](([-A-Za-z0-9]*[A-Za-z0-9]))?)*|(\\[(\\d{1,3}(\\.\\d{1,3}){3}|[Ii][Pp][Vv]6\\:" +
-            "([0-9A-Fa-f]{1,4}(\\:[0-9A-Fa-f]{1,4}){7}|([0-9A-Fa-f]{1,4}(\\:[0-9A-Fa-f]{1,4}){0,5})?\\:\\:" +
-            "([0-9A-Fa-f]{1,4}(\\:[0-9A-Fa-f]{1,4}){0,5})?|[0-9A-Fa-f]{1,4}(\\:[0-9A-Fa-f]{1,4}){5}\\:\\d{1,3}" +
-            "(\\.\\d{1,3}){3}|([0-9A-Fa-f]{1,4}(\\:[0-9A-Fa-f]{1,4}){0,3})?\\:\\:([0-9A-Fa-f]{1,4}" +
-            "(\\:[0-9A-Fa-f]{1,4}){0,3}\\:)?\\d{1,3}(\\.\\d{1,3}){3})|([-A-Za-z0-9]*[A-Za-z0-9])" +
-            "\\:[\\!-Z\\^-~]+)\\])))$"
-        )
-    );
+    private final int maxLength;
+    private final Rule ruleToProtect;
+
+    public MaxLengthRule(final int maxLength, final Rule ruleToProtect) {
+        this.maxLength = maxLength;
+        this.ruleToProtect = Objects.requireNonNull(ruleToProtect);
+    }
 
     @Override
-    public Optional<Rule> findRuleByName(final String ruleName) {
-        return Optional.ofNullable(RULES.get(ruleName)).map(RegExRule::new).map(rule -> new MaxLengthRule(256, rule));
+    public boolean applyTo(final String value) {
+        return value.length() <= maxLength && ruleToProtect.applyTo(value);
     }
 }
