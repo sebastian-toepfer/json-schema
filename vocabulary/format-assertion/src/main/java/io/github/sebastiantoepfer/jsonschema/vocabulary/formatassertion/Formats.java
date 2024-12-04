@@ -24,6 +24,7 @@
 package io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion;
 
 import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfc;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfc2673;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfc3339;
 import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfc5321;
 import java.util.List;
@@ -43,7 +44,10 @@ final class Formats {
             .entrySet()
             .stream()
             .map(entry -> new RfcBasedFormat(entry.getKey(), new Rfc3339(), entry.getValue())),
-        Stream.of(new RfcBasedFormat("email", new Rfc5321(), "mailbox"))
+        Stream.of(
+            new RfcBasedFormat("email", new Rfc5321(), "mailbox"),
+            new RfcBasedFormat("ipv4", new Rfc2673(), "dotted-quad")
+        )
     )
         .map(Format.class::cast)
         .toList();
