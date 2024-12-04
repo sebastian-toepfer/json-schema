@@ -48,7 +48,7 @@ final class Formats {
         Stream.of(
             new RfcBasedFormat("email", new Rfc5321(), "mailbox"),
             new RfcBasedFormat("ipv4", new Rfc2673(), "dotted-quad"),
-            new RfcBasedFormat("ipv6", new Rfc4291(), "address")
+            new RfcBasedFormat("ipv6", new Rfc4291(), "IPv6address")
         )
     )
         .map(Format.class::cast)
