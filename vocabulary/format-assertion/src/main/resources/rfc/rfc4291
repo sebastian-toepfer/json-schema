@@ -1,0 +1,7 @@
+; selfmade :( -> not effectiv
+dotted-quad      = decbyte "." decbyte "." decbyte "." decbyte
+decbyte          = 1*3DIGIT
+address          = (hexbytes 7(":" hexbytes) ) / *(hexbytes *5(":" hexbytes)) zeros *(hexbytes *5(":" hexbytes)) / ((((hexbytes 5(":" hexbytes) )  ":") / *(hexbytes *4(":" hexbytes)) zeros *(hexbytes *4(":" hexbytes))) dotted-quad)
+zeros            = "::"
+hexbytes         = 1*4hexValue
+hexValue         = DIGIT / %x41-46 / %x61-66
