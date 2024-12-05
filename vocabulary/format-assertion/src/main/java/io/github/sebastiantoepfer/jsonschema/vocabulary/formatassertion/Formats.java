@@ -24,38 +24,42 @@
 package io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion;
 
 import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfc;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfc2673;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfc3339;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfc4291;
-import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfc5321;
-import java.util.List;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfcs;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Stream;
+import java.util.Optional;
+import java.util.Set;
 
 final class Formats {
 
-    private static final List<Format> RFCS = Stream.concat(
-        Map.ofEntries(
-            Map.entry("date-time", "date-time"),
-            Map.entry("date", "full-date"),
-            Map.entry("time", "full-time"),
-            Map.entry("duration", "duration")
-        )
-            .entrySet()
-            .stream()
-            .map(entry -> new RfcBasedFormat(entry.getKey(), new Rfc3339(), entry.getValue())),
-        Stream.of(
-            new RfcBasedFormat("email", new Rfc5321(), "mailbox"),
-            new RfcBasedFormat("ipv4", new Rfc2673(), "dotted-quad"),
-            new RfcBasedFormat("ipv6", new Rfc4291(), "IPv6address")
-        )
-    )
-        .map(Format.class::cast)
-        .toList();
+    private static final Map<String, Map<Integer, String>> RFCS = Map.of(
+        "date-time",
+        Map.of(3339, "date-time"),
+        "date",
+        Map.of(3339, "full-date"),
+        "time",
+        Map.of(3339, "full-time"),
+        "duration",
+        Map.of(3339, "duration"),
+        "email",
+        Map.of(5321, "mailbox"),
+        "ipv4",
+        Map.of(2673, "dotted-quad"),
+        "ipv6",
+        Map.of(4291, "IPv6address")
+    );
 
     Format findByName(final String name) {
-        return RFCS.stream().filter(f -> f.name().equals(name)).findFirst().orElseGet(() -> new UnknownFormat(name));
+        return Optional.ofNullable(RFCS.get(name))
+            .stream()
+            .map(Map::entrySet)
+            .flatMap(Set::stream)
+            .findFirst()
+            .flatMap(entry ->
+                Rfcs.findRfcByNumber(entry.getKey()).map(rfc -> new RfcBasedFormat(name, rfc, entry.getValue()))
+            )
+            .map(Format.class::cast)
+            .orElseGet(() -> new UnknownFormat(name));
     }
 
     private static class RfcBasedFormat implements Format {
