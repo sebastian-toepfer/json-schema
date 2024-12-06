@@ -43,6 +43,8 @@ final class Formats {
         Map.of(3339, "full-time"),
         "duration",
         Map.of(3339, "duration"),
+        "uri",
+        Map.of(3986, "URI"),
         "email",
         Map.of(5321, "mailbox"),
         "ipv4",

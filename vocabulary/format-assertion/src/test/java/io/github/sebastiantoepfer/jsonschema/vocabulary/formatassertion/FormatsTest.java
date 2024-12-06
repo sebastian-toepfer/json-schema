@@ -102,4 +102,10 @@ class FormatsTest {
         assertThat(new Formats().findByName("hostname").applyTo("www"), is(true));
         assertThat(new Formats().findByName("hostname").applyTo("bar_baz"), is(false));
     }
+
+    @Test
+    void should_found_uriformat() {
+        assertThat(new Formats().findByName("uri").applyTo("http://www.example.com"), is(true));
+        assertThat(new Formats().findByName("uri").applyTo("1://noUri"), is(false));
+    }
 }
