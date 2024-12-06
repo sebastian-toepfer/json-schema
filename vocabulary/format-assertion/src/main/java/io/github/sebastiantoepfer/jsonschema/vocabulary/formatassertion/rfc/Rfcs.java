@@ -37,6 +37,10 @@ public final class Rfcs {
     //create regex with: https://abnf.msweet.org/index.php
     private static final Map<Integer, Map<String, Rule>> RULES = Map.ofEntries(
         Map.entry(
+            1123,
+            Map.of("hostname", new RegExRule(Pattern.compile("(?=\\A[-a-z0-9]{1,63}\\Z)\\A[a-z0-9]+(-[a-z0-9]+)*\\Z")))
+        ),
+        Map.entry(
             2673,
             Map.of("dotted-quad", new RegExRule(Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")))
         ),
