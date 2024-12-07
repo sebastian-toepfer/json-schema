@@ -108,4 +108,11 @@ class FormatsTest {
         assertThat(new Formats().findByName("uri").applyTo("http://www.example.com"), is(true));
         assertThat(new Formats().findByName("uri").applyTo("1://noUri"), is(false));
     }
+
+    @Test
+    void should_found_urireferenceformat() {
+        assertThat(new Formats().findByName("uri-reference").applyTo("http://www.example.com"), is(true));
+        assertThat(new Formats().findByName("uri-reference").applyTo("/json-schema"), is(true));
+        assertThat(new Formats().findByName("uri-reference").applyTo("1://noUri"), is(false));
+    }
 }

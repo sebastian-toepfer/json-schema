@@ -28,41 +28,41 @@ import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfcs
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 final class Formats {
 
-    private static final Map<String, Map<Integer, String>> RFCS = Map.of(
+    private static final Map<String, Map.Entry<Integer, String>> RFCS = Map.of(
         "hostname",
-        Map.of(1123, "hostname"),
+        Map.entry(1123, "hostname"),
         "date-time",
-        Map.of(3339, "date-time"),
+        Map.entry(3339, "date-time"),
         "date",
-        Map.of(3339, "full-date"),
+        Map.entry(3339, "full-date"),
         "time",
-        Map.of(3339, "full-time"),
+        Map.entry(3339, "full-time"),
         "duration",
-        Map.of(3339, "duration"),
+        Map.entry(3339, "duration"),
         "uri",
-        Map.of(3986, "URI"),
+        Map.entry(3986, "URI"),
+        "uri-reference",
+        Map.entry(3986, "URI-reference"),
         "email",
-        Map.of(5321, "mailbox"),
+        Map.entry(5321, "mailbox"),
         "ipv4",
-        Map.of(2673, "dotted-quad"),
+        Map.entry(2673, "dotted-quad"),
         "ipv6",
-        Map.of(4291, "IPv6address")
+        Map.entry(4291, "IPv6address")
     );
 
     Format findByName(final String name) {
         return Optional.ofNullable(RFCS.get(name))
             .stream()
-            .map(Map::entrySet)
-            .flatMap(Set::stream)
-            .findFirst()
-            .flatMap(entry ->
+            .map(entry ->
                 Rfcs.findRfcByNumber(entry.getKey()).map(rfc -> new RfcBasedFormat(name, rfc, entry.getValue()))
             )
+            .flatMap(Optional::stream)
             .map(Format.class::cast)
+            .findFirst()
             .orElseGet(() -> new UnknownFormat(name));
     }
 
