@@ -194,6 +194,17 @@ public final class Rfcs {
             )
         ),
         Map.entry(
+            4122,
+            Map.of(
+                "UUID",
+                new RegExRule(
+                    Pattern.compile(
+                        "^[0-9A-Fa-f]{8}\\-[0-9A-Fa-f]{4}\\-[0-9A-Fa-f]{4}\\-[0-9A-Fa-f]{4}\\-[0-9A-Fa-f]{12}$"
+                    )
+                )
+            )
+        ),
+        Map.entry(
             4291,
             Map.of(
                 "IPv6address",
