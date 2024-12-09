@@ -37,9 +37,9 @@ import java.util.Objects;
 final class FormatKeyword implements Assertion, Annotation {
 
     static final String NAME = "format";
-    private final Formats.Format format;
+    private final Format format;
 
-    FormatKeyword(final Formats.Format format) {
+    FormatKeyword(final Format format) {
         this.format = Objects.requireNonNull(format);
     }
 

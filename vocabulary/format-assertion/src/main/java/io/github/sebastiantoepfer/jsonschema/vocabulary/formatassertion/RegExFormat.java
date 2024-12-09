@@ -21,14 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires io.github.sebastiantoepfer.ddd.common;
-    requires java.logging;
-    requires com.github.spotbugs.annotations;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.FormatAssertionVocabulary;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
+final class RegExFormat implements Format {
+
+    private static final Logger LOG = Logger.getLogger(RegExFormat.class.getName());
+
+    @Override
+    public boolean applyTo(final String value) {
+        try {
+            Pattern.compile(value);
+            return true;
+        } catch (Exception e) {
+            LOG.log(Level.FINE, "invalid regex!", e);
+            return false;
+        }
+    }
+
+    @Override
+    public String name() {
+        return "regex";
+    }
 }

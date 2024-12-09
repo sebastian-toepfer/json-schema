@@ -21,14 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires io.github.sebastiantoepfer.ddd.common;
-    requires java.logging;
-    requires com.github.spotbugs.annotations;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.FormatAssertionVocabulary;
+import io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc.Rfc;
+import java.util.Objects;
+
+public final class RfcBasedFormat implements Format {
+
+    private final String formatName;
+    private final Rfc rfc;
+    private final String ruleName;
+
+    public RfcBasedFormat(final String formatName, final Rfc rfc, final String ruleName) {
+        this.formatName = Objects.requireNonNull(formatName);
+        this.rfc = Objects.requireNonNull(rfc);
+        this.ruleName = Objects.requireNonNull(ruleName);
+    }
+
+    @Override
+    public boolean applyTo(final String value) {
+        return rfc.findRuleByName(ruleName).map(r -> r.applyTo(value)).orElse(Boolean.FALSE);
+    }
+
+    @Override
+    public String name() {
+        return formatName;
+    }
 }

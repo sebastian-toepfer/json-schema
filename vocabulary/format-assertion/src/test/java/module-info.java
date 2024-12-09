@@ -26,6 +26,7 @@ open module io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion {
     requires io.github.sebastiantoepfer.jsonschema;
     requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
     requires io.github.sebastiantoepfer.ddd.common;
+    requires java.logging;
     requires jakarta.json;
 
     requires org.junit.jupiter.api;

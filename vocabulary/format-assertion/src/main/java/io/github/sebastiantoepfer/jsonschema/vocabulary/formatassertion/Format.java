@@ -21,14 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-module io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion {
-    requires io.github.sebastiantoepfer.jsonschema;
-    requires io.github.sebastiantoepfer.jsonschema.vocabulary.spi;
-    requires io.github.sebastiantoepfer.ddd.common;
-    requires java.logging;
-    requires com.github.spotbugs.annotations;
-    requires jakarta.json;
+package io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion;
 
-    provides io.github.sebastiantoepfer.jsonschema.vocabulary.spi.LazyVocabularies
-        with io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.FormatAssertionVocabulary;
+public interface Format {
+    boolean applyTo(String value);
+
+    String name();
 }

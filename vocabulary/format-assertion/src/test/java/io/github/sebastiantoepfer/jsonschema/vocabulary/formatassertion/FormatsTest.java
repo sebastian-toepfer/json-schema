@@ -135,4 +135,11 @@ class FormatsTest {
         assertThat(new Formats().findByName("json-pointer").applyTo("/abc"), is(true));
         assertThat(new Formats().findByName("json-pointer:").applyTo("abc"), is(false));
     }
+
+    @Test
+    void should_found_regexformat() {
+        assertThat(new Formats().findByName("regex").name(), is("regex"));
+        assertThat(new Formats().findByName("regex").applyTo("^[0-9]*"), is(true));
+        assertThat(new Formats().findByName("regex").applyTo("({"), is(false));
+    }
 }
