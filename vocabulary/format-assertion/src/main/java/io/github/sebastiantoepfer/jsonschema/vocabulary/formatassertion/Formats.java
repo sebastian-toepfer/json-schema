@@ -39,6 +39,7 @@ final class Formats {
         Map.entry("duration", Map.entry(3339, "duration")),
         Map.entry("uri", Map.entry(3986, "URI")),
         Map.entry("uri-reference", Map.entry(3986, "URI-reference")),
+        Map.entry("uri-template", Map.entry(6570, "URI-Template")),
         Map.entry("email", Map.entry(5321, "mailbox")),
         Map.entry("ipv4", Map.entry(2673, "dotted-quad")),
         Map.entry("uuid", Map.entry(4122, "UUID")),

@@ -117,6 +117,14 @@ class FormatsTest {
     }
 
     @Test
+    void should_found_uri_templateformat() {
+        assertThat(
+            new Formats().findByName("uri-template").applyTo("http://www.example.com/foo{?query,number}"),
+            is(true)
+        );
+    }
+
+    @Test
     void should_found_uuidformat() {
         assertThat(new Formats().findByName("uuid").applyTo("b7128c5b-eafc-4b6b-9b35-1c9e3dbaabb1"), is(true));
         assertThat(new Formats().findByName("uuid").applyTo("b7128c5b-eafc-4b6b-9b35"), is(false));
