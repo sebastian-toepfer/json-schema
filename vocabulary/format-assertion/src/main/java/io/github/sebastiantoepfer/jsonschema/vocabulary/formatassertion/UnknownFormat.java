@@ -25,11 +25,6 @@ package io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion;
 
 public record UnknownFormat(String name) implements Format {
     @Override
-    public String name() {
-        return name;
-    }
-
-    @Override
     public boolean applyTo(final String value) {
         return false;
     }
