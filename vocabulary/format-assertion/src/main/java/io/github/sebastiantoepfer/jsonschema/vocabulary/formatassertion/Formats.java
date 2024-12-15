@@ -46,7 +46,8 @@ final class Formats {
         Map.entry("ipv6", Map.entry(4291, "IPv6address")),
         Map.entry("json-pointer", Map.entry(6901, "json-pointer")),
         Map.entry("iri", Map.entry(3987, "IRI")),
-        Map.entry("iri-reference", Map.entry(3987, "IRI-reference"))
+        Map.entry("iri-reference", Map.entry(3987, "IRI-reference")),
+        Map.entry("relative-json-pointer", Map.entry(20180723, "relative-json-pointer"))
     );
 
     Format findByName(final String name) {

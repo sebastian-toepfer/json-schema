@@ -133,7 +133,7 @@ class FormatsTest {
     @Test
     void should_found_jsonpointerformat() {
         assertThat(new Formats().findByName("json-pointer").applyTo("/abc"), is(true));
-        assertThat(new Formats().findByName("json-pointer:").applyTo("abc"), is(false));
+        assertThat(new Formats().findByName("json-pointer").applyTo("abc"), is(false));
     }
 
     @Test
@@ -156,5 +156,15 @@ class FormatsTest {
         //α -> only looks like an a, but is not one
         assertThat(new Formats().findByName("iri-reference").applyTo("http://www.myfictionαlbank.com"), is(true));
         assertThat(new Formats().findByName("iri-reference").applyTo("1://noIri"), is(false));
+    }
+
+    @Test
+    void should_found_relativejsonpointerformat() {
+        assertThat(new Formats().findByName("relative-json-pointer").applyTo("0"), is(true));
+        assertThat(new Formats().findByName("relative-json-pointer").applyTo("1/0"), is(true));
+        assertThat(new Formats().findByName("relative-json-pointer").applyTo("2/highly/nested/objects"), is(true));
+        assertThat(new Formats().findByName("relative-json-pointer").applyTo("0#"), is(true));
+        assertThat(new Formats().findByName("relative-json-pointer").applyTo("1#"), is(true));
+        assertThat(new Formats().findByName("relative-json-pointer").applyTo("nopointer"), is(false));
     }
 }

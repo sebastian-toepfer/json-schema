@@ -424,6 +424,19 @@ public final class Rfcs {
         Map.entry(
             6901,
             Map.of("json-pointer", new RegExRule(Pattern.compile("^(/([\\x00-.0-}\\x7f-\\u010ffff]|\\~[01])*)*$")))
+        ),
+        //draft -> use expired date as number :)
+        Map.entry(
+            20180723,
+            Map.of(
+                "relative-json-pointer",
+                new RegExRule(
+                    Pattern.compile(
+                        "^(0|[1-9][0-9]*)((/([\\x00-.0-}\\x7f-\\u010ffff]|\\~[01])*)*|#)$",
+                        Pattern.CASE_INSENSITIVE
+                    )
+                )
+            )
         )
     );
 
