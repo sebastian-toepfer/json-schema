@@ -39,8 +39,9 @@ class TypeKeywordTypeTest {
         assertThat(
             new TypeKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("type", Json.createValue("string")).build())
+                    new DefaultJsonSchemaFactory().create(
+                        Json.createObjectBuilder().add("type", Json.createValue("string")).build()
+                    )
                 )
                 .hasName("type"),
             is(true)
@@ -52,8 +53,9 @@ class TypeKeywordTypeTest {
         assertThat(
             new TypeKeywordType()
                 .createKeyword(
-                    new DefaultJsonSchemaFactory()
-                        .create(Json.createObjectBuilder().add("type", Json.createValue("string")).build())
+                    new DefaultJsonSchemaFactory().create(
+                        Json.createObjectBuilder().add("type", Json.createValue("string")).build()
+                    )
                 )
                 .hasName("id"),
             is(false)
@@ -64,8 +66,9 @@ class TypeKeywordTypeTest {
     void should_use_stringvalue_to_validate_type() {
         final Assertion typeAssertion = new TypeKeywordType()
             .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(Json.createObjectBuilder().add("type", Json.createValue("string")).build())
+                new DefaultJsonSchemaFactory().create(
+                    Json.createObjectBuilder().add("type", Json.createValue("string")).build()
+                )
             )
             .asAssertion();
 
@@ -79,17 +82,14 @@ class TypeKeywordTypeTest {
     void should_use_arrayvalue_to_validate_type() {
         final Assertion typeAssertion = new TypeKeywordType()
             .createKeyword(
-                new DefaultJsonSchemaFactory()
-                    .create(
-                        Json.createObjectBuilder()
-                            .add(
-                                "type",
-                                Json.createArrayBuilder()
-                                    .add(Json.createValue("string"))
-                                    .add(Json.createValue("object"))
-                            )
-                            .build()
-                    )
+                new DefaultJsonSchemaFactory().create(
+                    Json.createObjectBuilder()
+                        .add(
+                            "type",
+                            Json.createArrayBuilder().add(Json.createValue("string")).add(Json.createValue("object"))
+                        )
+                        .build()
+                )
             )
             .asAssertion();
 

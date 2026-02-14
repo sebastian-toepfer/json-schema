@@ -40,7 +40,10 @@ public final class RfcBasedFormat implements Format {
 
     @Override
     public boolean applyTo(final String value) {
-        return rfc.findRuleByName(ruleName).map(r -> r.applyTo(value)).orElse(Boolean.FALSE);
+        return rfc
+            .findRuleByName(ruleName)
+            .map(r -> r.applyTo(value))
+            .orElse(Boolean.FALSE);
     }
 
     @Override

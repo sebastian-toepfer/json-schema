@@ -125,6 +125,9 @@ class PatternPropertiesKeyword implements Applicator, Annotation {
     }
 
     private boolean isValidName(final String name) {
-        return properties.keySet().stream().anyMatch(p -> p.matcher(name).find());
+        return properties
+            .keySet()
+            .stream()
+            .anyMatch(p -> p.matcher(name).find());
     }
 }

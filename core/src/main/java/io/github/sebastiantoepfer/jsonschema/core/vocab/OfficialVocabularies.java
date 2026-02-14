@@ -57,6 +57,8 @@ public final class OfficialVocabularies implements LazyVocabularies {
 
     @Override
     public Optional<Vocabulary> loadVocabularyWithId(final URI id) {
-        return OFFICEAL_VOCABS.stream().filter(vocab -> vocab.id().equals(id)).findFirst();
+        return OFFICEAL_VOCABS.stream()
+            .filter(vocab -> vocab.id().equals(id))
+            .findFirst();
     }
 }

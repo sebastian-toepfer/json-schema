@@ -40,8 +40,9 @@ class DefaultJsonSubSchemaTest {
 
     @Test
     void should_return_owner() {
-        final JsonSchema owner = new DefaultJsonSchemaFactory()
-            .create(Json.createObjectBuilder().add("test", JsonValue.TRUE).build());
+        final JsonSchema owner = new DefaultJsonSchemaFactory().create(
+            Json.createObjectBuilder().add("test", JsonValue.TRUE).build()
+        );
         assertThat(
             new DefaultJsonSubSchema(owner, new DefaultJsonSchemaFactory().create(JsonValue.TRUE)).owner(),
             is(owner)
@@ -50,10 +51,9 @@ class DefaultJsonSubSchemaTest {
 
     @Test
     void should_return_subschema_by_name() {
-        final JsonSchema owner = new DefaultJsonSchemaFactory()
-            .create(
-                Json.createObjectBuilder().add("test", Json.createObjectBuilder().add("sub", JsonValue.TRUE)).build()
-            );
+        final JsonSchema owner = new DefaultJsonSchemaFactory().create(
+            Json.createObjectBuilder().add("test", Json.createObjectBuilder().add("sub", JsonValue.TRUE)).build()
+        );
         assertThat(
             new DefaultJsonSubSchema(
                 owner,
@@ -65,19 +65,17 @@ class DefaultJsonSubSchemaTest {
 
     @Test
     void should_return_subschemas() {
-        final JsonSchema owner = new DefaultJsonSchemaFactory()
-            .create(
-                Json.createObjectBuilder()
-                    .add("test", Json.createObjectBuilder().add("subs", Json.createArrayBuilder().add(JsonValue.TRUE)))
-                    .build()
-            );
+        final JsonSchema owner = new DefaultJsonSchemaFactory().create(
+            Json.createObjectBuilder()
+                .add("test", Json.createObjectBuilder().add("subs", Json.createArrayBuilder().add(JsonValue.TRUE)))
+                .build()
+        );
         assertThat(
             new DefaultJsonSubSchema(
                 owner,
-                new DefaultJsonSchemaFactory()
-                    .create(
-                        Json.createObjectBuilder().add("subs", Json.createArrayBuilder().add(JsonValue.TRUE)).build()
-                    )
+                new DefaultJsonSchemaFactory().create(
+                    Json.createObjectBuilder().add("subs", Json.createArrayBuilder().add(JsonValue.TRUE)).build()
+                )
             )
                 .subSchemas("subs")
                 .toList(),
@@ -87,10 +85,9 @@ class DefaultJsonSubSchemaTest {
 
     @Test
     void should_return_subschema_by_pointer() {
-        final JsonSchema owner = new DefaultJsonSchemaFactory()
-            .create(
-                Json.createObjectBuilder().add("test", Json.createObjectBuilder().add("sub", JsonValue.TRUE)).build()
-            );
+        final JsonSchema owner = new DefaultJsonSchemaFactory().create(
+            Json.createObjectBuilder().add("test", Json.createObjectBuilder().add("sub", JsonValue.TRUE)).build()
+        );
         assertThat(
             new DefaultJsonSubSchema(
                 owner,
@@ -102,10 +99,9 @@ class DefaultJsonSubSchemaTest {
 
     @Test
     void should_convertable_to_plain_jsonobject() {
-        final JsonSchema owner = new DefaultJsonSchemaFactory()
-            .create(
-                Json.createObjectBuilder().add("test", Json.createObjectBuilder().add("sub", JsonValue.TRUE)).build()
-            );
+        final JsonSchema owner = new DefaultJsonSchemaFactory().create(
+            Json.createObjectBuilder().add("test", Json.createObjectBuilder().add("sub", JsonValue.TRUE)).build()
+        );
         assertThat(
             new DefaultJsonSubSchema(
                 owner,

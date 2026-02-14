@@ -89,7 +89,9 @@ final class DefaultJsonSubSchema implements JsonSubSchema {
 
     @Override
     public Optional<Keyword> keywordByName(final String name) {
-        return keywords().filter(keyword -> keyword.hasName(name)).findAny();
+        return keywords()
+            .filter(keyword -> keyword.hasName(name))
+            .findAny();
     }
 
     private Stream<Keyword> keywords() {

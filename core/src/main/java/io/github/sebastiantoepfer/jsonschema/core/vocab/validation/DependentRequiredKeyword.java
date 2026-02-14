@@ -100,7 +100,10 @@ final class DependentRequiredKeyword implements Assertion {
         @Override
         public boolean isFulfilledBy(final JsonObject value) {
             return (
-                value.values().stream().allMatch(v -> isArray.isFulfilledBy(v) && values.isFulfilledBy(v.asJsonArray()))
+                value
+                    .values()
+                    .stream()
+                    .allMatch(v -> isArray.isFulfilledBy(v) && values.isFulfilledBy(v.asJsonArray()))
             );
         }
     }

@@ -55,7 +55,10 @@ final class AllOfKeyword implements Applicator {
 
     @Override
     public boolean applyTo(final JsonValue instance) {
-        return schemas.stream().map(JsonSchema::validator).allMatch(v -> v.isValid(instance));
+        return schemas
+            .stream()
+            .map(JsonSchema::validator)
+            .allMatch(v -> v.isValid(instance));
     }
 
     @Override

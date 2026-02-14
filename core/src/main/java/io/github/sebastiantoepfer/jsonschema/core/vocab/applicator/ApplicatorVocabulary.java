@@ -104,7 +104,8 @@ public final class ApplicatorVocabulary implements Vocabulary {
                         ItemsKeyword.NAME,
                         List.of(new Affects("prefixItems", Json.createValue(-1))),
                         (affects, subSchema) ->
-                            new SubSchemaKeywordType(ItemsKeyword.NAME, s -> new ItemsKeyword(affects, s)
+                            new SubSchemaKeywordType(ItemsKeyword.NAME, s ->
+                                new ItemsKeyword(affects, s)
                             ).createKeyword(subSchema)
                     ).createKeyword(schema)
             ),
