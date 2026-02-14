@@ -34,4 +34,5 @@ open module io.github.sebastiantoepfer.jsonschema.vocabulary.spi {
     requires org.junit.jupiter.api;
     requires hamcrest.optional;
     requires org.hamcrest;
+    requires nl.jqno.equalsverifier;
 }
