@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 sebastian.
+ * Copyright 2026 sebastian.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,48 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.sebastiantoepfer.jsonschema.keyword;
+package io.github.sebastiantoepfer.jsonschema;
 
-import io.github.sebastiantoepfer.ddd.common.Printable;
-import java.util.Collection;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-/**
- * see: https://json-schema.org/draft/2020-12/json-schema-core.html#name-json-schema-objects-and-key
- **/
-public interface Keyword extends Printable {
-    default Identifier asIdentifier() {
-        return (Identifier) this;
-    }
+import jakarta.json.JsonValue;
+import org.junit.jupiter.api.Test;
 
-    default Assertion asAssertion() {
-        return (Assertion) this;
-    }
+class ValidatorTest {
 
-    default Annotation asAnnotation() {
-        return (Annotation) this;
-    }
-
-    default Applicator asApplicator() {
-        return (Applicator) this;
-    }
-
-    default ReservedLocation asReservedLocation() {
-        return (ReservedLocation) this;
-    }
-
-    default boolean hasCategory(final KeywordCategory category) {
-        return categories().contains(category);
-    }
-
-    Collection<KeywordCategory> categories();
-
-    boolean hasName(String name);
-
-    enum KeywordCategory {
-        IDENTIFIER,
-        ASSERTION,
-        ANNOTATION,
-        APPLICATOR,
-        RESERVED_LOCATION,
+    @Test
+    void should_delegate_isValid_with_String_to_isValid_with_JsonValue() {
+        assertThat(
+            new Validator() {
+                @Override
+                public boolean isValid(final JsonValue data) {
+                    return false;
+                }
+            }
+                .isValid("{}"),
+            is(false)
+        );
+        assertThat(
+            new Validator() {
+                @Override
+                public boolean isValid(final JsonValue data) {
+                    return true;
+                }
+            }
+                .isValid("{}"),
+            is(true)
+        );
     }
 }

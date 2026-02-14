@@ -40,7 +40,7 @@ public enum InstanceType implements JsonString {
     OBJECT(JsonValue.ValueType.OBJECT),
     ARRAY(JsonValue.ValueType.ARRAY),
     NUMBER(JsonValue.ValueType.NUMBER),
-    INTEGER() {
+    INTEGER {
         @Override
         public boolean isInstance(final JsonValue value) {
             return value instanceof JsonNumber nr && isIntegral(nr.bigDecimalValue());

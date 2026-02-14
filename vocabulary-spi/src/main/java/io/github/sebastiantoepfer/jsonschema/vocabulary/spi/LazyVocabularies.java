@@ -28,7 +28,7 @@ import java.net.URI;
 import java.util.Optional;
 
 public interface LazyVocabularies {
-    default boolean knowsId(URI id) {
+    default boolean knowsId(final URI id) {
         return loadVocabularyWithId(id).isPresent();
     }
 

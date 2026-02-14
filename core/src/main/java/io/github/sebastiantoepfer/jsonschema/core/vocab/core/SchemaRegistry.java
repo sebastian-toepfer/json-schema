@@ -25,8 +25,6 @@ package io.github.sebastiantoepfer.jsonschema.core.vocab.core;
 
 import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import io.github.sebastiantoepfer.jsonschema.JsonSchemas;
-import jakarta.json.Json;
-import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
 import java.io.IOException;
 import java.net.URI;
@@ -45,16 +43,6 @@ interface SchemaRegistry {
         @Override
         public JsonSchema schemaForUrl(final URI uri) throws IOException {
             return schema;
-        }
-    }
-
-    class RemoteSchemaRegistry implements SchemaRegistry {
-
-        @Override
-        public JsonSchema schemaForUrl(final URI uri) throws IOException {
-            try (JsonReader reader = Json.createReader(uri.toURL().openStream())) {
-                return JsonSchemas.load(reader.readValue());
-            }
         }
     }
 }
