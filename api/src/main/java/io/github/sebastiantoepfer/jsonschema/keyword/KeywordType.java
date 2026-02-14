@@ -27,7 +27,7 @@ import io.github.sebastiantoepfer.jsonschema.JsonSchema;
 import java.util.Objects;
 
 public interface KeywordType {
-    default boolean hasName(String name) {
+    default boolean hasName(final String name) {
         return Objects.equals(name(), name);
     }
 

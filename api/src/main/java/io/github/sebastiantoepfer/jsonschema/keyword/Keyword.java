@@ -50,7 +50,7 @@ public interface Keyword extends Printable {
         return (ReservedLocation) this;
     }
 
-    default boolean hasCategory(KeywordCategory category) {
+    default boolean hasCategory(final KeywordCategory category) {
         return categories().contains(category);
     }
 

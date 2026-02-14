@@ -38,7 +38,7 @@ final class RefKeywordType implements KeywordType {
 
     public RefKeywordType(final JsonProvider jsonContext) {
         this.jsonContext = Objects.requireNonNull(jsonContext);
-        this.schemaRegistry = new SchemaRegistry.RemoteSchemaRegistry();
+        this.schemaRegistry = new SchemaRegistry.DefaultSchemaRegistry();
     }
 
     @Override
