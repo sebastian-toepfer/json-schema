@@ -34,7 +34,7 @@ interface SchemaRegistry {
 
     class DefaultSchemaRegistry implements SchemaRegistry {
 
-        private JsonSchema schema;
+        private final JsonSchema schema;
 
         public DefaultSchemaRegistry() {
             schema = JsonSchemas.load(JsonValue.FALSE);

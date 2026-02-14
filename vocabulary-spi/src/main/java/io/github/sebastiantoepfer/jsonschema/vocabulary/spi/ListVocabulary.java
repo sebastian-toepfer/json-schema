@@ -53,6 +53,9 @@ public final class ListVocabulary implements Vocabulary {
 
     @Override
     public Optional<KeywordType> findKeywordTypeByName(final String name) {
-        return keywords.stream().filter(keywordType -> keywordType.hasName(name)).findFirst();
+        return keywords
+            .stream()
+            .filter(keywordType -> keywordType.hasName(name))
+            .findFirst();
     }
 }

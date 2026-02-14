@@ -54,17 +54,24 @@ public final class DefaultJsonObjectSchema extends AbstractJsonValueSchema {
 
     @Override
     public boolean applyTo(final JsonValue instance) {
-        return keywords().map(KeywordPredicate::new).allMatch(prdct -> prdct.test(instance));
+        return keywords()
+            .map(KeywordPredicate::new)
+            .allMatch(prdct -> prdct.test(instance));
     }
 
     @Override
     public Optional<Keyword> keywordByName(final String name) {
-        return keywords().filter(k -> k.hasName(name)).findFirst();
+        return keywords()
+            .filter(k -> k.hasName(name))
+            .findFirst();
     }
 
     private Stream<Keyword> keywords() {
         final Keywords keywords = new KeywordExtractor(this).createKeywords();
-        return asJsonObject().keySet().stream().map(propertyName -> keywords.createKeywordFor(this, propertyName));
+        return asJsonObject()
+            .keySet()
+            .stream()
+            .map(propertyName -> keywords.createKeywordFor(this, propertyName));
     }
 
     @Override

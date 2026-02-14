@@ -42,7 +42,10 @@ final class AnyOfKeyword implements Applicator {
 
     @Override
     public boolean applyTo(final JsonValue instance) {
-        return schemas.stream().map(JsonSchema::validator).anyMatch(v -> v.isValid(instance));
+        return schemas
+            .stream()
+            .map(JsonSchema::validator)
+            .anyMatch(v -> v.isValid(instance));
     }
 
     @Override

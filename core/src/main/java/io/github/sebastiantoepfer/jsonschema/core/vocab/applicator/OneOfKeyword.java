@@ -55,7 +55,15 @@ final class OneOfKeyword implements Applicator {
 
     @Override
     public boolean applyTo(final JsonValue instance) {
-        return (schemas.stream().map(JsonSchema::validator).filter(v -> v.isValid(instance)).limit(2).count() == 1);
+        return (
+            schemas
+                .stream()
+                .map(JsonSchema::validator)
+                .filter(v -> v.isValid(instance))
+                .limit(2)
+                .count() ==
+            1
+        );
     }
 
     @Override

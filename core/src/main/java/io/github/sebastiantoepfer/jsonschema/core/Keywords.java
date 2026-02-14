@@ -83,12 +83,12 @@ final class Keywords {
             Stream.concat(MANDANTORY_VOCABS.values().stream(), DEFAULT_VOCABS.stream()),
             vocabDefs.stream().map(VocabularyDefinition::findVocabulary).flatMap(Optional::stream)
         ).collect(
-            Collector.of(
-                ArrayDeque::new,
-                ArrayDeque::addFirst,
-                (first, last) -> null //pitest otherwise see mutants here :(
-            )
-        );
+                Collector.of(
+                    ArrayDeque::new,
+                    ArrayDeque::addFirst,
+                    (first, last) -> null //pitest otherwise see mutants here :(
+                )
+            );
     }
 
     public Keyword createKeywordFor(final JsonSchema schema, final String propertyName) {

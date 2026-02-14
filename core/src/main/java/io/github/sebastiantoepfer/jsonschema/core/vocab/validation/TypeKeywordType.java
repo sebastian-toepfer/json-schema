@@ -48,17 +48,16 @@ final class TypeKeywordType implements KeywordType {
     @Override
     public Keyword createKeyword(final JsonSchema schema) {
         final JsonValue typeDefinition = schema.asJsonObject().get(name());
-        final Collection<String> allowedTypes =
-            switch (typeDefinition.getValueType()) {
-                case STRING -> List.of(((JsonString) typeDefinition).getString());
-                case ARRAY -> typeDefinition
-                    .asJsonArray()
-                    .stream()
-                    .map(JsonString.class::cast)
-                    .map(JsonString::getString)
-                    .toList();
-                default -> throw new IllegalArgumentException();
-            };
+        final Collection<String> allowedTypes = switch (typeDefinition.getValueType()) {
+            case STRING -> List.of(((JsonString) typeDefinition).getString());
+            case ARRAY -> typeDefinition
+                .asJsonArray()
+                .stream()
+                .map(JsonString.class::cast)
+                .map(JsonString::getString)
+                .toList();
+            default -> throw new IllegalArgumentException();
+        };
 
         return new TypeKeyword(allowedTypes);
     }

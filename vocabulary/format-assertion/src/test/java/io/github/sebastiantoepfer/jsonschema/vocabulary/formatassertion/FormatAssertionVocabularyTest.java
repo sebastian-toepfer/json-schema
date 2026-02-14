@@ -43,8 +43,9 @@ class FormatAssertionVocabularyTest {
     @Test
     void should_return_non_empty_optional_for_right_id() {
         assertThat(
-            new FormatAssertionVocabulary()
-                .loadVocabularyWithId(URI.create("https://json-schema.org/draft/2020-12/vocab/format-assertion")),
+            new FormatAssertionVocabulary().loadVocabularyWithId(
+                URI.create("https://json-schema.org/draft/2020-12/vocab/format-assertion")
+            ),
             isPresent()
         );
     }

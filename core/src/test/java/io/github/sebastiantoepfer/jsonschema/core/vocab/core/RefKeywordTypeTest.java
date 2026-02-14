@@ -52,8 +52,9 @@ class RefKeywordTypeTest {
     @Test
     void should_be_not_createable_from_non_string() {
         final RefKeywordType keywordType = new RefKeywordType(JsonProvider.provider());
-        final JsonSchema schema = new DefaultJsonSchemaFactory()
-            .create(Json.createObjectBuilder().add("$ref", JsonValue.TRUE).build());
+        final JsonSchema schema = new DefaultJsonSchemaFactory().create(
+            Json.createObjectBuilder().add("$ref", JsonValue.TRUE).build()
+        );
         assertThrows(IllegalArgumentException.class, () -> keywordType.createKeyword(schema));
     }
 

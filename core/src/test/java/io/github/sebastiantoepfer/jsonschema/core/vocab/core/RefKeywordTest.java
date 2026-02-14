@@ -57,8 +57,10 @@ class RefKeywordTest {
                 Json.createObjectBuilder()
                     .add(
                         "$defs",
-                        Json.createObjectBuilder()
-                            .add("positiveInteger", Json.createObjectBuilder().add("type", "integer"))
+                        Json.createObjectBuilder().add(
+                            "positiveInteger",
+                            Json.createObjectBuilder().add("type", "integer")
+                        )
                     )
                     .add("$ref", Json.createValue("#/$defs/positiveInteger"))
                     .build()
