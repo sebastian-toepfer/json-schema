@@ -41,7 +41,7 @@ import java.util.Objects;
  * source: https://www.learnjsonschema.com/2020-12/applicator/else/
  * spec: https://json-schema.org/draft/2020-12/json-schema-core.html#section-10.2.2.3
  */
-class ElseKeyword implements Applicator {
+final class ElseKeyword implements Applicator {
 
     static final String NAME = "else";
     private final JsonSchema schema;

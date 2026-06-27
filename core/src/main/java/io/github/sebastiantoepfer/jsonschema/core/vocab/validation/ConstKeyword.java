@@ -43,7 +43,7 @@ import java.util.Objects;
  * source: https://www.learnjsonschema.com/2020-12/validation/const/
  * spec: https://json-schema.org/draft/2020-12/json-schema-validation.html#section-6.1.3
  */
-class ConstKeyword implements Assertion {
+final class ConstKeyword implements Assertion {
 
     static final String NAME = "const";
     private final JsonProvider jsonContext;

@@ -75,7 +75,7 @@ final class UniqueItemsKeyword implements Assertion {
         return Objects.equals(NAME, name);
     }
 
-    private static class JsonArrayChecks {
+    private static final class JsonArrayChecks {
 
         private final JsonArray values;
 

@@ -31,7 +31,7 @@ import jakarta.json.spi.JsonProvider;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
-public class AnyKeywordType implements KeywordType {
+public final class AnyKeywordType implements KeywordType {
 
     private final JsonProvider jsonContext;
     private final String name;

@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-class KeywordExtractor {
+final class KeywordExtractor {
 
     private final JsonSchema schema;
 
