@@ -25,7 +25,7 @@ package io.github.sebastiantoepfer.jsonschema.vocabulary.formatassertion.rfc;
 
 import java.util.Objects;
 
-class MaxLengthRule implements Rule {
+final class MaxLengthRule implements Rule {
 
     private final int maxLength;
     private final Rule ruleToProtect;

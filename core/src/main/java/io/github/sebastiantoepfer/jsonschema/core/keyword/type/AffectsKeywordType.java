@@ -35,7 +35,7 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class AffectsKeywordType implements KeywordType {
+public final class AffectsKeywordType implements KeywordType {
 
     private final String name;
     private final Collection<Affects> affects;

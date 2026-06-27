@@ -81,5 +81,10 @@ abstract class KeywordRelationship implements Keyword {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    protected final void finalize() {
+        // Do nothing
+    }
+
     protected abstract Keyword delegate();
 }

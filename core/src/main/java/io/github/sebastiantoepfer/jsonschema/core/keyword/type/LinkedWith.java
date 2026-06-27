@@ -59,7 +59,7 @@ public final class LinkedWith implements AffectedBy {
         return "LinkedWith{" + "name=" + name + '}';
     }
 
-    private static class KeywordLink implements Function<Keyword, Keyword> {
+    private static final class KeywordLink implements Function<Keyword, Keyword> {
 
         private final Keyword firstChainLink;
         private final LINKTYPE linkType;
